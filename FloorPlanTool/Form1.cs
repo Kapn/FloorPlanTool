@@ -72,6 +72,7 @@ namespace FloorPlanTool
                     //rectangle
                     else if (drawRec)
                     {
+                        Console.WriteLine("e.X:" + e.X + " e.Y:" + e.Y);
                         previousPoint = e.Location;
                     }
                     //eraser
@@ -177,6 +178,7 @@ namespace FloorPlanTool
                 Shapes.Add(newLine);
             } else if (drawRec)
             {
+                Console.WriteLine("after: " + e.X + " " + e.Y);
                 Rec newRec = new Rec();
                 newRec.FillColor = brush_color.Color;
                 var dx = e.X - previousPoint.X;
