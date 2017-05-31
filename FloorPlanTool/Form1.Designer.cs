@@ -30,9 +30,9 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.toolbar_panel = new System.Windows.Forms.Panel();
+            this.dotted_line_button = new System.Windows.Forms.Button();
             this.redoButton = new System.Windows.Forms.Button();
             this.selectButton = new System.Windows.Forms.Button();
-            this.drawX_button = new System.Windows.Forms.Button();
             this.text_button = new System.Windows.Forms.Button();
             this.undo_button = new System.Windows.Forms.Button();
             this.eraser_button = new System.Windows.Forms.Button();
@@ -45,11 +45,13 @@
             this.green_button = new System.Windows.Forms.Button();
             this.red_button = new System.Windows.Forms.Button();
             this.black_button = new System.Windows.Forms.Button();
-            this.drawing_panel = new System.Windows.Forms.Panel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.drawing_panel = new System.Windows.Forms.Panel();
+            this.fill_circle_button = new System.Windows.Forms.Button();
+            this.fill_rectangle_button = new System.Windows.Forms.Button();
             this.toolbar_panel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -57,9 +59,11 @@
             // 
             // toolbar_panel
             // 
+            this.toolbar_panel.Controls.Add(this.fill_circle_button);
+            this.toolbar_panel.Controls.Add(this.fill_rectangle_button);
+            this.toolbar_panel.Controls.Add(this.dotted_line_button);
             this.toolbar_panel.Controls.Add(this.redoButton);
             this.toolbar_panel.Controls.Add(this.selectButton);
-            this.toolbar_panel.Controls.Add(this.drawX_button);
             this.toolbar_panel.Controls.Add(this.text_button);
             this.toolbar_panel.Controls.Add(this.undo_button);
             this.toolbar_panel.Controls.Add(this.eraser_button);
@@ -79,6 +83,17 @@
             this.toolbar_panel.Size = new System.Drawing.Size(126, 523);
             this.toolbar_panel.TabIndex = 0;
             // 
+            // dotted_line_button
+            // 
+            this.dotted_line_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.dotted_line_button.Location = new System.Drawing.Point(67, 174);
+            this.dotted_line_button.Name = "dotted_line_button";
+            this.dotted_line_button.Size = new System.Drawing.Size(34, 23);
+            this.dotted_line_button.TabIndex = 38;
+            this.dotted_line_button.Text = "Dotted Line";
+            this.dotted_line_button.UseVisualStyleBackColor = true;
+            this.dotted_line_button.Click += new System.EventHandler(this.dotted_line_button_Click);
+            // 
             // redoButton
             // 
             this.redoButton.Location = new System.Drawing.Point(26, 395);
@@ -91,7 +106,8 @@
             // 
             // selectButton
             // 
-            this.selectButton.Location = new System.Drawing.Point(26, 258);
+            this.selectButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.selectButton.Location = new System.Drawing.Point(26, 287);
             this.selectButton.Name = "selectButton";
             this.selectButton.Size = new System.Drawing.Size(75, 23);
             this.selectButton.TabIndex = 35;
@@ -99,19 +115,11 @@
             this.selectButton.UseVisualStyleBackColor = true;
             this.selectButton.Click += new System.EventHandler(this.selectButton_Click);
             // 
-            // drawX_button
-            // 
-            this.drawX_button.Location = new System.Drawing.Point(67, 200);
-            this.drawX_button.Name = "drawX_button";
-            this.drawX_button.Size = new System.Drawing.Size(34, 23);
-            this.drawX_button.TabIndex = 34;
-            this.drawX_button.Text = "X";
-            this.drawX_button.UseVisualStyleBackColor = true;
-            // 
             // text_button
             // 
+            this.text_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.text_button.Image = ((System.Drawing.Image)(resources.GetObject("text_button.Image")));
-            this.text_button.Location = new System.Drawing.Point(28, 229);
+            this.text_button.Location = new System.Drawing.Point(28, 258);
             this.text_button.Name = "text_button";
             this.text_button.Size = new System.Drawing.Size(36, 23);
             this.text_button.TabIndex = 32;
@@ -130,8 +138,9 @@
             // 
             // eraser_button
             // 
+            this.eraser_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.eraser_button.Image = ((System.Drawing.Image)(resources.GetObject("eraser_button.Image")));
-            this.eraser_button.Location = new System.Drawing.Point(67, 229);
+            this.eraser_button.Location = new System.Drawing.Point(67, 258);
             this.eraser_button.Name = "eraser_button";
             this.eraser_button.Size = new System.Drawing.Size(33, 23);
             this.eraser_button.TabIndex = 31;
@@ -150,8 +159,9 @@
             // 
             // circle_button
             // 
+            this.circle_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.circle_button.Image = ((System.Drawing.Image)(resources.GetObject("circle_button.Image")));
-            this.circle_button.Location = new System.Drawing.Point(26, 200);
+            this.circle_button.Location = new System.Drawing.Point(26, 229);
             this.circle_button.Name = "circle_button";
             this.circle_button.Size = new System.Drawing.Size(36, 23);
             this.circle_button.TabIndex = 26;
@@ -170,8 +180,9 @@
             // 
             // rectangle_button
             // 
+            this.rectangle_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.rectangle_button.Image = ((System.Drawing.Image)(resources.GetObject("rectangle_button.Image")));
-            this.rectangle_button.Location = new System.Drawing.Point(68, 171);
+            this.rectangle_button.Location = new System.Drawing.Point(67, 229);
             this.rectangle_button.Name = "rectangle_button";
             this.rectangle_button.Size = new System.Drawing.Size(34, 23);
             this.rectangle_button.TabIndex = 27;
@@ -190,7 +201,8 @@
             // 
             // line_button
             // 
-            this.line_button.Location = new System.Drawing.Point(28, 171);
+            this.line_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.line_button.Location = new System.Drawing.Point(28, 174);
             this.line_button.Name = "line_button";
             this.line_button.Size = new System.Drawing.Size(34, 23);
             this.line_button.TabIndex = 28;
@@ -228,19 +240,6 @@
             this.black_button.UseVisualStyleBackColor = false;
             this.black_button.Click += new System.EventHandler(this.black_button_Click);
             // 
-            // drawing_panel
-            // 
-            this.drawing_panel.BackColor = System.Drawing.Color.White;
-            this.drawing_panel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.drawing_panel.Location = new System.Drawing.Point(126, 0);
-            this.drawing_panel.Name = "drawing_panel";
-            this.drawing_panel.Size = new System.Drawing.Size(488, 523);
-            this.drawing_panel.TabIndex = 1;
-            this.drawing_panel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawing_panel_Paint);
-            this.drawing_panel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseDown);
-            this.drawing_panel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseMove);
-            this.drawing_panel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseUp);
-            // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -264,16 +263,51 @@
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // loadToolStripMenuItem
             // 
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
             this.loadToolStripMenuItem.Text = "Load";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
+            // 
+            // drawing_panel
+            // 
+            this.drawing_panel.BackColor = System.Drawing.Color.White;
+            this.drawing_panel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.drawing_panel.Location = new System.Drawing.Point(126, 0);
+            this.drawing_panel.Name = "drawing_panel";
+            this.drawing_panel.Size = new System.Drawing.Size(488, 523);
+            this.drawing_panel.TabIndex = 1;
+            this.drawing_panel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawing_panel_Paint);
+            this.drawing_panel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseDown);
+            this.drawing_panel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseMove);
+            this.drawing_panel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseUp);
+            // 
+            // fill_circle_button
+            // 
+            this.fill_circle_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.fill_circle_button.Image = ((System.Drawing.Image)(resources.GetObject("fill_circle_button.Image")));
+            this.fill_circle_button.Location = new System.Drawing.Point(26, 203);
+            this.fill_circle_button.Name = "fill_circle_button";
+            this.fill_circle_button.Size = new System.Drawing.Size(36, 23);
+            this.fill_circle_button.TabIndex = 39;
+            this.fill_circle_button.UseVisualStyleBackColor = true;
+            this.fill_circle_button.Click += new System.EventHandler(this.fill_circle_button_Click);
+            // 
+            // fill_rectangle_button
+            // 
+            this.fill_rectangle_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.fill_rectangle_button.Image = ((System.Drawing.Image)(resources.GetObject("fill_rectangle_button.Image")));
+            this.fill_rectangle_button.Location = new System.Drawing.Point(67, 203);
+            this.fill_rectangle_button.Name = "fill_rectangle_button";
+            this.fill_rectangle_button.Size = new System.Drawing.Size(34, 23);
+            this.fill_rectangle_button.TabIndex = 40;
+            this.fill_rectangle_button.UseVisualStyleBackColor = true;
+            this.fill_rectangle_button.Click += new System.EventHandler(this.fill_rectangle_button_Click);
             // 
             // Form1
             // 
@@ -298,7 +332,6 @@
 
         private System.Windows.Forms.Panel toolbar_panel;
         private System.Windows.Forms.Panel drawing_panel;
-        private System.Windows.Forms.Button drawX_button;
         private System.Windows.Forms.Button text_button;
         private System.Windows.Forms.Button undo_button;
         private System.Windows.Forms.Button eraser_button;
@@ -317,6 +350,9 @@
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
+        private System.Windows.Forms.Button dotted_line_button;
+        private System.Windows.Forms.Button fill_circle_button;
+        private System.Windows.Forms.Button fill_rectangle_button;
     }
 }
 

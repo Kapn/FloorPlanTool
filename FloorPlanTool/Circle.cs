@@ -10,7 +10,11 @@ namespace FloorPlanTool
 {
     public class Circle : IShape
     {
-        public Circle() { FillColor = Color.Black; }
+        public Circle() {
+            FillColor = Color.Black;
+            Fill = false;
+        }
+        public bool Fill { get; set; }
         public Color FillColor { get; set; }
         public Point Center { get; set; }
         private int radius;
@@ -38,9 +42,21 @@ namespace FloorPlanTool
         }
         public void Draw(Graphics g)
         {
-            using (var path = GetPath())
-            using (var brush = new SolidBrush(FillColor))
-                g.FillPath(brush, path);
+            if (Fill)
+            {
+                using (var path = GetPath())
+                using (var brush = new SolidBrush(FillColor))
+                    g.FillPath(brush, path);
+            } else
+            {
+                var p = Center;
+                p.Offset(-Radius, -Radius);
+
+                using (var path = GetPath())
+                using (var pen = new Pen(FillColor))
+                    g.DrawEllipse(pen, new Rectangle(p, new Size(Radius * 2, 2* Radius)));
+            }
+            
         }
         public void Move(Point d)
         {

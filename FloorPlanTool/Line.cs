@@ -14,6 +14,7 @@ namespace FloorPlanTool
         public Line() { LineWidth = 2; LineColor = Color.Black; }
         public int LineWidth { get; set; }
         public Color LineColor { get; set; }
+        public float[] DashPattern { get; set; }
         public Point Point1 { get; set; }
         public Point Point2 { get; set; }
         public GraphicsPath GetPath()
@@ -34,7 +35,10 @@ namespace FloorPlanTool
         {
             using (var path = GetPath())
             using (var pen = new Pen(LineColor, LineWidth))
+            {
+                pen.DashPattern = DashPattern;
                 g.DrawPath(pen, path);
+            }
         }
         public void Move(Point d)
         {

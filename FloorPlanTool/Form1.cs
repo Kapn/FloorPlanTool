@@ -13,7 +13,7 @@ using System.Windows.Forms;
 
 // TODO: resizing rectangle past nothing should mirror across
 // - undo and redo needs a little work
-// - text stuff
+//      - undo text removal and adding
 
     // Following taken from other version when drawing text, might be useful
 //g.SmoothingMode = SmoothingMode.AntiAlias;
@@ -27,13 +27,17 @@ namespace FloorPlanTool
         /*
          * Variable Declarations 
          */
-        bool drawCir, drawLine,drawRec, drawText, eraser, scaleShape;
+        bool drawCir, drawLine,drawRec, drawText, drawDotted, eraser, fill, scaleShape;
         string text_to_draw;
         private SolidBrush brush_color;
         private Color prev_color;
         Bitmap bmap;
-        IShape lastPopped;
-        
+
+        // according to https://stackoverflow.com/questions/336387/image-save-throws-a-gdi-exception-because-the-memory-stream-is-closed
+        // memorystreams are acceptable to not close, as they will be closed with bitmap is disposed anyway
+        Stream ms;
+
+        IShape lastPopped;      
         public List<IShape> Shapes { get; private set; }
         IShape selectedShape;
         bool moving;
@@ -69,7 +73,12 @@ namespace FloorPlanTool
                 {
                     if (drawCir)
                     {
+                        previousPoint = e.Location;
                         Circle newCircle = new Circle();
+                        if (fill)
+                        {
+                            newCircle.Fill = true;
+                        }
                         newCircle.FillColor = brush_color.Color;
                         newCircle.Center = new Point(e.X, e.Y);
                         newCircle.Radius = trackBar1.Value;
@@ -79,6 +88,11 @@ namespace FloorPlanTool
                     //line
                     else if(drawLine)
                     {                        
+                        previousPoint = e.Location;
+                    }
+                    //dotted line
+                    else if (drawDotted)
+                    {
                         previousPoint = e.Location;
                     }
                     //rectangle
@@ -175,8 +189,7 @@ namespace FloorPlanTool
                 {
                     var newRadius = e.X - previousPoint.X;
                     var dx = e.X - previousPoint.X;
-                    var dy = e.Y - previousPoint.Y;
-                    
+                    var dy = e.Y - previousPoint.Y;                    
                     selectedShape.Resize(e.Location, previousPoint);
                     drawing_panel.Invalidate();
                 }            
@@ -193,17 +206,40 @@ namespace FloorPlanTool
             {
                 scaleShape = false;
                 selectedShape = null;
-            } else if (drawLine)
+            } else if (drawCir)
+            {
+                //Circle newCircle = new Circle();
+                //newCircle.FillColor = brush_color.Color;
+                //newCircle.Center = new Point(e.X, e.Y);
+                //newCircle.Radius = trackBar1.Value;
+                //Shapes.Add(newCircle);
+                //drawing_panel.Invalidate();
+            }
+            else if (drawLine)
             {                
                 Line newLine = new Line();
                 newLine.LineColor = brush_color.Color;
                 newLine.LineWidth = trackBar1.Value;
+                newLine.DashPattern = new float[] { 1.0F};
+                newLine.Point1 = previousPoint;
+                newLine.Point2 = e.Location;
+                Shapes.Add(newLine);
+            } else if (drawDotted)
+            {
+                Line newLine = new Line();
+                newLine.LineColor = brush_color.Color;
+                newLine.LineWidth = trackBar1.Value;
+                newLine.DashPattern = new float[] { 2.0F , 2.0F};
                 newLine.Point1 = previousPoint;
                 newLine.Point2 = e.Location;
                 Shapes.Add(newLine);
             } else if (drawRec)
             {                
                 Rec newRec = new Rec();
+                if (fill)
+                {
+                    newRec.Fill = true;
+                }
                 newRec.FillColor = brush_color.Color;
                 
                 if (e.X < previousPoint.X)
@@ -238,6 +274,8 @@ namespace FloorPlanTool
             drawLine = false;
             eraser = false;
             drawText = false;
+            drawDotted = false;
+            fill = false;
             //draw_x = false;
             //update_preview();
         }
@@ -248,7 +286,21 @@ namespace FloorPlanTool
             drawRec = false;
             eraser = false;
             drawText = false;
+            drawDotted = false;
+            fill = false;
         }
+
+        private void dotted_line_button_Click(object sender, EventArgs e)
+        {
+            drawDotted = true;
+            drawLine = false;
+            drawCir = false;
+            drawRec = false;
+            eraser = false;
+            drawText = false;
+            fill = false;
+        }
+
 
         private void eraser_button_Click(object sender, EventArgs e)
         {
@@ -257,6 +309,8 @@ namespace FloorPlanTool
             drawLine = false;
             drawRec = false;
             drawText = false;
+            drawDotted = false;
+            fill = false;
         }
 
 
@@ -266,7 +320,8 @@ namespace FloorPlanTool
             drawCir = false;
             drawLine = false;
             drawText = false;
-
+            drawDotted = false;
+            fill = false;
         }
 
         private void selectButton_Click(object sender, EventArgs e)
@@ -276,6 +331,8 @@ namespace FloorPlanTool
             drawRec = false;
             eraser = false;
             drawText = false;
+            drawDotted = false;
+            fill = false;
 
         }
 
@@ -286,6 +343,30 @@ namespace FloorPlanTool
             drawRec = false;
             eraser = false;
             drawText = true;
+            drawDotted = false;
+            fill = false;
+        }
+
+        private void fill_circle_button_Click(object sender, EventArgs e)
+        {
+            drawCir = true;
+            fill = true;
+            drawLine = false;
+            drawRec = false;
+            eraser = false;
+            drawText = false;
+            drawDotted = false;
+        }
+
+        private void fill_rectangle_button_Click(object sender, EventArgs e)
+        {
+            drawCir = false;
+            fill = true;
+            drawLine = false;
+            drawRec = true;
+            eraser = false;
+            drawText = false;
+            drawDotted = false;
         }
 
 
@@ -322,7 +403,7 @@ namespace FloorPlanTool
         {
             brush_color.Color = Color.Red;
             update_preview();
-        }
+        }     
 
         private void green_button_Click(object sender, EventArgs e)
         {
@@ -368,33 +449,38 @@ namespace FloorPlanTool
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (Stream ms = new MemoryStream())
-            {
-                bmap.Save(ms, ImageFormat.Bmp);
-                bmap = new Bitmap(ms);
+            
+            ms = new MemoryStream();
+            //save image to memorystream
+            bmap.Save(ms, ImageFormat.Bmp);
+            bmap = new Bitmap(ms);
 
-                //write memory stream to file
-                using (FileStream file = new FileStream("file.bin", FileMode.Create, FileAccess.Write))
-                {
-                    byte[] bytes = new byte[ms.Length];
-                    ms.Read(bytes, 0, (int)ms.Length);
-                    file.Write(bytes, 0, bytes.Length);                    
-                }
-            }
+                
+
+            //write memory stream to file
+            using (FileStream file = new FileStream(@"C:\Users\Kevin\test.bmp", FileMode.Create, FileAccess.Write))
+            {
+                //byte[] bytes = new byte[ms.Length];
+                //ms.Read(bytes, 0, (int)ms.Length);
+                //file.Write(bytes, 0, bytes.Length);                    
+                ms.CopyTo(file);
+            }            
         }
 
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (MemoryStream ms = new MemoryStream())
-            using (FileStream file = new FileStream("file.bin", FileMode.Open, FileAccess.Read))
-            {
-                byte[] bytes = new byte[file.Length];
-                file.Read(bytes, 0, (int)file.Length);
-                ms.Write(bytes, 0, (int)file.Length);
+            
+            //using (FileStream file = new FileStream(@"C:\Users\Kevin\test.bmp", FileMode.Open, FileAccess.Read))
+            //{
+            //    ms = new MemoryStream();
+            //    byte[] bytes = new byte[file.Length];
+            //    file.Read(bytes, 0, (int)file.Length);
+            //    ms.Write(bytes, 0, (int)file.Length/2);
 
-                bmap = new Bitmap(ms);
-            }
-            drawing_panel.Invalidate();
+            //    ms.Seek(0, SeekOrigin.Begin);                
+            //    bmap = new Bitmap(ms);
+            //}
+            //drawing_panel.Invalidate();
         }
     }
 }

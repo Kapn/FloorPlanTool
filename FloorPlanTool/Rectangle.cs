@@ -10,7 +10,11 @@ namespace FloorPlanTool
 {
     class Rec : IShape
     {
-        public Rec() { FillColor = Color.Black; }
+        public Rec() {
+            FillColor = Color.Black;
+            Fill = false;        
+        }
+        public bool Fill { get; set; }
         public Color FillColor { get; set; }
         public int Left { get; set; }
         public int Right { get; set; }
@@ -45,9 +49,19 @@ namespace FloorPlanTool
 
         public void Draw(Graphics g)
         {
-            using (var path = GetPath())
-            using (var pen = new Pen(FillColor))
-                g.DrawRectangle(pen, temp_rec);
+            if (Fill)
+            {
+                using (var path = GetPath())
+                using (var brush = new SolidBrush(FillColor))
+                    g.FillPath(brush, path);
+            } else
+            {
+                using (var path = GetPath())
+                using (var pen = new Pen(FillColor))
+                    g.DrawRectangle(pen, temp_rec);
+            }
+
+
         }
 
         //resize rectangle

@@ -26,8 +26,7 @@ namespace FloorPlanTool
 
         public void Draw(Graphics g)
         {
-            using (var path = GetPath())
-            using (var pen = new Pen(Color.White))
+            using (var path = GetPath())            
                 g.DrawString(Text, Font, Brush, drawRect);
         }
 
@@ -58,9 +57,14 @@ namespace FloorPlanTool
             int dx = e.X - PosX;
             int dy = e.Y - PosY;
 
-            Width = Width + dx;
-            Height = Height + dy;
-            FontSize = FontSize + dx;
+            Console.WriteLine("dx:" + dx);
+            Width = dx;
+            Height = dy;
+
+            //FontSize = CurrentFontSize * (DesiredWidth / CurrentWidth)
+
+            FontSize = dx/6;
+            Console.WriteLine("fontsize:" + FontSize);
             Font = new Font("Arial", FontSize);
 
 

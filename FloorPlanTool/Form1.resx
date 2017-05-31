@@ -118,6 +118,23 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="fill_circle_button.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
+        wwAADsMBx2+oZAAAAOFJREFUOE+tk00OgjAQhXsUz8IpujRyCw7QPReRI7hmxSXUbXUBLMd+dTCADTHF
+        SV5C5v0wHYpZ1ziOx77vL8MwyBz04FT2XYE8BGHXtq1UVSVFUSxADw4NWrW9S83eOSfWWmnOjdyud3n4
+        ZwTP9ODquibEL0JIhShP5cK4BhwaDemimXMxGulb5glo0OLBa1gO52PElCEFtHjwMn5c0i9vn4AWD95P
+        QEq4hf8HZB9h9xJ3f0YqjNJxC7MuEsW1DA0PQTojzoN4pgeXvMqUhuT9TPPiXCwnCOOWJ9CDU5mWMS8D
+        5/O9EfFUrwAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="fill_rectangle_button.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
+        wwAADsMBx2+oZAAAADJJREFUOE9jGHjw7du3/5RgsAFOTk5kYeob8OH9R6LwqAG0NIBUTD0DKMHQHDFg
+        gIEBAFV/O+cJuGKtAAAAAElFTkSuQmCC
+</value>
+  </data>
   <data name="text_button.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
