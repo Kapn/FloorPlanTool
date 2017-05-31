@@ -46,9 +46,22 @@ namespace FloorPlanTool
         {
             Center = new Point(Center.X + d.X, Center.Y + d.Y);
         }
-        public void Resize(int radius)
+        public void Resize(Point e, Point previousPoint)
         {
-            this.Radius = radius;
+            int newRadius;
+            int dx = e.X - previousPoint.X;
+            int dy = e.Y - previousPoint.Y;
+
+            if (dx < dy)
+            {
+                newRadius = dy;
+            }
+            else
+            {
+                newRadius = dx;
+            }
+
+            this.Radius = newRadius;
         }
     }
 }

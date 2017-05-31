@@ -30,12 +30,11 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.toolbar_panel = new System.Windows.Forms.Panel();
+            this.redoButton = new System.Windows.Forms.Button();
             this.selectButton = new System.Windows.Forms.Button();
             this.drawX_button = new System.Windows.Forms.Button();
-            this.preview_panel = new System.Windows.Forms.Panel();
             this.text_button = new System.Windows.Forms.Button();
             this.undo_button = new System.Windows.Forms.Button();
-            this.pen_tool_button = new System.Windows.Forms.Button();
             this.eraser_button = new System.Windows.Forms.Button();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.circle_button = new System.Windows.Forms.Button();
@@ -47,9 +46,13 @@
             this.red_button = new System.Windows.Forms.Button();
             this.black_button = new System.Windows.Forms.Button();
             this.drawing_panel = new System.Windows.Forms.Panel();
-            this.redoButton = new System.Windows.Forms.Button();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolbar_panel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolbar_panel
@@ -57,10 +60,8 @@
             this.toolbar_panel.Controls.Add(this.redoButton);
             this.toolbar_panel.Controls.Add(this.selectButton);
             this.toolbar_panel.Controls.Add(this.drawX_button);
-            this.toolbar_panel.Controls.Add(this.preview_panel);
             this.toolbar_panel.Controls.Add(this.text_button);
             this.toolbar_panel.Controls.Add(this.undo_button);
-            this.toolbar_panel.Controls.Add(this.pen_tool_button);
             this.toolbar_panel.Controls.Add(this.eraser_button);
             this.toolbar_panel.Controls.Add(this.trackBar1);
             this.toolbar_panel.Controls.Add(this.circle_button);
@@ -71,15 +72,26 @@
             this.toolbar_panel.Controls.Add(this.green_button);
             this.toolbar_panel.Controls.Add(this.red_button);
             this.toolbar_panel.Controls.Add(this.black_button);
+            this.toolbar_panel.Controls.Add(this.menuStrip1);
             this.toolbar_panel.Dock = System.Windows.Forms.DockStyle.Left;
             this.toolbar_panel.Location = new System.Drawing.Point(0, 0);
             this.toolbar_panel.Name = "toolbar_panel";
             this.toolbar_panel.Size = new System.Drawing.Size(126, 523);
             this.toolbar_panel.TabIndex = 0;
             // 
+            // redoButton
+            // 
+            this.redoButton.Location = new System.Drawing.Point(26, 395);
+            this.redoButton.Name = "redoButton";
+            this.redoButton.Size = new System.Drawing.Size(81, 33);
+            this.redoButton.TabIndex = 36;
+            this.redoButton.Text = "Redo";
+            this.redoButton.UseVisualStyleBackColor = true;
+            this.redoButton.Click += new System.EventHandler(this.redoButton_Click);
+            // 
             // selectButton
             // 
-            this.selectButton.Location = new System.Drawing.Point(26, 287);
+            this.selectButton.Location = new System.Drawing.Point(26, 258);
             this.selectButton.Name = "selectButton";
             this.selectButton.Size = new System.Drawing.Size(75, 23);
             this.selectButton.TabIndex = 35;
@@ -89,29 +101,22 @@
             // 
             // drawX_button
             // 
-            this.drawX_button.Location = new System.Drawing.Point(68, 229);
+            this.drawX_button.Location = new System.Drawing.Point(67, 200);
             this.drawX_button.Name = "drawX_button";
             this.drawX_button.Size = new System.Drawing.Size(34, 23);
             this.drawX_button.TabIndex = 34;
             this.drawX_button.Text = "X";
             this.drawX_button.UseVisualStyleBackColor = true;
             // 
-            // preview_panel
-            // 
-            this.preview_panel.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.preview_panel.Location = new System.Drawing.Point(26, 327);
-            this.preview_panel.Name = "preview_panel";
-            this.preview_panel.Size = new System.Drawing.Size(76, 63);
-            this.preview_panel.TabIndex = 33;
-            // 
             // text_button
             // 
             this.text_button.Image = ((System.Drawing.Image)(resources.GetObject("text_button.Image")));
-            this.text_button.Location = new System.Drawing.Point(26, 229);
+            this.text_button.Location = new System.Drawing.Point(28, 229);
             this.text_button.Name = "text_button";
             this.text_button.Size = new System.Drawing.Size(36, 23);
             this.text_button.TabIndex = 32;
             this.text_button.UseVisualStyleBackColor = true;
+            this.text_button.Click += new System.EventHandler(this.text_button_Click);
             // 
             // undo_button
             // 
@@ -123,21 +128,12 @@
             this.undo_button.UseVisualStyleBackColor = true;
             this.undo_button.Click += new System.EventHandler(this.undo_button_Click);
             // 
-            // pen_tool_button
-            // 
-            this.pen_tool_button.Image = ((System.Drawing.Image)(resources.GetObject("pen_tool_button.Image")));
-            this.pen_tool_button.Location = new System.Drawing.Point(26, 171);
-            this.pen_tool_button.Name = "pen_tool_button";
-            this.pen_tool_button.Size = new System.Drawing.Size(36, 23);
-            this.pen_tool_button.TabIndex = 24;
-            this.pen_tool_button.UseVisualStyleBackColor = true;
-            // 
             // eraser_button
             // 
             this.eraser_button.Image = ((System.Drawing.Image)(resources.GetObject("eraser_button.Image")));
-            this.eraser_button.Location = new System.Drawing.Point(26, 258);
+            this.eraser_button.Location = new System.Drawing.Point(67, 229);
             this.eraser_button.Name = "eraser_button";
-            this.eraser_button.Size = new System.Drawing.Size(76, 23);
+            this.eraser_button.Size = new System.Drawing.Size(33, 23);
             this.eraser_button.TabIndex = 31;
             this.eraser_button.UseVisualStyleBackColor = true;
             this.eraser_button.Click += new System.EventHandler(this.eraser_button_Click);
@@ -194,7 +190,7 @@
             // 
             // line_button
             // 
-            this.line_button.Location = new System.Drawing.Point(68, 200);
+            this.line_button.Location = new System.Drawing.Point(28, 171);
             this.line_button.Name = "line_button";
             this.line_button.Size = new System.Drawing.Size(34, 23);
             this.line_button.TabIndex = 28;
@@ -245,15 +241,39 @@
             this.drawing_panel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseMove);
             this.drawing_panel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseUp);
             // 
-            // redoButton
+            // menuStrip1
             // 
-            this.redoButton.Location = new System.Drawing.Point(27, 405);
-            this.redoButton.Name = "redoButton";
-            this.redoButton.Size = new System.Drawing.Size(75, 23);
-            this.redoButton.TabIndex = 36;
-            this.redoButton.Text = "Redo";
-            this.redoButton.UseVisualStyleBackColor = true;
-            this.redoButton.Click += new System.EventHandler(this.redoButton_Click);
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+            this.menuStrip1.Size = new System.Drawing.Size(126, 24);
+            this.menuStrip1.TabIndex = 37;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveToolStripMenuItem,
+            this.loadToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
+            this.fileToolStripMenuItem.Text = "File..";
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveToolStripMenuItem.Text = "Save";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
+            // loadToolStripMenuItem
+            // 
+            this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.loadToolStripMenuItem.Text = "Load";
+            this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -262,11 +282,14 @@
             this.ClientSize = new System.Drawing.Size(614, 523);
             this.Controls.Add(this.drawing_panel);
             this.Controls.Add(this.toolbar_panel);
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
             this.toolbar_panel.ResumeLayout(false);
             this.toolbar_panel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -276,10 +299,8 @@
         private System.Windows.Forms.Panel toolbar_panel;
         private System.Windows.Forms.Panel drawing_panel;
         private System.Windows.Forms.Button drawX_button;
-        private System.Windows.Forms.Panel preview_panel;
         private System.Windows.Forms.Button text_button;
         private System.Windows.Forms.Button undo_button;
-        private System.Windows.Forms.Button pen_tool_button;
         private System.Windows.Forms.Button eraser_button;
         private System.Windows.Forms.TrackBar trackBar1;
         private System.Windows.Forms.Button circle_button;
@@ -292,6 +313,10 @@
         private System.Windows.Forms.Button black_button;
         private System.Windows.Forms.Button selectButton;
         private System.Windows.Forms.Button redoButton;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
     }
 }
 

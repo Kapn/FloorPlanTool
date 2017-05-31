@@ -20,19 +20,27 @@ namespace FloorPlanTool
         public GraphicsPath GetPath()
         {
             var path = new GraphicsPath();            
-            temp_rec = Rectangle.FromLTRB(Left, Right, Top, Bottom);
+            temp_rec = Rectangle.FromLTRB(Left, Top, Right, Bottom);
             path.AddRectangle(temp_rec);
             return path;
         }
 
         public bool HitTest(Point p)
         {
-            throw new NotImplementedException();
+            var result = false;
+            using (var path = GetPath())
+                result = path.IsVisible(p);
+            return result;
         }
 
         public void Move(Point d)
         {
-            throw new NotImplementedException();
+            Left = Left + d.X;
+            Right = Right + d.X;
+
+            Top = Top + d.Y;
+            Bottom = Bottom + d.Y;
+
         }
 
         public void Draw(Graphics g)
@@ -42,9 +50,16 @@ namespace FloorPlanTool
                 g.DrawRectangle(pen, temp_rec);
         }
 
-        public void Resize(int radius)
+        //resize rectangle
+        //top-left corner stays fixed
+        public void Resize(Point e, Point previousPoint)
         {
-            throw new NotImplementedException();
+            int dx = e.X - Right;
+            int dy = e.Y - Bottom;
+            
+            Right = Right + dx;
+            Bottom = Bottom + dy;
+            
         }
 
     }

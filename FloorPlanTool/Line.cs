@@ -41,9 +41,24 @@ namespace FloorPlanTool
             Point1 = new Point(Point1.X + d.X, Point1.Y + d.Y);
             Point2 = new Point(Point2.X + d.X, Point2.Y + d.Y);
         }
-        public void Resize(int radius)
-        {
 
+        //resize line based on closest point clicked
+        public void Resize(Point e, Point previousPoint)
+        {
+            
+            
+            double distanceToPt1 = ((e.X - Point1.X) * (e.X - Point1.X) + (e.Y - Point1.Y) * (e.Y - Point1.Y));
+            double distanceToPt2 = ((e.X - Point2.X) * (e.X - Point2.X) + (e.Y - Point2.Y) * (e.Y - Point2.Y));
+
+            if (distanceToPt1 < distanceToPt2)
+            {
+                //leave pt2 anchored
+                Point1 = new Point(Point1.X + (e.X - Point1.X), Point1.Y + (e.Y - Point1.Y));
+            } else
+            {
+                //leave pt1 anchored
+                Point2 = new Point(Point2.X + (e.X - Point2.X), Point2.Y + (e.Y - Point2.Y));
+            }
         }
     }
 }

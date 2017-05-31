@@ -128,16 +128,6 @@
         nhEKhLMQ4zhuAgxVVHiBXX8Ha74/0csP1ptDlgAAAABJRU5ErkJggg==
 </value>
   </data>
-  <data name="pen_tool_button.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        wwAADsMBx2+oZAAAAONJREFUOE/NkbsNwjAQhjMKIzBD+uxAkZaIMtShR5mADUiRPiuEIYAmRUDKozT+
-        TjZYKC86fulkx3fff2fHW6q2bU9d1yknjiY1LwsHQaB835e1KIplJi4cbSN1u95VWV7km3NTNiwL0zU7
-        ZwInyUFWziYNXNiOTWdgJpmc4Bt2TZjEwtQZ5KMx2I0/hPu+X+lknabpIEiMwkgbbKqqksI43ssj/QyH
-        YSj/+FE/xWQRjHRyZ7tjQLDnOrMw0kVlnufvjkyCoT6vZ2FEISAmgATX4mFNybSaplljwiRcB9ikFsjz
-        Xn3Rj3HKPzrRAAAAAElFTkSuQmCC
-</value>
-  </data>
   <data name="eraser_button.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
@@ -163,4 +153,7 @@
         gIEBAFV/O+cJuGKtAAAAAElFTkSuQmCC
 </value>
   </data>
+  <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
 </root>

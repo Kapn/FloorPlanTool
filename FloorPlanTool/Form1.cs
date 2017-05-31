@@ -3,11 +3,22 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
+// TODO: resizing rectangle past nothing should mirror across
+// - undo and redo needs a little work
+// - text stuff
+
+    // Following taken from other version when drawing text, might be useful
+//g.SmoothingMode = SmoothingMode.AntiAlias;
+//g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+//g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
 namespace FloorPlanTool
 {
@@ -16,7 +27,8 @@ namespace FloorPlanTool
         /*
          * Variable Declarations 
          */
-        bool drawCir, drawLine,drawRec,eraser, scaleShape;
+        bool drawCir, drawLine,drawRec, drawText, eraser, scaleShape;
+        string text_to_draw;
         private SolidBrush brush_color;
         private Color prev_color;
         Bitmap bmap;
@@ -71,9 +83,19 @@ namespace FloorPlanTool
                     }
                     //rectangle
                     else if (drawRec)
-                    {
-                        Console.WriteLine("e.X:" + e.X + " e.Y:" + e.Y);
+                    {                        
                         previousPoint = e.Location;
+                    }
+                    //draw text
+                    else if (drawText)
+                    {
+                        previousPoint = e.Location;
+                        TextBox txtbox = new TextBox { Name = "textbox1" };
+                        txtbox.KeyDown += textbox_KeyDown;
+                        drawing_panel.Controls.Add(txtbox);
+                        txtbox.Location = new Point(e.X, e.Y);
+                        txtbox.TextAlign = HorizontalAlignment.Center;
+                        
                     }
                     //eraser
                     else if (eraser)
@@ -90,7 +112,7 @@ namespace FloorPlanTool
                                 break;
                             }
                         }                        
-                    }
+                    }                   
                     //selector
                     else
                     {
@@ -111,13 +133,13 @@ namespace FloorPlanTool
                         drawing_panel.Invalidate();
                     }
                 }
-                // resize with mouse click or right click
+                // resize with wheel click or right click
                 else
                 {
                     
                     for (var i = Shapes.Count - 1; i >= 0; i--)
                     {
-                        Console.WriteLine("type:" + Shapes[i].ToString());
+                        //Console.WriteLine("type:" + Shapes[i].ToString());
                         if (Shapes[i].HitTest(e.Location))
                         {
                             selectedShape = Shapes[i];
@@ -152,7 +174,10 @@ namespace FloorPlanTool
                 else if (scaleShape)
                 {
                     var newRadius = e.X - previousPoint.X;
-                    selectedShape.Resize(newRadius);
+                    var dx = e.X - previousPoint.X;
+                    var dy = e.Y - previousPoint.Y;
+                    
+                    selectedShape.Resize(e.Location, previousPoint);
                     drawing_panel.Invalidate();
                 }            
             }
@@ -177,16 +202,30 @@ namespace FloorPlanTool
                 newLine.Point2 = e.Location;
                 Shapes.Add(newLine);
             } else if (drawRec)
-            {
-                Console.WriteLine("after: " + e.X + " " + e.Y);
+            {                
                 Rec newRec = new Rec();
                 newRec.FillColor = brush_color.Color;
-                var dx = e.X - previousPoint.X;
-                var dy = e.Y - previousPoint.Y;
-                newRec.Left = previousPoint.X;
-                newRec.Right = e.X;
-                newRec.Top = previousPoint.Y;
-                newRec.Bottom = e.Y;
+                
+                if (e.X < previousPoint.X)
+                {
+                    newRec.Left = e.X;
+                    newRec.Right = previousPoint.X;
+                } else
+                {
+                    newRec.Left = previousPoint.X;
+                    newRec.Right = e.X;
+                }                                                          
+
+                if (e.Y < previousPoint.Y)
+                {
+                    newRec.Top = e.Y;
+                    newRec.Bottom = previousPoint.Y;
+                } else
+                {
+                    newRec.Top = previousPoint.Y;
+                    newRec.Bottom = e.Y;
+                }
+                                          
                 Shapes.Add(newRec);                                
             }
             drawing_panel.Invalidate();
@@ -197,8 +236,8 @@ namespace FloorPlanTool
             drawCir = true;
             drawRec = false;
             drawLine = false;
-            eraser = false;            
-            //text = false;
+            eraser = false;
+            drawText = false;
             //draw_x = false;
             //update_preview();
         }
@@ -208,6 +247,7 @@ namespace FloorPlanTool
             drawCir = false;            
             drawRec = false;
             eraser = false;
+            drawText = false;
         }
 
         private void eraser_button_Click(object sender, EventArgs e)
@@ -216,6 +256,7 @@ namespace FloorPlanTool
             drawCir = false;
             drawLine = false;
             drawRec = false;
+            drawText = false;
         }
 
 
@@ -224,7 +265,8 @@ namespace FloorPlanTool
             drawRec = true;
             drawCir = false;
             drawLine = false;
-            
+            drawText = false;
+
         }
 
         private void selectButton_Click(object sender, EventArgs e)
@@ -233,8 +275,19 @@ namespace FloorPlanTool
             drawLine = false;
             drawRec = false;
             eraser = false;
-            
+            drawText = false;
+
         }
+
+        private void text_button_Click(object sender, EventArgs e)
+        {
+            drawCir = false;
+            drawLine = false;
+            drawRec = false;
+            eraser = false;
+            drawText = true;
+        }
+
 
         private void clear_all_button_Click(object sender, EventArgs e)
         {
@@ -286,6 +339,62 @@ namespace FloorPlanTool
         void update_preview()
         {
 
+        }
+
+        private void textbox_KeyDown(object sender, KeyEventArgs e)
+        {            
+            if (e.KeyCode == Keys.Enter)
+            {
+                foreach (Control ctrl in drawing_panel.Controls)
+                {
+                    if (ctrl.Name == "textbox1")
+                    {
+                        text_to_draw = ctrl.Text;
+                        drawing_panel.Controls.Remove(ctrl);
+                    }
+                }
+
+                TextInput newText = new TextInput();
+                newText.Text = text_to_draw;
+                newText.Brush = brush_color;
+                newText.Width = 100;
+                newText.Height = 25;
+                newText.PosX = previousPoint.X;
+                newText.PosY = previousPoint.Y;
+                Shapes.Add(newText);
+                drawing_panel.Invalidate();
+            }
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (Stream ms = new MemoryStream())
+            {
+                bmap.Save(ms, ImageFormat.Bmp);
+                bmap = new Bitmap(ms);
+
+                //write memory stream to file
+                using (FileStream file = new FileStream("file.bin", FileMode.Create, FileAccess.Write))
+                {
+                    byte[] bytes = new byte[ms.Length];
+                    ms.Read(bytes, 0, (int)ms.Length);
+                    file.Write(bytes, 0, bytes.Length);                    
+                }
+            }
+        }
+
+        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            using (FileStream file = new FileStream("file.bin", FileMode.Open, FileAccess.Read))
+            {
+                byte[] bytes = new byte[file.Length];
+                file.Read(bytes, 0, (int)file.Length);
+                ms.Write(bytes, 0, (int)file.Length);
+
+                bmap = new Bitmap(ms);
+            }
+            drawing_panel.Invalidate();
         }
     }
 }

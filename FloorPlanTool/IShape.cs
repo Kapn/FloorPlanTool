@@ -14,6 +14,6 @@ namespace FloorPlanTool
         bool HitTest(Point p);
         void Draw(Graphics g);
         void Move(Point d);
-        void Resize(int radius);
+        void Resize(Point e, Point previousPoint);
     }
 }
