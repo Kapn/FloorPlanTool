@@ -26,23 +26,22 @@ namespace FloorPlanTool
     {
         /*
          * Variable Declarations 
-         */
-        bool drawCir, drawLine,drawRec, drawText, drawDotted, eraser, fill, scaleShape;
-        string text_to_draw;
+         */        
         private SolidBrush brush_color;
         private Color prev_color;
-        Bitmap bmap;
+        public List<IShape> Shapes { get; private set; }
+
+        bool drawCir, drawLine, drawRec, drawText, drawDotted, eraser, fill, scaleShape, moving, just_cleared;
+        string text_to_draw;        
 
         // according to https://stackoverflow.com/questions/336387/image-save-throws-a-gdi-exception-because-the-memory-stream-is-closed
         // memorystreams are acceptable to not close, as they will be closed with bitmap is disposed anyway
         Stream ms;
-
-        IShape lastPopped;      
-        public List<IShape> Shapes { get; private set; }
         IShape selectedShape;
-        bool moving;
+        Bitmap bmap;
+        Stack<IShape> redo_stack = new Stack<IShape>();
         Point previousPoint = Point.Empty;
-
+        
         public Form1()
         {
             InitializeComponent();
@@ -152,8 +151,7 @@ namespace FloorPlanTool
                 {
                     
                     for (var i = Shapes.Count - 1; i >= 0; i--)
-                    {
-                        //Console.WriteLine("type:" + Shapes[i].ToString());
+                    {                        
                         if (Shapes[i].HitTest(e.Location))
                         {
                             selectedShape = Shapes[i];
@@ -169,7 +167,8 @@ namespace FloorPlanTool
                     drawing_panel.Invalidate();
                 }
                
-            }            
+            }
+            redo_stack.Clear();
         }
 
         private void drawing_panel_MouseMove(object sender, MouseEventArgs e)
@@ -275,9 +274,7 @@ namespace FloorPlanTool
             eraser = false;
             drawText = false;
             drawDotted = false;
-            fill = false;
-            //draw_x = false;
-            //update_preview();
+            fill = false;            
         }
         private void line_button_Click(object sender, EventArgs e)
         {
@@ -369,58 +366,68 @@ namespace FloorPlanTool
             drawDotted = false;
         }
 
-
-        private void clear_all_button_Click(object sender, EventArgs e)
-        {
-            Shapes.Clear();
-            drawing_panel.Invalidate();
-        }
-
         private void black_button_Click(object sender, EventArgs e)
         {
-            brush_color.Color = Color.Black;
-            update_preview();
+            brush_color.Color = Color.Black;           
+        }
+
+        Stack<IShape> clear_all_stack = new Stack<IShape>();
+        private void clear_all_button_Click(object sender, EventArgs e)
+        {
+            clear_all_stack.Clear();
+            //push onto redo stack
+            foreach (IShape shape in Shapes)
+            {
+                clear_all_stack.Push(shape);
+                just_cleared = true;
+            }
+            Shapes.Clear();
+            drawing_panel.Invalidate();
         }
 
         private void undo_button_Click(object sender, EventArgs e)
         {
             
             if (Shapes.Count > 0)
+            {                
+                redo_stack.Push(Shapes.Last());
+                Shapes.RemoveAt(Shapes.Count - 1);                
+            } else if(just_cleared)
             {
-                lastPopped = Shapes.Last();
-                Shapes.RemoveAt(Shapes.Count - 1); drawing_panel.Invalidate();
+                foreach(IShape shape in clear_all_stack)
+                {
+                    Shapes.Add(shape);
+                }
+                just_cleared = false;                                
             }
             drawing_panel.Invalidate();
         }
-        // need a redo list/stack
+        
         private void redoButton_Click(object sender, EventArgs e)
         {
-            Shapes.Add(lastPopped);
+            if (redo_stack.Count > 0)
+            {
+                IShape popped_shape = redo_stack.Pop();
+                Shapes.Add(popped_shape);
+            }            
             drawing_panel.Invalidate();
         }
 
         private void red_button_Click(object sender, EventArgs e)
         {
-            brush_color.Color = Color.Red;
-            update_preview();
+            brush_color.Color = Color.Red;            
         }     
 
         private void green_button_Click(object sender, EventArgs e)
         {
             brush_color.Color = Color.Green;
-            update_preview();
+            
         }
 
         private void blue_button_Click(object sender, EventArgs e)
         {
-            brush_color.Color = Color.Blue;
-            update_preview();
+            brush_color.Color = Color.Blue;            
         }      
-
-        void update_preview()
-        {
-
-        }
 
         private void textbox_KeyDown(object sender, KeyEventArgs e)
         {            
