@@ -60,14 +60,16 @@ namespace FloorPlanTool
         {
             //e.Graphics.DrawImage(bmap, Point.Empty);
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+           
             foreach (var shape in Shapes)
                 shape.Draw(e.Graphics);
+      
         }
 
         private void drawing_panel_MouseDown(object sender, MouseEventArgs e)
         {
-            using (Graphics g = Graphics.FromImage(bmap))
-            {
+            //using (Graphics g = Graphics.FromImage(bmap))
+            //{
                 if (e.Button == MouseButtons.Left)
                 {
                     if (drawCir)
@@ -167,14 +169,14 @@ namespace FloorPlanTool
                     drawing_panel.Invalidate();
                 }
                
-            }
+            //}
             redo_stack.Clear();
         }
 
         private void drawing_panel_MouseMove(object sender, MouseEventArgs e)
         {
-            using (Graphics g = Graphics.FromImage(bmap))
-            {
+            //using (Graphics g = Graphics.FromImage(bmap))
+            //{
 
 
                 if (moving)
@@ -192,7 +194,7 @@ namespace FloorPlanTool
                     selectedShape.Resize(e.Location, previousPoint);
                     drawing_panel.Invalidate();
                 }            
-            }
+            //}
         }
 
         private void drawing_panel_MouseUp(object sender, MouseEventArgs e)
@@ -454,24 +456,35 @@ namespace FloorPlanTool
             }
         }
 
+        //currently saves to file for testing of database in other solution 'ProgrammingKnowledge'
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
-            ms = new MemoryStream();
-            //save image to memorystream
-            bmap.Save(ms, ImageFormat.Bmp);
-            bmap = new Bitmap(ms);
+            Bitmap bmp = new Bitmap((int)drawing_panel.Width, (int)drawing_panel.Height);
+            drawing_panel.DrawToBitmap(bmp, new Rectangle(0, 0, drawing_panel.Width, drawing_panel.Height));
+
+            using (FileStream saveStream = new FileStream(@"C:\Users\kpannell\testing.png", FileMode.OpenOrCreate))
+            {
+                bmp.Save(saveStream, ImageFormat.Png);
+            }
+
+
+
+            //ms = new MemoryStream();
+            ////save image to memorystream
+            //bmap.Save(ms, ImageFormat.Bmp);
+            //bmap = new Bitmap(ms);
+            //bmap.Save(@"C:\Users\kpannell\test.png", ImageFormat.Png);
 
                 
 
-            //write memory stream to file
-            using (FileStream file = new FileStream(@"C:\Users\Kevin\test.bmp", FileMode.Create, FileAccess.Write))
-            {
-                //byte[] bytes = new byte[ms.Length];
-                //ms.Read(bytes, 0, (int)ms.Length);
-                //file.Write(bytes, 0, bytes.Length);                    
-                ms.CopyTo(file);
-            }            
+            ////write memory stream to file
+            //using (FileStream file = new FileStream(@"C:\Users\Kevin\test.bmp", FileMode.Create, FileAccess.Write))
+            //{
+            //    //byte[] bytes = new byte[ms.Length];
+            //    //ms.Read(bytes, 0, (int)ms.Length);
+            //    //file.Write(bytes, 0, bytes.Length);                    
+            //    ms.CopyTo(file);
+            //}            
         }
 
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
