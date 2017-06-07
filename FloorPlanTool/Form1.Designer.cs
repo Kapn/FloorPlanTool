@@ -30,6 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.toolbar_panel = new System.Windows.Forms.Panel();
+            this.fill_circle_button = new System.Windows.Forms.Button();
+            this.fill_rectangle_button = new System.Windows.Forms.Button();
             this.dotted_line_button = new System.Windows.Forms.Button();
             this.redoButton = new System.Windows.Forms.Button();
             this.selectButton = new System.Windows.Forms.Button();
@@ -50,8 +52,6 @@
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.drawing_panel = new System.Windows.Forms.Panel();
-            this.fill_circle_button = new System.Windows.Forms.Button();
-            this.fill_rectangle_button = new System.Windows.Forms.Button();
             this.toolbar_panel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -82,6 +82,28 @@
             this.toolbar_panel.Name = "toolbar_panel";
             this.toolbar_panel.Size = new System.Drawing.Size(126, 523);
             this.toolbar_panel.TabIndex = 0;
+            // 
+            // fill_circle_button
+            // 
+            this.fill_circle_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.fill_circle_button.Image = ((System.Drawing.Image)(resources.GetObject("fill_circle_button.Image")));
+            this.fill_circle_button.Location = new System.Drawing.Point(26, 203);
+            this.fill_circle_button.Name = "fill_circle_button";
+            this.fill_circle_button.Size = new System.Drawing.Size(36, 23);
+            this.fill_circle_button.TabIndex = 39;
+            this.fill_circle_button.UseVisualStyleBackColor = true;
+            this.fill_circle_button.Click += new System.EventHandler(this.fill_circle_button_Click);
+            // 
+            // fill_rectangle_button
+            // 
+            this.fill_rectangle_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.fill_rectangle_button.Image = ((System.Drawing.Image)(resources.GetObject("fill_rectangle_button.Image")));
+            this.fill_rectangle_button.Location = new System.Drawing.Point(67, 203);
+            this.fill_rectangle_button.Name = "fill_rectangle_button";
+            this.fill_rectangle_button.Size = new System.Drawing.Size(34, 23);
+            this.fill_rectangle_button.TabIndex = 40;
+            this.fill_rectangle_button.UseVisualStyleBackColor = true;
+            this.fill_rectangle_button.Click += new System.EventHandler(this.fill_rectangle_button_Click);
             // 
             // dotted_line_button
             // 
@@ -286,28 +308,6 @@
             this.drawing_panel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseDown);
             this.drawing_panel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseMove);
             this.drawing_panel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseUp);
-            // 
-            // fill_circle_button
-            // 
-            this.fill_circle_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.fill_circle_button.Image = ((System.Drawing.Image)(resources.GetObject("fill_circle_button.Image")));
-            this.fill_circle_button.Location = new System.Drawing.Point(26, 203);
-            this.fill_circle_button.Name = "fill_circle_button";
-            this.fill_circle_button.Size = new System.Drawing.Size(36, 23);
-            this.fill_circle_button.TabIndex = 39;
-            this.fill_circle_button.UseVisualStyleBackColor = true;
-            this.fill_circle_button.Click += new System.EventHandler(this.fill_circle_button_Click);
-            // 
-            // fill_rectangle_button
-            // 
-            this.fill_rectangle_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.fill_rectangle_button.Image = ((System.Drawing.Image)(resources.GetObject("fill_rectangle_button.Image")));
-            this.fill_rectangle_button.Location = new System.Drawing.Point(67, 203);
-            this.fill_rectangle_button.Name = "fill_rectangle_button";
-            this.fill_rectangle_button.Size = new System.Drawing.Size(34, 23);
-            this.fill_rectangle_button.TabIndex = 40;
-            this.fill_rectangle_button.UseVisualStyleBackColor = true;
-            this.fill_rectangle_button.Click += new System.EventHandler(this.fill_rectangle_button_Click);
             // 
             // Form1
             // 

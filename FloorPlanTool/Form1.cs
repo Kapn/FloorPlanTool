@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,11 +12,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+//used for testing storage in MySQL Database
+using MySql.Data.MySqlClient;
+
 // TODO: resizing rectangle past nothing should mirror across
 // - undo and redo needs a little work
 //      - undo text removal and adding
+// - drawing after load, what else needs to be stored?
+// - dispose of bitmap
+// - close SQL Connections? using statments?>
 
-    // Following taken from other version when drawing text, might be useful
+// Following taken from other version when drawing text, might be useful
 //g.SmoothingMode = SmoothingMode.AntiAlias;
 //g.InterpolationMode = InterpolationMode.HighQualityBicubic;
 //g.PixelOffsetMode = PixelOffsetMode.HighQuality;
@@ -374,6 +381,7 @@ namespace FloorPlanTool
         }
 
         Stack<IShape> clear_all_stack = new Stack<IShape>();
+
         private void clear_all_button_Click(object sender, EventArgs e)
         {
             clear_all_stack.Clear();
@@ -460,7 +468,8 @@ namespace FloorPlanTool
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Bitmap bmp = new Bitmap((int)drawing_panel.Width, (int)drawing_panel.Height);
-            drawing_panel.DrawToBitmap(bmp, new Rectangle(0, 0, drawing_panel.Width, drawing_panel.Height));
+            //Draw Graphics to Bitmap for storage
+            drawing_panel.DrawToBitmap(bmp, new Rectangle(0, 0, drawing_panel.Width, drawing_panel.Height));            
 
             using (FileStream saveStream = new FileStream(@"C:\Users\kpannell\testing.png", FileMode.OpenOrCreate))
             {
@@ -468,14 +477,41 @@ namespace FloorPlanTool
             }
 
 
+            // save to localhost for testing
+             try
+            {
+                string myConnection = "datasource=localhost;port=3306;username=root;password=root";
+                MySqlConnection myConn = new MySqlConnection(myConnection);
+                myConn.Open();
 
+                string cmdText = "INSERT INTO test_schema.file(idfile, file_name, memorystream, file_size) VALUES (@idfile, @filename, @memorystream, @filesize)";
+                MySqlCommand cmd = new MySqlCommand(cmdText, myConn);
+                cmd.Parameters.AddWithValue("@idfile", 55);
+                cmd.Parameters.AddWithValue("@filename", "checkingSize");
+
+
+                //save image to memorystream
+                using (MemoryStream memStream = new MemoryStream())
+                {
+                    
+                    bmap.Save(memStream, ImageFormat.Bmp);
+                    byte[] ms_Array = memStream.ToArray();
+                    cmd.Parameters.AddWithValue("@filesize", memStream.Length);
+                    cmd.Parameters.AddWithValue("@memorystream", memStream);
+                    cmd.ExecuteNonQuery();
+                }                    
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
             //ms = new MemoryStream();
             ////save image to memorystream
             //bmap.Save(ms, ImageFormat.Bmp);
             //bmap = new Bitmap(ms);
             //bmap.Save(@"C:\Users\kpannell\test.png", ImageFormat.Png);
 
-                
 
             ////write memory stream to file
             //using (FileStream file = new FileStream(@"C:\Users\Kevin\test.bmp", FileMode.Create, FileAccess.Write))
@@ -489,7 +525,18 @@ namespace FloorPlanTool
 
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+
+            byte[] image = GetImage("55");
+            MemoryStream stream = new MemoryStream(image);
+
+            //using (Image img = Image.FromStream(stream))
+            //{
+            //    img.Save(@"C:\Users\kpannell\retrieved.png", ImageFormat.Png);
+            //}
+
+
+
+
             //using (FileStream file = new FileStream(@"C:\Users\Kevin\test.bmp", FileMode.Open, FileAccess.Read))
             //{
             //    ms = new MemoryStream();
@@ -501,6 +548,127 @@ namespace FloorPlanTool
             //    bmap = new Bitmap(ms);
             //}
             //drawing_panel.Invalidate();
+
+            //try
+            //{
+            //    string myConnection = "datasource=localhost;port=3306;username=root;password=root";
+            //    MySqlConnection myConn = new MySqlConnection(myConnection);
+            //    myConn.Open();
+
+            //    string cmdText = "SELECT * FROM test_schema.file WHERE idfile = 3";
+            //    MySqlCommand cmd = new MySqlCommand(cmdText, myConn);
+
+            //using (MySqlDataReader reader = cmd.ExecuteReader())
+            //{
+
+            //    if (!reader.HasRows)
+            //    {
+            //        throw new Exception("There are no blobs to save");
+            //    }
+
+            //    reader.Read();
+            //    UInt32 FileSize = reader.GetUInt32(reader.GetOrdinal("file_size"));
+            //    byte[] rawData = new byte[FileSize/4];
+            //    reader.GetBytes(reader.GetOrdinal("memorystream"), 0, rawData, 0, (Int32)FileSize/4);
+
+            //    var fs = new BinaryWriter(new FileStream(@"C:\Users\kpannell\tmp.bmp", FileMode.Create, FileAccess.Write));
+            //    fs.Write(rawData);
+            //    fs.Close();
+
+
+            //    //save image to memorystream
+            //    MemoryStream temp_ms = new MemoryStream(rawData);
+            //    temp_ms.Seek(0, SeekOrigin.Begin);
+            //    Bitmap new_bmap = new Bitmap(temp_ms);
+
+            //    cmd.Dispose();
+            //}
+
+
+
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show(ex.Message);
+            //}
         }
+        
+
+        //get memorystream from database and return byte array
+        // parameter 'id' is temporary for testing
+        //byte[] GetImage(string id)
+        //{
+        //    string myConnection = "datasource=localhost;port=3306;username=root;password=root";
+        //    using (var conn = new MySqlConnection(myConnection))
+        //    {
+        //        conn.Open();
+
+        //        using (var cmd = conn.CreateCommand())
+        //        {
+        //            cmd.CommandText = "SELECT memorystream FROM test_schema.file WHERE idfile = @id";
+        //            cmd.Parameters.AddWithValue("@id", id);
+        //            using (var reader = cmd.ExecuteReader())
+        //            {
+        //                if (!reader.Read())
+        //                {
+        //                    return null;
+        //                }
+
+        //                const int CHUNK_SIZE = 2 * 1024;
+        //                byte[] buffer = new byte[CHUNK_SIZE];
+        //                long bytesRead;
+        //                long fieldOffset = 0;
+        //                using (var stream = new MemoryStream())
+        //                {
+        //                    while ((bytesRead = reader.GetBytes(0, fieldOffset, buffer, 0, buffer.Length)) > 0)
+        //                    {
+        //                        stream.Write(buffer, 0, (int)bytesRead);
+        //                        fieldOffset += bytesRead;
+        //                    }
+        //                    return stream.ToArray();
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
+
+        byte[] GetImage(string id)
+        {
+            using (MySqlConnection connection = new MySqlConnection("datasource=localhost;port=3306;username=root;password=root"))
+            {
+                try
+                {
+                    connection.Open();
+                    MySqlCommand cmd = new MySqlCommand("SELECT memorystream FROM test_schema.file WHERE idfile = @id", connection);
+                    cmd.Parameters.AddWithValue("@id", id);
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        reader.Read();
+                        FileStream outfile = new FileStream("testing.bmp", FileMode.OpenOrCreate, FileAccess.Write);
+
+                        using (System.IO.BinaryWriter writer = new System.IO.BinaryWriter(outfile))
+                        {
+                            long bufferSize = reader.GetBytes(0, 0, null, 0, 0);
+                            byte[] buffer = new byte[bufferSize];
+
+                            reader.GetBytes(0, 0, buffer, 0, (int)bufferSize);
+                            writer.Write(buffer, 0, (int)bufferSize);
+                            writer.Flush();
+
+                            return buffer;
+
+                        }
+                    }
+                }
+
+                catch (IndexOutOfRangeException er)
+                {                    
+                    MessageBox.Show("Error has occurred: " + er.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                return null;
+            }
+
+        }
+            
     }
 }
