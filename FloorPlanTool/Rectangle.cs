@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace FloorPlanTool
 {
+    // ---------------------------------
+    //  Handles Drawing/Manipulating Rec
+    // ---------------------------------
     class Rec : IShape
     {
         public Rec() {

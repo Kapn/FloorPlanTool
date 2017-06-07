@@ -15,17 +15,16 @@ using System.Windows.Forms;
 //used for testing storage in MySQL Database
 using MySql.Data.MySqlClient;
 
-// TODO: resizing rectangle past nothing should mirror across
-// - undo and redo needs a little work
-//      - undo text removal and adding
-// - drawing after load, what else needs to be stored?
-// - dispose of bitmap
-// - close SQL Connections? using statments?>
+// TODO: 
+// - file save/load
 
-// Following taken from other version when drawing text, might be useful
-//g.SmoothingMode = SmoothingMode.AntiAlias;
-//g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-//g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+// minor TODO:
+// - resizing rectangle past nothing should mirror across
+// - undo/redo Object Manipulation (move/resize)
+// - only allow one textbox on the form at a time.
+
+
+
 
 namespace FloorPlanTool
 {
@@ -34,34 +33,33 @@ namespace FloorPlanTool
         /*
          * Variable Declarations 
          */        
-        private SolidBrush brush_color;
-        private Color prev_color;
-        public List<IShape> Shapes { get; private set; }
-
+        
+        //List of Shapes that are to be drawn each time Paint Event gets fired.
+        public List<IShape> Shapes { get; private set; }        
         bool drawCir, drawLine, drawRec, drawText, drawDotted, eraser, fill, scaleShape, moving, just_cleared;
-        string text_to_draw;        
-
-        // according to https://stackoverflow.com/questions/336387/image-save-throws-a-gdi-exception-because-the-memory-stream-is-closed
-        // memorystreams are acceptable to not close, as they will be closed with bitmap is disposed anyway
-        Stream ms;
-        IShape selectedShape;
-        Bitmap bmap;
+        string text_to_draw;
+        SolidBrush brush_color;
+        IShape selectedShape;        
         Stack<IShape> redo_stack = new Stack<IShape>();
         Point previousPoint = Point.Empty;
         
         public Form1()
         {
             InitializeComponent();
+
+            //enables doublebuffering. Fixes screen flashing when dragging/resizing
             typeof(Panel).InvokeMember("DoubleBuffered",
                 BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
-                null, drawing_panel, new object[] { true });            
+                null, drawing_panel, new object[] { true });   
+            
             Shapes = new List<IShape>();
-            brush_color = new SolidBrush(Color.Black);
-            bmap = new Bitmap(drawing_panel.ClientSize.Width, drawing_panel.ClientSize.Height);
+            brush_color = new SolidBrush(Color.Black);            
         }
        
         /*
          *  OnPaint Event, Fired with calls to drawing_panel.Invalidate()
+         *  
+         *  Loops through Shapes calling each IShape's Draw method
          */
         private void drawing_panel_Paint(object sender, PaintEventArgs e)
         {
@@ -73,94 +71,78 @@ namespace FloorPlanTool
       
         }
 
+        /*
+        *  On LeftClick: use current selected tool
+        *  On RightClick/MouseWheelClick: resize object
+        */
         private void drawing_panel_MouseDown(object sender, MouseEventArgs e)
         {
-            //using (Graphics g = Graphics.FromImage(bmap))
-            //{
-                if (e.Button == MouseButtons.Left)
+            
+            if (e.Button == MouseButtons.Left)
+            {
+                if (drawCir)
                 {
-                    if (drawCir)
+                    previousPoint = e.Location;
+                    Circle newCircle = new Circle();
+                    if (fill)
                     {
-                        previousPoint = e.Location;
-                        Circle newCircle = new Circle();
-                        if (fill)
-                        {
-                            newCircle.Fill = true;
-                        }
-                        newCircle.FillColor = brush_color.Color;
-                        newCircle.Center = new Point(e.X, e.Y);
-                        newCircle.Radius = trackBar1.Value;
-                        Shapes.Add(newCircle);
-                        drawing_panel.Invalidate();
+                        newCircle.Fill = true;
                     }
-                    //line
-                    else if(drawLine)
-                    {                        
-                        previousPoint = e.Location;
-                    }
-                    //dotted line
-                    else if (drawDotted)
-                    {
-                        previousPoint = e.Location;
-                    }
-                    //rectangle
-                    else if (drawRec)
-                    {                        
-                        previousPoint = e.Location;
-                    }
-                    //draw text
-                    else if (drawText)
-                    {
-                        previousPoint = e.Location;
-                        TextBox txtbox = new TextBox { Name = "textbox1" };
-                        txtbox.KeyDown += textbox_KeyDown;
-                        drawing_panel.Controls.Add(txtbox);
-                        txtbox.Location = new Point(e.X, e.Y);
-                        txtbox.TextAlign = HorizontalAlignment.Center;
-                        
-                    }
-                    //eraser
-                    else if (eraser)
-                    {
-                        for (var i = Shapes.Count - 1; i >= 0; i--)
-                        {
-                            if (Shapes[i].HitTest(e.Location))
-                            {
-                                selectedShape = Shapes[i];
-                                if (selectedShape != null)
-                                {
-                                    Shapes.RemoveAt(i);
-                                }
-                                break;
-                            }
-                        }                        
-                    }                   
-                    //selector
-                    else
-                    {
-                        for (var i = Shapes.Count - 1; i >= 0; i--)
-                        {
-                            if (Shapes[i].HitTest(e.Location))
-                            {
-                                selectedShape = Shapes[i];
-                                break;
-                            }
-                        }
-
-                        if (selectedShape != null)
-                        {
-                            moving = true;
-                            previousPoint = e.Location;
-                        }
-                        drawing_panel.Invalidate();
-                    }
+                    newCircle.FillColor = brush_color.Color;
+                    newCircle.Center = new Point(e.X, e.Y);
+                    newCircle.Radius = trackBar1.Value;
+                    Shapes.Add(newCircle);
+                    drawing_panel.Invalidate();
                 }
-                // resize with wheel click or right click
+                //line
+                else if(drawLine)
+                {                        
+                    previousPoint = e.Location;
+                }
+                //dotted line
+                else if (drawDotted)
+                {
+                    previousPoint = e.Location;
+                }
+                //rectangle
+                else if (drawRec)
+                {                        
+                    previousPoint = e.Location;
+                }
+                //draw text
+                else if (drawText)
+                {
+                    //Create a TextBox object and add event.KeyDown method
+                    previousPoint = e.Location;
+                    TextBox txtbox = new TextBox { Name = "textbox1" };
+                    txtbox.KeyDown += textbox_KeyDown;
+                    drawing_panel.Controls.Add(txtbox);
+                    txtbox.Location = new Point(e.X, e.Y);
+                    txtbox.TextAlign = HorizontalAlignment.Center;
+                        
+                }
+                //eraser
+                else if (eraser)
+                {
+                    for (var i = Shapes.Count - 1; i >= 0; i--)
+                    {
+                        //if a Shape was clicked on, erase it.
+                        if (Shapes[i].HitTest(e.Location))
+                        {
+                            selectedShape = Shapes[i];
+                            if (selectedShape != null)
+                            {
+                                Shapes.RemoveAt(i);
+                            }
+                            break;
+                        }
+                    }                        
+                }                   
+                //selector
                 else
                 {
-                    
                     for (var i = Shapes.Count - 1; i >= 0; i--)
-                    {                        
+                    {
                         if (Shapes[i].HitTest(e.Location))
                         {
                             selectedShape = Shapes[i];
@@ -170,22 +152,41 @@ namespace FloorPlanTool
 
                     if (selectedShape != null)
                     {
-                        scaleShape = true;
-                        previousPoint = e.Location;                        
+                        moving = true;
+                        previousPoint = e.Location;
                     }
                     drawing_panel.Invalidate();
                 }
-               
-            //}
+            }
+            // resize with wheel click or right click
+            else
+            {
+                    
+                for (var i = Shapes.Count - 1; i >= 0; i--)
+                {                        
+                    if (Shapes[i].HitTest(e.Location))
+                    {
+                        selectedShape = Shapes[i];
+                        break;
+                    }
+                }
+
+                if (selectedShape != null)
+                {
+                    scaleShape = true;
+                    previousPoint = e.Location;                        
+                }
+                drawing_panel.Invalidate();
+            }            
             redo_stack.Clear();
         }
 
+        /*
+         * MouseMove handles Moving and Resizing shapes
+         */
         private void drawing_panel_MouseMove(object sender, MouseEventArgs e)
         {
-            //using (Graphics g = Graphics.FromImage(bmap))
-            //{
-
-
+            
                 if (moving)
                 {
                     var d = new Point(e.X - previousPoint.X, e.Y - previousPoint.Y);
@@ -201,9 +202,12 @@ namespace FloorPlanTool
                     selectedShape.Resize(e.Location, previousPoint);
                     drawing_panel.Invalidate();
                 }            
-            //}
+            
         }
 
+        /*
+         * OnMouseUp: Draws desired shape and adds it to the Shapes List
+         */
         private void drawing_panel_MouseUp(object sender, MouseEventArgs e)
         {
             if (moving)
@@ -275,6 +279,9 @@ namespace FloorPlanTool
             drawing_panel.Invalidate();
         }
 
+        /* 
+         * Tool Buttons: Handles bools for drawing functions
+         */
         private void circle_button_Click(object sender, EventArgs e)
         {
             drawCir = true;
@@ -395,6 +402,10 @@ namespace FloorPlanTool
             drawing_panel.Invalidate();
         }
 
+        /*
+         * When Undo is clicked, remove the last shape added to the Shapes List
+         * and push it onto the redo_stack. Handle if 'Clear All' was clicked.
+         */
         private void undo_button_Click(object sender, EventArgs e)
         {
             
@@ -413,6 +424,9 @@ namespace FloorPlanTool
             drawing_panel.Invalidate();
         }
         
+        /*
+         * When Redo is clicked: pop redo_stack and add it back to the Shapes List
+         */
         private void redoButton_Click(object sender, EventArgs e)
         {
             if (redo_stack.Count > 0)
@@ -423,6 +437,9 @@ namespace FloorPlanTool
             drawing_panel.Invalidate();
         }
 
+        /*
+         * Adjust brush_color for each button selected
+         */
         private void red_button_Click(object sender, EventArgs e)
         {
             brush_color.Color = Color.Red;            
@@ -439,6 +456,13 @@ namespace FloorPlanTool
             brush_color.Color = Color.Blue;            
         }      
 
+        /*
+         * Handles the KeyDown event for our dynamically created TextBox
+         * 
+         * Draws the text entered, and removes the textbox from the form
+         * 
+         * TODO: only allow 1 TextBox to be created at a time
+         */
         private void textbox_KeyDown(object sender, KeyEventArgs e)
         {            
             if (e.KeyCode == Keys.Enter)
@@ -471,10 +495,11 @@ namespace FloorPlanTool
             //Draw Graphics to Bitmap for storage
             drawing_panel.DrawToBitmap(bmp, new Rectangle(0, 0, drawing_panel.Width, drawing_panel.Height));            
 
-            using (FileStream saveStream = new FileStream(@"C:\Users\kpannell\testing.png", FileMode.OpenOrCreate))
-            {
-                bmp.Save(saveStream, ImageFormat.Png);
-            }
+            //saved to file to check contents of bmp
+            //using (FileStream saveStream = new FileStream(@"C:\Users\kpannell\testing.png", FileMode.OpenOrCreate))
+            //{
+            //    bmp.Save(saveStream, ImageFormat.Png);
+            //}
 
 
             // save to localhost for testing
@@ -494,10 +519,10 @@ namespace FloorPlanTool
                 using (MemoryStream memStream = new MemoryStream())
                 {
                     
-                    bmap.Save(memStream, ImageFormat.Bmp);
+                    bmp.Save(memStream, ImageFormat.Bmp);
                     byte[] ms_Array = memStream.ToArray();
                     cmd.Parameters.AddWithValue("@filesize", memStream.Length);
-                    cmd.Parameters.AddWithValue("@memorystream", memStream);
+                    cmd.Parameters.AddWithValue("@memorystream", ms_Array);
                     cmd.ExecuteNonQuery();
                 }                    
             }
@@ -505,133 +530,19 @@ namespace FloorPlanTool
             {
                 MessageBox.Show(ex.Message);
             }
-            
-            //ms = new MemoryStream();
-            ////save image to memorystream
-            //bmap.Save(ms, ImageFormat.Bmp);
-            //bmap = new Bitmap(ms);
-            //bmap.Save(@"C:\Users\kpannell\test.png", ImageFormat.Png);
-
-
-            ////write memory stream to file
-            //using (FileStream file = new FileStream(@"C:\Users\Kevin\test.bmp", FileMode.Create, FileAccess.Write))
-            //{
-            //    //byte[] bytes = new byte[ms.Length];
-            //    //ms.Read(bytes, 0, (int)ms.Length);
-            //    //file.Write(bytes, 0, bytes.Length);                    
-            //    ms.CopyTo(file);
-            //}            
+            bmp.Dispose();
         }
 
+        //load currently only attempts to grab the stream from the database
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
             byte[] image = GetImage("55");
             MemoryStream stream = new MemoryStream(image);
 
-            //using (Image img = Image.FromStream(stream))
-            //{
-            //    img.Save(@"C:\Users\kpannell\retrieved.png", ImageFormat.Png);
-            //}
-
-
-
-
-            //using (FileStream file = new FileStream(@"C:\Users\Kevin\test.bmp", FileMode.Open, FileAccess.Read))
-            //{
-            //    ms = new MemoryStream();
-            //    byte[] bytes = new byte[file.Length];
-            //    file.Read(bytes, 0, (int)file.Length);
-            //    ms.Write(bytes, 0, (int)file.Length/2);
-
-            //    ms.Seek(0, SeekOrigin.Begin);                
-            //    bmap = new Bitmap(ms);
-            //}
-            //drawing_panel.Invalidate();
-
-            //try
-            //{
-            //    string myConnection = "datasource=localhost;port=3306;username=root;password=root";
-            //    MySqlConnection myConn = new MySqlConnection(myConnection);
-            //    myConn.Open();
-
-            //    string cmdText = "SELECT * FROM test_schema.file WHERE idfile = 3";
-            //    MySqlCommand cmd = new MySqlCommand(cmdText, myConn);
-
-            //using (MySqlDataReader reader = cmd.ExecuteReader())
-            //{
-
-            //    if (!reader.HasRows)
-            //    {
-            //        throw new Exception("There are no blobs to save");
-            //    }
-
-            //    reader.Read();
-            //    UInt32 FileSize = reader.GetUInt32(reader.GetOrdinal("file_size"));
-            //    byte[] rawData = new byte[FileSize/4];
-            //    reader.GetBytes(reader.GetOrdinal("memorystream"), 0, rawData, 0, (Int32)FileSize/4);
-
-            //    var fs = new BinaryWriter(new FileStream(@"C:\Users\kpannell\tmp.bmp", FileMode.Create, FileAccess.Write));
-            //    fs.Write(rawData);
-            //    fs.Close();
-
-
-            //    //save image to memorystream
-            //    MemoryStream temp_ms = new MemoryStream(rawData);
-            //    temp_ms.Seek(0, SeekOrigin.Begin);
-            //    Bitmap new_bmap = new Bitmap(temp_ms);
-
-            //    cmd.Dispose();
-            //}
-
-
-
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(ex.Message);
-            //}
         }
-        
 
-        //get memorystream from database and return byte array
-        // parameter 'id' is temporary for testing
-        //byte[] GetImage(string id)
-        //{
-        //    string myConnection = "datasource=localhost;port=3306;username=root;password=root";
-        //    using (var conn = new MySqlConnection(myConnection))
-        //    {
-        //        conn.Open();
-
-        //        using (var cmd = conn.CreateCommand())
-        //        {
-        //            cmd.CommandText = "SELECT memorystream FROM test_schema.file WHERE idfile = @id";
-        //            cmd.Parameters.AddWithValue("@id", id);
-        //            using (var reader = cmd.ExecuteReader())
-        //            {
-        //                if (!reader.Read())
-        //                {
-        //                    return null;
-        //                }
-
-        //                const int CHUNK_SIZE = 2 * 1024;
-        //                byte[] buffer = new byte[CHUNK_SIZE];
-        //                long bytesRead;
-        //                long fieldOffset = 0;
-        //                using (var stream = new MemoryStream())
-        //                {
-        //                    while ((bytesRead = reader.GetBytes(0, fieldOffset, buffer, 0, buffer.Length)) > 0)
-        //                    {
-        //                        stream.Write(buffer, 0, (int)bytesRead);
-        //                        fieldOffset += bytesRead;
-        //                    }
-        //                    return stream.ToArray();
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-
+        //Grabs memorystream by fileid field and returns the byte array           
         byte[] GetImage(string id)
         {
             using (MySqlConnection connection = new MySqlConnection("datasource=localhost;port=3306;username=root;password=root"))
@@ -641,6 +552,7 @@ namespace FloorPlanTool
                     connection.Open();
                     MySqlCommand cmd = new MySqlCommand("SELECT memorystream FROM test_schema.file WHERE idfile = @id", connection);
                     cmd.Parameters.AddWithValue("@id", id);
+
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         reader.Read();
@@ -660,11 +572,11 @@ namespace FloorPlanTool
                         }
                     }
                 }
-
                 catch (IndexOutOfRangeException er)
                 {                    
                     MessageBox.Show("Error has occurred: " + er.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+
                 return null;
             }
 

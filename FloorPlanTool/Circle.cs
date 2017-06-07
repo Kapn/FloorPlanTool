@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace FloorPlanTool
 {
+    // ---------------------------------
+    //  Handles Drawing/Manipulating Circles
+    // ---------------------------------
     public class Circle : IShape
     {
         public Circle() {
@@ -62,6 +65,7 @@ namespace FloorPlanTool
         {
             Center = new Point(Center.X + d.X, Center.Y + d.Y);
         }
+
         public void Resize(Point e, Point previousPoint)
         {
             int newRadius;

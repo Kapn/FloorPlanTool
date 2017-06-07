@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace FloorPlanTool
 {
+    // ---------------------------------
+    //  Handles Drawing/Manipulating Text
+    // ---------------------------------
     public class TextInput : IShape
     {
         public TextInput() {
@@ -60,11 +63,15 @@ namespace FloorPlanTool
             Console.WriteLine("dx:" + dx);
             Width = dx;
             Height = dy;
-
-            //FontSize = CurrentFontSize * (DesiredWidth / CurrentWidth)
-
+            
+            //random scale value to determine fontSize, needs work
             FontSize = dx/6;
-            Console.WriteLine("fontsize:" + FontSize);
+            
+            if (FontSize < 0)
+            {
+                FontSize = 2;
+            }
+
             Font = new Font("Arial", FontSize);
 
 

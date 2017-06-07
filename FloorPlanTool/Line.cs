@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 
 namespace FloorPlanTool
 {
-   
+    // ---------------------------------
+    //  Handles Drawing/Manipulating lines
+    // ---------------------------------
     public class Line : IShape
     {
         public Line() { LineWidth = 2; LineColor = Color.Black; }
