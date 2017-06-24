@@ -22,6 +22,8 @@ using MySql.Data.MySqlClient;
 // - resizing rectangle past nothing should mirror across
 // - undo/redo Object Manipulation (move/resize)
 // - only allow one textbox on the form at a time.
+// - right click drag shouldn't draw rectangles (or any shapes, tri does it too)
+// - select inside of triangle for dragging, not just clicking the lines
 
 
 
@@ -36,7 +38,7 @@ namespace FloorPlanTool
         
         //List of Shapes that are to be drawn each time Paint Event gets fired.
         public List<IShape> Shapes { get; private set; }        
-        bool drawCir, drawLine, drawRec, drawText, drawDotted, eraser, fill, scaleShape, moving, just_cleared;
+        bool drawCir, drawLine, drawRec, drawText, drawTri, drawDotted, eraser, fill, scaleShape, moving, just_cleared;
         string text_to_draw;
         SolidBrush brush_color;
         IShape selectedShape;        
@@ -107,6 +109,11 @@ namespace FloorPlanTool
                 //rectangle
                 else if (drawRec)
                 {                        
+                    previousPoint = e.Location;
+                }
+                //triangle
+                else if (drawTri)
+                {
                     previousPoint = e.Location;
                 }
                 //draw text
@@ -236,7 +243,8 @@ namespace FloorPlanTool
                 newLine.Point1 = previousPoint;
                 newLine.Point2 = e.Location;
                 Shapes.Add(newLine);
-            } else if (drawDotted)
+            }
+            else if (drawDotted)
             {
                 Line newLine = new Line();
                 newLine.LineColor = brush_color.Color;
@@ -245,7 +253,18 @@ namespace FloorPlanTool
                 newLine.Point1 = previousPoint;
                 newLine.Point2 = e.Location;
                 Shapes.Add(newLine);
-            } else if (drawRec)
+            }
+            else if (drawTri)
+            {
+                Triangle newTriangle = new Triangle();
+                newTriangle.LineColor = brush_color.Color;
+                newTriangle.LineWidth = trackBar1.Value - 2;
+                newTriangle.Point1 = new Point(e.X, e.Y);
+                newTriangle.Point2 = new Point(e.X + 10, e.Y + 15);
+                newTriangle.Point3 = new Point(e.X - 10, e.Y + 15);                               
+                Shapes.Add(newTriangle);
+            }
+            else if (drawRec)
             {                
                 Rec newRec = new Rec();
                 if (fill)
@@ -290,7 +309,8 @@ namespace FloorPlanTool
             eraser = false;
             drawText = false;
             drawDotted = false;
-            fill = false;            
+            fill = false;
+            drawTri = false;
         }
         private void line_button_Click(object sender, EventArgs e)
         {
@@ -301,6 +321,7 @@ namespace FloorPlanTool
             drawText = false;
             drawDotted = false;
             fill = false;
+            drawTri = false;
         }
 
         private void dotted_line_button_Click(object sender, EventArgs e)
@@ -312,6 +333,7 @@ namespace FloorPlanTool
             eraser = false;
             drawText = false;
             fill = false;
+            drawTri = false;
         }
 
 
@@ -324,6 +346,7 @@ namespace FloorPlanTool
             drawText = false;
             drawDotted = false;
             fill = false;
+            drawTri = false;
         }
 
 
@@ -335,7 +358,21 @@ namespace FloorPlanTool
             drawText = false;
             drawDotted = false;
             fill = false;
+            drawTri = false;
         }
+
+        private void tri_button_Click(object sender, EventArgs e)
+        {
+            drawCir = false;
+            drawLine = false;
+            drawRec = false;
+            eraser = false;
+            drawText = false;
+            drawDotted = false;
+            fill = false;            
+            drawTri = true;
+        }
+
 
         private void selectButton_Click(object sender, EventArgs e)
         {
@@ -346,7 +383,7 @@ namespace FloorPlanTool
             drawText = false;
             drawDotted = false;
             fill = false;
-
+            drawTri = false;
         }
 
         private void text_button_Click(object sender, EventArgs e)
@@ -358,6 +395,7 @@ namespace FloorPlanTool
             drawText = true;
             drawDotted = false;
             fill = false;
+            drawTri = false;
         }
 
         private void fill_circle_button_Click(object sender, EventArgs e)
@@ -369,6 +407,7 @@ namespace FloorPlanTool
             eraser = false;
             drawText = false;
             drawDotted = false;
+            drawTri = false;
         }
 
         private void fill_rectangle_button_Click(object sender, EventArgs e)
@@ -380,7 +419,8 @@ namespace FloorPlanTool
             eraser = false;
             drawText = false;
             drawDotted = false;
-        }
+            drawTri = false;
+        }    
 
         private void black_button_Click(object sender, EventArgs e)
         {
@@ -402,6 +442,7 @@ namespace FloorPlanTool
             drawing_panel.Invalidate();
         }
 
+    
         /*
          * When Undo is clicked, remove the last shape added to the Shapes List
          * and push it onto the redo_stack. Handle if 'Clear All' was clicked.

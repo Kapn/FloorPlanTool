@@ -52,6 +52,7 @@
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.drawing_panel = new System.Windows.Forms.Panel();
+            this.tri_button = new System.Windows.Forms.Button();
             this.toolbar_panel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -59,6 +60,7 @@
             // 
             // toolbar_panel
             // 
+            this.toolbar_panel.Controls.Add(this.tri_button);
             this.toolbar_panel.Controls.Add(this.fill_circle_button);
             this.toolbar_panel.Controls.Add(this.fill_rectangle_button);
             this.toolbar_panel.Controls.Add(this.dotted_line_button);
@@ -309,6 +311,17 @@
             this.drawing_panel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseMove);
             this.drawing_panel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseUp);
             // 
+            // tri_button
+            // 
+            this.tri_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.tri_button.Location = new System.Drawing.Point(26, 145);
+            this.tri_button.Name = "tri_button";
+            this.tri_button.Size = new System.Drawing.Size(36, 23);
+            this.tri_button.TabIndex = 41;
+            this.tri_button.Text = "Tri";
+            this.tri_button.UseVisualStyleBackColor = true;
+            this.tri_button.Click += new System.EventHandler(this.tri_button_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -353,6 +366,7 @@
         private System.Windows.Forms.Button dotted_line_button;
         private System.Windows.Forms.Button fill_circle_button;
         private System.Windows.Forms.Button fill_rectangle_button;
+        private System.Windows.Forms.Button tri_button;
     }
 }
 
