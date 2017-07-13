@@ -76,7 +76,21 @@ namespace FloorPlanTool
             
             Right = Right + dx;
             Bottom = Bottom + dy;
-            
+
+            if (Right < Left)
+            { 
+                var initialRight = Right;
+                var initialTop = Top;
+
+                Right = previousPoint.X;
+                Left = initialRight;
+
+                Console.WriteLine("right < left");
+
+            } else
+            {
+                Console.WriteLine("left < right");
+            }
         }
 
     }

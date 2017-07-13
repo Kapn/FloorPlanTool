@@ -51,8 +51,19 @@ namespace FloorPlanTool
 
         public void Resize(Point e, Point previousPoint)
         {
-            Point1 = new Point(Point1.X + (e.X - Point1.X), Point1.Y + (e.Y - Point1.Y));
-            Point1 = new Point(Point2.X + (e.X - Point2.X), Point2.Y + (e.Y - Point2.Y));            
+
+            //Point1 = new Point(Point1.X + (e.X - Point1.X), Point1.Y + (e.Y - Point1.Y));
+            //Point2 = new Point(Point2.X + (e.X - Point2.X), Point2.Y + (e.Y - Point2.Y));
+            var delta = (e.X - Point1.X);
+
+            //calc slope of line segment between point3 and point1
+            var dy = (Point3.Y - Point1.Y)/Convert.ToInt32(Point3.Y + Point1.Y);
+            var dx = (Point3.X - Point1.X)/Convert.ToInt32(Point3.X + Point1.X);
+            //var slope = dy / dx;
+            //Console.WriteLine(slope);
+            
+            Point1 = new Point(Point1.X + delta, Point1.Y - dy);
+            Point2 = new Point(Point2.X + delta, Point2.Y);
         }
     }
 }
