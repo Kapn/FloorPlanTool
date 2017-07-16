@@ -27,8 +27,8 @@ namespace FloorPlanTool
         {
             var result = false;
             using (var path = GetPath())
-            using (var pen = new Pen(LineColor, LineWidth))
-                result = path.IsOutlineVisible(p, pen);
+            using (var pen = new Pen(LineColor, LineWidth))                
+                result = path.IsVisible(p);
             return result;
         }
 
@@ -62,7 +62,7 @@ namespace FloorPlanTool
             //var slope = dy / dx;
             //Console.WriteLine(slope);
             
-            Point1 = new Point(Point1.X + delta, Point1.Y - dy);
+            Point1 = new Point(Point1.X + delta, Point1.Y - delta);
             Point2 = new Point(Point2.X + delta, Point2.Y);
         }
     }

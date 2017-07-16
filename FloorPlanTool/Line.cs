@@ -50,8 +50,7 @@ namespace FloorPlanTool
 
         //resize line based on closest point clicked
         public void Resize(Point e, Point previousPoint)
-        {
-            
+        {            
             
             double distanceToPt1 = ((e.X - Point1.X) * (e.X - Point1.X) + (e.Y - Point1.Y) * (e.Y - Point1.Y));
             double distanceToPt2 = ((e.X - Point2.X) * (e.X - Point2.X) + (e.Y - Point2.Y) * (e.Y - Point2.Y));

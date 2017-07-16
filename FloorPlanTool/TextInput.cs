@@ -29,8 +29,16 @@ namespace FloorPlanTool
 
         public void Draw(Graphics g)
         {
-            using (var path = GetPath())            
+            using (var path = GetPath())
+            {
+                //strip rectangle to only be size of Text after resizing etc
+                var stringSize = g.MeasureString(Text, Font);
+                Width = Convert.ToInt32(stringSize.Width);
+                Height = Convert.ToInt32(stringSize.Height);
+
                 g.DrawString(Text, Font, Brush, drawRect);
+            }         
+                
         }
 
         public GraphicsPath GetPath()
@@ -57,15 +65,12 @@ namespace FloorPlanTool
 
         public void Resize(Point e, Point previousPoint)
         {
-            int dx = e.X - PosX;
-            int dy = e.Y - PosY;
-
-            Console.WriteLine("dx:" + dx);
-            Width = dx;
-            Height = dy;
+                        
+            Width = e.X - PosX;
+            Height = e.Y - PosY;
             
             //random scale value to determine fontSize, needs work
-            FontSize = dx/6;
+            FontSize = Width / 6;
             
             if (FontSize < 0)
             {

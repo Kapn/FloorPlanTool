@@ -1,5 +1,6 @@
 ﻿/* Notes 7/11 for meeting:
  * Should I remove the trackbar?
+ * Drop down shape selector or something similar
  */
 
 
@@ -22,15 +23,19 @@ using System.Windows.Forms;
 
 // TODO: 
 // - change UI buttons to be more intuitive  (need dashed-line image still)
-// - drag triangle for drawing
+// - drag-out triangle when drawing
 // - undo erase
 // - file save/load
+// - other triangle shapes, maybe a drop-down button
 
 // minor TODO:
 // - resizing rectangle past nothing should mirror across
 // - undo/redo Object Manipulation (move/resize)
 // - clicking places with textbox tool makes text appear at last place clicked.
-// - right click drag shouldn't draw rectangles (or any shapes, tri does it too)
+// - resizing circle starts from smallest possible circle
+
+// FINISHED:
+// - right click drag shouldn't draw rectangles (or any shapes, tri does it too) 
 // - select inside of triangle for dragging, not having to precisely click the lines
 
 
@@ -139,20 +144,20 @@ namespace FloorPlanTool
                 }
                 //rectangle
                 else if (drawRec)
-                {   
-                    if (!scaleShape)
-                    { 
-                        previousPoint = e.Location;
-                    }
-                    
+                {
+                    //previousPoint is the initial mousedown location
+                    previousPoint = e.Location;
 
                     Rec newRec = new Rec();
+                    
+                    //set fill bool
                     if (fill)
                     {
                         newRec.Fill = true;
-                    }
+                    }                 
                     newRec.FillColor = brush_color.Color;
 
+                    //set initial values of rec here
                     if (e.X < previousPoint.X)
                     {
                         newRec.Left = e.X;
@@ -199,6 +204,7 @@ namespace FloorPlanTool
                 //draw text
                 else if (drawText)
                 {
+                    Console.WriteLine("cursor size: " + Cursor.Size);
                     //Create a TextBox object and add event.KeyDown method
                     previousPoint = e.Location;
                     if (!textbox_IsDrawn)
@@ -206,7 +212,7 @@ namespace FloorPlanTool
                         txtbox = new TextBox { Name = "textbox1" };
                         txtbox.KeyDown += textbox_KeyDown;
                         txtbox.Location = new Point(e.X, e.Y);
-                        txtbox.TextAlign = HorizontalAlignment.Center;
+                        txtbox.TextAlign = HorizontalAlignment.Left;
                         drawing_panel.Controls.Add(txtbox);
                         textbox_IsDrawn = true;
 
