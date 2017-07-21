@@ -9,17 +9,20 @@ using System.Threading.Tasks;
 namespace FloorPlanTool
 {
     class Triangle : IShape
-    {        
-        public Point Point1 { get; set; }
-        public Point Point2 { get; set; }
-        public Point Point3 { get; set; }
+    {   
+        public Point Location { get; set; }
+        public PointF[] Points { get; set; }
+        public PointF Point1 { get; set; }
+        public PointF Point2 { get; set; }
+        public PointF Point3 { get; set; }
+        public int Size { get; set; }
         public int LineWidth { get; set; }
         public Color LineColor { get; set; }
 
         public GraphicsPath GetPath()
         {
             var path = new GraphicsPath();
-            path.AddPolygon(new Point[] { Point1, Point2, Point3 });
+            path.AddPolygon(Points);            
             return path;
         }
 
@@ -36,34 +39,39 @@ namespace FloorPlanTool
         {
             using (var path = GetPath())
             using (var pen = new Pen(LineColor, LineWidth))
-            {                                
-                g.DrawPolygon(pen, new Point[]{ Point1, Point2, Point3});
+            {                                                
+                g.DrawPolygon(pen, Points);
             }
         }
 
         public void Move(Point d)
-        {
-            Point1 = new Point(Point1.X + d.X, Point1.Y + d.Y);
-            Point2 = new Point(Point2.X + d.X, Point2.Y + d.Y);
-            Point3 = new Point(Point3.X + d.X, Point3.Y + d.Y);
+        {            
+            Points[0] = new PointF(Points[0].X + d.X, Points[0].Y + d.Y);
+            Points[1] = new PointF(Points[1].X + d.X, Points[1].Y + d.Y);
+            Points[2] = new PointF(Points[2].X + d.X, Points[2].Y + d.Y);
+            Location = new Point((int)(Points[2].X + d.X), (int)(Points[2].Y + d.Y));
 
         }
 
-        public void Resize(Point e, Point previousPoint)
-        {
+        public void Resize(Point e, Point distance)
+        {          
+            var scale = e.X - distance.X;
+            Console.WriteLine(scale);
 
-            //Point1 = new Point(Point1.X + (e.X - Point1.X), Point1.Y + (e.Y - Point1.Y));
-            //Point2 = new Point(Point2.X + (e.X - Point2.X), Point2.Y + (e.Y - Point2.Y));
-            var delta = (e.X - Point1.X);
+            Point1 = new PointF((float)(Location.X + scale * Math.Cos(Math.PI / 3)),
+                              (float)(Location.Y + scale * Math.Sin(Math.PI / 3)));
+            Point2 = new PointF((float)(Location.X + scale * Math.Cos((2 * Math.PI) / 3)),
+                                 (float)(Location.Y + scale * Math.Sin((2 * Math.PI) / 3)));
+        
+            Points[0] = Point1;
 
-            //calc slope of line segment between point3 and point1
-            var dy = (Point3.Y - Point1.Y)/Convert.ToInt32(Point3.Y + Point1.Y);
-            var dx = (Point3.X - Point1.X)/Convert.ToInt32(Point3.X + Point1.X);
-            //var slope = dy / dx;
-            //Console.WriteLine(slope);
-            
-            Point1 = new Point(Point1.X + delta, Point1.Y - delta);
-            Point2 = new Point(Point2.X + delta, Point2.Y);
+            Points[1] = Point2;
+
+            Points[2] = Location;
+
+
+
+
         }
     }
 }

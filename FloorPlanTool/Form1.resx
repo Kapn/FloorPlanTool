@@ -140,9 +140,19 @@
   </data>
   <data name="fill_rectangle_button.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAA7SURBVDhPrdOxDQAwDMOw/P9Yz2of4CKkBrho9/zYWZq7xFgwFowFY8FYMBaMBWPBWDAWjAUP
-        Umw28wDae9ghKFWp9wAAAABJRU5ErkJggg==
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAADtJREFUOE+t
+        07ENADAMw7D8/1jPah/gIqQGuGj3/NhZmrvEWDAWjAVjwVgwFowFY8FYMBaMBQ9SbDbzANp72CEoVan3
+        AAAAAElFTkSuQmCC
+</value>
+  </data>
+  <data name="dotted_line_button.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
+        xAAADsQBlSsOGwAAAPdJREFUOE+VlI0NhSAMhDuH2xiZwTinjKfYl8Oc6auA0OQCtfLZH4OklPQ8T+Xq
+        91+x67oUtq6rTtOkYoPUcRxNnwIcNs+ziohu23YD7YEWzMcsbFmW7P9lWMukJBhhIdwwZFwsGWrBEYPZ
+        zNjbPJSvw9aH2T3MDqqaoRcHsO97Xn2cH6720O4JY89iLEOh5z+sycN8z3xLmj0chUHVkkdh9KtDgY1k
+        RhVLhmGaJdiXXhkCznJjjHntyexVMiEwPrP7FswqAwljz2D2pZ7MKOF95gdQO2BViuV0CAshZFjPADyM
+        vuCmHf01WjHBtY2b1sJK6omllPQHxsDDmWGiyQsAAAAASUVORK5CYII=
 </value>
   </data>
   <data name="text_button.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
@@ -175,9 +185,9 @@
   </data>
   <data name="rectangle_button.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAA2SURBVDhPY6AGEAZicTIxSC/DNSDuJxOD9DIsBxFkArDeUQNGDYATZAKwXoqTMsWZiQLAwAAA
-        mqYi2WscJ/wAAAAASUVORK5CYII=
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAADZJREFUOE9j
+        oAYQBmJxMjFIL8M1IO4nE4P0MiwHEWQCsN5RA0YNgBNkArBeipMyxZmJAsDAAACapiLZaxwn/AAAAABJ
+        RU5ErkJggg==
 </value>
   </data>
   <data name="line_button.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

@@ -72,12 +72,21 @@ namespace FloorPlanTool
             //random scale value to determine fontSize, needs work
             FontSize = Width / 6;
             
-            if (FontSize < 0)
+            if (FontSize < 8)
             {
-                FontSize = 2;
+                FontSize = 8;
             }
 
-            Font = new Font("Arial", FontSize);
+            try
+            {
+                Font = new Font("Arial", FontSize);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Font Size less than 0");
+            }
+
+            
 
 
         }

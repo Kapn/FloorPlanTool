@@ -39,7 +39,6 @@
             this.text_button = new System.Windows.Forms.Button();
             this.undo_button = new System.Windows.Forms.Button();
             this.eraser_button = new System.Windows.Forms.Button();
-            this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.circle_button = new System.Windows.Forms.Button();
             this.clear_all_button = new System.Windows.Forms.Button();
             this.rectangle_button = new System.Windows.Forms.Button();
@@ -54,7 +53,6 @@
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.drawing_panel = new System.Windows.Forms.Panel();
             this.toolbar_panel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -69,7 +67,6 @@
             this.toolbar_panel.Controls.Add(this.text_button);
             this.toolbar_panel.Controls.Add(this.undo_button);
             this.toolbar_panel.Controls.Add(this.eraser_button);
-            this.toolbar_panel.Controls.Add(this.trackBar1);
             this.toolbar_panel.Controls.Add(this.circle_button);
             this.toolbar_panel.Controls.Add(this.clear_all_button);
             this.toolbar_panel.Controls.Add(this.rectangle_button);
@@ -89,7 +86,7 @@
             // 
             this.tri_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.tri_button.Image = ((System.Drawing.Image)(resources.GetObject("tri_button.Image")));
-            this.tri_button.Location = new System.Drawing.Point(67, 258);
+            this.tri_button.Location = new System.Drawing.Point(61, 185);
             this.tri_button.Name = "tri_button";
             this.tri_button.Size = new System.Drawing.Size(34, 23);
             this.tri_button.TabIndex = 41;
@@ -100,7 +97,7 @@
             // 
             this.fill_circle_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.fill_circle_button.Image = ((System.Drawing.Image)(resources.GetObject("fill_circle_button.Image")));
-            this.fill_circle_button.Location = new System.Drawing.Point(28, 203);
+            this.fill_circle_button.Location = new System.Drawing.Point(22, 130);
             this.fill_circle_button.Name = "fill_circle_button";
             this.fill_circle_button.Size = new System.Drawing.Size(34, 23);
             this.fill_circle_button.TabIndex = 39;
@@ -111,7 +108,7 @@
             // 
             this.fill_rectangle_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.fill_rectangle_button.Image = ((System.Drawing.Image)(resources.GetObject("fill_rectangle_button.Image")));
-            this.fill_rectangle_button.Location = new System.Drawing.Point(67, 203);
+            this.fill_rectangle_button.Location = new System.Drawing.Point(61, 130);
             this.fill_rectangle_button.Name = "fill_rectangle_button";
             this.fill_rectangle_button.Size = new System.Drawing.Size(34, 23);
             this.fill_rectangle_button.TabIndex = 40;
@@ -121,17 +118,17 @@
             // dotted_line_button
             // 
             this.dotted_line_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.dotted_line_button.Location = new System.Drawing.Point(67, 174);
+            this.dotted_line_button.Image = ((System.Drawing.Image)(resources.GetObject("dotted_line_button.Image")));
+            this.dotted_line_button.Location = new System.Drawing.Point(61, 101);
             this.dotted_line_button.Name = "dotted_line_button";
             this.dotted_line_button.Size = new System.Drawing.Size(34, 23);
             this.dotted_line_button.TabIndex = 38;
-            this.dotted_line_button.Text = "dashed";
             this.dotted_line_button.UseVisualStyleBackColor = true;
             this.dotted_line_button.Click += new System.EventHandler(this.dotted_line_button_Click);
             // 
             // redoButton
             // 
-            this.redoButton.Location = new System.Drawing.Point(26, 395);
+            this.redoButton.Location = new System.Drawing.Point(22, 392);
             this.redoButton.Name = "redoButton";
             this.redoButton.Size = new System.Drawing.Size(81, 33);
             this.redoButton.TabIndex = 36;
@@ -142,7 +139,7 @@
             // selectButton
             // 
             this.selectButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.selectButton.Location = new System.Drawing.Point(28, 287);
+            this.selectButton.Location = new System.Drawing.Point(22, 214);
             this.selectButton.Name = "selectButton";
             this.selectButton.Size = new System.Drawing.Size(34, 23);
             this.selectButton.TabIndex = 35;
@@ -154,7 +151,7 @@
             // 
             this.text_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.text_button.Image = ((System.Drawing.Image)(resources.GetObject("text_button.Image")));
-            this.text_button.Location = new System.Drawing.Point(28, 258);
+            this.text_button.Location = new System.Drawing.Point(22, 185);
             this.text_button.Name = "text_button";
             this.text_button.Size = new System.Drawing.Size(36, 23);
             this.text_button.TabIndex = 32;
@@ -163,7 +160,7 @@
             // 
             // undo_button
             // 
-            this.undo_button.Location = new System.Drawing.Point(26, 434);
+            this.undo_button.Location = new System.Drawing.Point(22, 431);
             this.undo_button.Name = "undo_button";
             this.undo_button.Size = new System.Drawing.Size(82, 33);
             this.undo_button.TabIndex = 30;
@@ -175,28 +172,18 @@
             // 
             this.eraser_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.eraser_button.Image = ((System.Drawing.Image)(resources.GetObject("eraser_button.Image")));
-            this.eraser_button.Location = new System.Drawing.Point(67, 287);
+            this.eraser_button.Location = new System.Drawing.Point(61, 214);
             this.eraser_button.Name = "eraser_button";
             this.eraser_button.Size = new System.Drawing.Size(34, 23);
             this.eraser_button.TabIndex = 31;
             this.eraser_button.UseVisualStyleBackColor = true;
             this.eraser_button.Click += new System.EventHandler(this.eraser_button_Click);
             // 
-            // trackBar1
-            // 
-            this.trackBar1.Location = new System.Drawing.Point(26, 103);
-            this.trackBar1.Minimum = 4;
-            this.trackBar1.Name = "trackBar1";
-            this.trackBar1.Size = new System.Drawing.Size(66, 45);
-            this.trackBar1.TabIndex = 29;
-            this.trackBar1.TickFrequency = 5;
-            this.trackBar1.Value = 4;
-            // 
             // circle_button
             // 
             this.circle_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.circle_button.Image = ((System.Drawing.Image)(resources.GetObject("circle_button.Image")));
-            this.circle_button.Location = new System.Drawing.Point(28, 229);
+            this.circle_button.Location = new System.Drawing.Point(22, 156);
             this.circle_button.Name = "circle_button";
             this.circle_button.Size = new System.Drawing.Size(34, 23);
             this.circle_button.TabIndex = 26;
@@ -205,7 +192,7 @@
             // 
             // clear_all_button
             // 
-            this.clear_all_button.Location = new System.Drawing.Point(26, 473);
+            this.clear_all_button.Location = new System.Drawing.Point(22, 470);
             this.clear_all_button.Name = "clear_all_button";
             this.clear_all_button.Size = new System.Drawing.Size(82, 38);
             this.clear_all_button.TabIndex = 25;
@@ -217,7 +204,7 @@
             // 
             this.rectangle_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.rectangle_button.Image = ((System.Drawing.Image)(resources.GetObject("rectangle_button.Image")));
-            this.rectangle_button.Location = new System.Drawing.Point(67, 229);
+            this.rectangle_button.Location = new System.Drawing.Point(61, 156);
             this.rectangle_button.Name = "rectangle_button";
             this.rectangle_button.Size = new System.Drawing.Size(34, 23);
             this.rectangle_button.TabIndex = 27;
@@ -238,7 +225,7 @@
             // 
             this.line_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.line_button.Image = ((System.Drawing.Image)(resources.GetObject("line_button.Image")));
-            this.line_button.Location = new System.Drawing.Point(28, 174);
+            this.line_button.Location = new System.Drawing.Point(22, 101);
             this.line_button.Name = "line_button";
             this.line_button.Size = new System.Drawing.Size(34, 23);
             this.line_button.TabIndex = 28;
@@ -335,7 +322,6 @@
             this.Text = "FloorPlan Tool";
             this.toolbar_panel.ResumeLayout(false);
             this.toolbar_panel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -349,7 +335,6 @@
         private System.Windows.Forms.Button text_button;
         private System.Windows.Forms.Button undo_button;
         private System.Windows.Forms.Button eraser_button;
-        private System.Windows.Forms.TrackBar trackBar1;
         private System.Windows.Forms.Button circle_button;
         private System.Windows.Forms.Button clear_all_button;
         private System.Windows.Forms.Button rectangle_button;
