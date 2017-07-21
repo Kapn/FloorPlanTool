@@ -49,16 +49,18 @@ namespace FloorPlanTool
     {
         /*
          * Variable Declarations 
-         */        
-        
+         */
+
         //List of Shapes that are to be drawn each time Paint Event gets fired.
-        public List<IShape> Shapes { get; private set; }        
+        public List<IShape> Shapes = new List<IShape>();
+        List<ShapeAction> Actions = new List<ShapeAction>();
         bool drawCir, drawLine,textbox_IsDrawn, drawRec, drawText, drawTri, drawDotted, eraser, fill, scaleShape, moving, just_cleared;
         string text_to_draw;
         SolidBrush brush_color;
-        IShape selectedShape;
-        int selectedIndex;
-        Stack<IShape> redo_stack = new Stack<IShape>();
+        IShape selectedShape;        
+        Stack<ShapeAction> redo_stack = new Stack<ShapeAction>();
+        Stack<IShape> move_stack = new Stack<IShape>();
+        Stack<IShape> resize_stack = new Stack<IShape>();        
         Point previousPoint = Point.Empty;
         TextBox txtbox;
         
@@ -70,8 +72,7 @@ namespace FloorPlanTool
             typeof(Panel).InvokeMember("DoubleBuffered",
                 BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
                 null, drawing_panel, new object[] { true });   
-            
-            Shapes = new List<IShape>();
+                        
             brush_color = new SolidBrush(Color.Black);            
         }
        
@@ -111,9 +112,10 @@ namespace FloorPlanTool
                     newCircle.Center = new Point(e.X, e.Y);
                     newCircle.Radius = 2; //trackBar1.Value;
                     Shapes.Add(newCircle);
+                    Actions.Add(new ShapeAction("Draw", newCircle));
 
                     scaleShape = true;
-                    //drawing_panel.Invalidate();
+                
                 }
                 //line
                 else if(drawLine)
@@ -127,6 +129,7 @@ namespace FloorPlanTool
                     newLine.Point1 = previousPoint;
                     newLine.Point2 = e.Location;
                     Shapes.Add(newLine);
+                    Actions.Add(new ShapeAction("Draw", newLine));
 
                     scaleShape = true;
                 }
@@ -142,6 +145,7 @@ namespace FloorPlanTool
                     newLine.Point1 = previousPoint;
                     newLine.Point2 = e.Location;
                     Shapes.Add(newLine);
+                    Actions.Add(new ShapeAction("Draw", newLine));
 
                     scaleShape = true;
                 }
@@ -185,9 +189,9 @@ namespace FloorPlanTool
                     }
 
                     Shapes.Add(newRec);
+                    Actions.Add(new ShapeAction("Draw", newRec));
 
-                    scaleShape = true;
-                    Console.WriteLine("MouseDown");
+                    scaleShape = true;                    
                 }
                 //triangle
                 else if (drawTri)
@@ -210,6 +214,7 @@ namespace FloorPlanTool
                     };
                     
                     Shapes.Add(newTriangle);
+                    Actions.Add(new ShapeAction("Draw", newTriangle));
 
                     scaleShape = true;
                 }
@@ -242,6 +247,7 @@ namespace FloorPlanTool
                             if (selectedShape != null)
                             {                                                      
                                 Shapes.RemoveAt(i);
+                                Actions.Add(new ShapeAction("Erase", Shapes[i]));
                             }
                             break;
                         }
@@ -263,6 +269,7 @@ namespace FloorPlanTool
                     {
                         moving = true;
                         previousPoint = e.Location;
+                        Actions.Add(new ShapeAction("Move", selectedShape));
                     }
                     drawing_panel.Invalidate();
                 }
@@ -275,8 +282,7 @@ namespace FloorPlanTool
                 {                        
                     if (Shapes[i].HitTest(e.Location))
                     {
-                        selectedShape = Shapes[i];
-                        selectedIndex = i;
+                        selectedShape = Shapes[i];                        
                         break;
                     }
                 }
@@ -284,7 +290,8 @@ namespace FloorPlanTool
                 if (selectedShape != null)
                 {
                     scaleShape = true;
-                    previousPoint = e.Location;                        
+                    previousPoint = e.Location;
+                    Actions.Add(new ShapeAction("Resize", selectedShape));
                 }
                 drawing_panel.Invalidate();
             }            
@@ -298,14 +305,15 @@ namespace FloorPlanTool
         {
             
                 if (moving)
-                {
+                {                                                            
                     var d = new Point(e.X - previousPoint.X, e.Y - previousPoint.Y);
                     selectedShape.Move(d);
+                
                     previousPoint = e.Location;
                     drawing_panel.Invalidate();
                 }
                 else if (scaleShape)
-                {
+                {                    
                     var newRadius = e.X - previousPoint.X;
                     var dx = e.X - previousPoint.X;
                     var dy = e.Y - previousPoint.Y;
@@ -315,12 +323,7 @@ namespace FloorPlanTool
                         selectedShape = Shapes.Last<IShape>();
                     }
 
-                //was not able to use selectedShape.Size because it does not belong to IShape interface.
-                //implemented selectedIndex for a work around.
-                //if (selectedShape is Triangle)
-                //{
-                //    previousPoint = new Point(dx, 0);                    
-                //}
+          
 
                     selectedShape.Resize(e.Location, previousPoint);
                     drawing_panel.Invalidate();                
@@ -341,76 +344,8 @@ namespace FloorPlanTool
             {
                 scaleShape = false;
                 selectedShape = null;
-            } else if (drawCir)
-            {
-                //Circle newCircle = new Circle();
-                //newCircle.FillColor = brush_color.Color;
-                //newCircle.Center = new Point(e.X, e.Y);
-                //newCircle.Radius = trackBar1.Value;
-                //Shapes.Add(newCircle);
-                //drawing_panel.Invalidate();
             }
-            else if (drawLine)
-            {                
-                //Line newLine = new Line();
-                //newLine.LineColor = brush_color.Color;
-                //newLine.LineWidth = trackBar1.Value;
-                //newLine.DashPattern = new float[] { 1.0F};
-                //newLine.Point1 = previousPoint;
-                //newLine.Point2 = e.Location;
-                //Shapes.Add(newLine);
-            }
-            else if (drawDotted)
-            {
-                //Line newLine = new Line();
-                //newLine.LineColor = brush_color.Color;
-                //newLine.LineWidth = trackBar1.Value;
-                //newLine.DashPattern = new float[] { 2.0F , 2.0F};
-                //newLine.Point1 = previousPoint;
-                //newLine.Point2 = e.Location;
-                //Shapes.Add(newLine);
-            }
-            else if (drawTri)
-            {
-                //Triangle newTriangle = new Triangle();
-                //newTriangle.LineColor = brush_color.Color;
-                //newTriangle.LineWidth = trackBar1.Value - 2;
-                //newTriangle.Point1 = new Point(e.X, e.Y);
-                //newTriangle.Point2 = new Point(e.X + 10, e.Y + 15);
-                //newTriangle.Point3 = new Point(e.X - 10, e.Y + 15);                               
-                //Shapes.Add(newTriangle);
-            }
-            else if (drawRec)
-            {                
-            //    Rec newRec = new Rec();
-            //    if (fill)
-            //    {
-            //        newRec.Fill = true;
-            //    }
-            //    newRec.FillColor = brush_color.Color;
-                
-            //    if (e.X < previousPoint.X)
-            //    {
-            //        newRec.Left = e.X;
-            //        newRec.Right = previousPoint.X;
-            //    } else
-            //    {
-            //        newRec.Left = previousPoint.X;
-            //        newRec.Right = e.X;
-            //    }                                                          
 
-            //    if (e.Y < previousPoint.Y)
-            //    {
-            //        newRec.Top = e.Y;
-            //        newRec.Bottom = previousPoint.Y;
-            //    } else
-            //    {
-            //        newRec.Top = previousPoint.Y;
-            //        newRec.Bottom = e.Y;
-            //    }
-                                          
-            //    Shapes.Add(newRec);                                
-            }
             drawing_panel.Invalidate();
         }
 
@@ -565,12 +500,26 @@ namespace FloorPlanTool
          */
         private void undo_button_Click(object sender, EventArgs e)
         {
+            // check if there are any actions to undo
+            if (Actions.Count > 0)
+            {
+                var lastAction = Actions.Last();
+
+                //save last action to a redo stack
+                redo_stack.Push(lastAction);
+                
+                //undo last action
+
+
+                //remove lastaction from stack
+            }
             
             if (Shapes.Count > 0)
-            {                
+            {                                
                 redo_stack.Push(Shapes.Last());
                 Shapes.RemoveAt(Shapes.Count - 1);                
-            } else if(just_cleared)
+            }
+            else if(just_cleared)
             {
                 foreach(IShape shape in clear_all_stack)
                 {
@@ -641,6 +590,7 @@ namespace FloorPlanTool
                 newText.PosX = previousPoint.X;
                 newText.PosY = previousPoint.Y;
                 Shapes.Add(newText);
+                Actions.Add(new ShapeAction("Draw", newText));
 
                 textbox_IsDrawn = false;
                 drawing_panel.Invalidate();
