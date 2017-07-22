@@ -508,17 +508,28 @@ namespace FloorPlanTool
                 //save last action to a redo stack
                 redo_stack.Push(lastAction);
                 
-                //undo last action
+                //undo last action, make changes to Shapes list
+                foreach(var shape in Shapes)
+                {
+                    if (lastAction.Shape == shape)
+                    {
+                        Console.WriteLine("equal");
 
+                    }
+                    else
+                    {
+                        Console.WriteLine("not equal");
+                    }
+                }
 
                 //remove lastaction from stack
             }
             
-            if (Shapes.Count > 0)
-            {                                
-                redo_stack.Push(Shapes.Last());
-                Shapes.RemoveAt(Shapes.Count - 1);                
-            }
+            //if (Shapes.Count > 0)
+            //{                                
+            //    redo_stack.Push(Shapes.Last());
+            //    Shapes.RemoveAt(Shapes.Count - 1);                
+            //}
             else if(just_cleared)
             {
                 foreach(IShape shape in clear_all_stack)
@@ -537,7 +548,7 @@ namespace FloorPlanTool
         {
             if (redo_stack.Count > 0)
             {
-                IShape popped_shape = redo_stack.Pop();
+                IShape popped_shape = redo_stack.Pop().Shape;
                 Shapes.Add(popped_shape);
             }            
             drawing_panel.Invalidate();
