@@ -69,9 +69,18 @@ namespace FloorPlanTool
 
             Points[2] = Location;
 
+        }
 
+        //return Triangle Properties:
+        //  - location
+        public List<int> GetProperties()
+        {
+            return new List<int> { Location.X, Location.Y };
+        }
 
-
+        public IShape Copy()
+        {
+            throw new NotImplementedException();
         }
     }
 }

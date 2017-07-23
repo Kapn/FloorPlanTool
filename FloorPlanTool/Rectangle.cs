@@ -17,6 +17,17 @@ namespace FloorPlanTool
             FillColor = Color.Black;
             Fill = false;        
         }
+
+        public Rec(int Left, int Top, int Right, int Bottom)
+        {
+            FillColor = Color.Black;
+            Fill = false;
+
+            this.Left = Left;
+            this.Top = Top;
+            this.Right = Right;
+            this.Bottom = Bottom;
+        }
         public bool Fill { get; set; }
         public Color FillColor { get; set; }
         public int Left { get; set; }
@@ -80,7 +91,7 @@ namespace FloorPlanTool
             if (Right < Left)
             { 
                 var initialRight = Right;
-                var initialTop = Top;
+                //var initialTop = Top;
 
                 Right = previousPoint.X;
                 Left = initialRight;
@@ -93,5 +104,15 @@ namespace FloorPlanTool
             }
         }
 
+        public List<int> GetProperties()
+        {
+            return new List<int> { Left, Top, Right, Bottom };
+        }
+
+        public IShape Copy()
+        {
+            var properties = this.GetProperties();
+            return new Rec(properties[0], properties[1], properties[2], properties[3]);
+        }
     }
 }

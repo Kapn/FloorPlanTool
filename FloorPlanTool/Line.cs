@@ -65,5 +65,15 @@ namespace FloorPlanTool
                 Point2 = new Point(Point2.X + (e.X - Point2.X), Point2.Y + (e.Y - Point2.Y));
             }
         }
+
+        public List<int> GetProperties()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IShape Copy()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

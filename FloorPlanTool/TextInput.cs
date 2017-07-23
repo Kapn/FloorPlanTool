@@ -90,5 +90,15 @@ namespace FloorPlanTool
 
 
         }
+
+        public List<int> GetProperties()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IShape Copy()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

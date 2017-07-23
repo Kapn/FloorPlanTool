@@ -83,5 +83,15 @@ namespace FloorPlanTool
 
             this.Radius = newRadius;
         }
+
+        public List<int> GetProperties()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IShape Copy()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

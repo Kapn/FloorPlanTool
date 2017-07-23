@@ -53,6 +53,10 @@ namespace FloorPlanTool
 
         //List of Shapes that are to be drawn each time Paint Event gets fired.
         public List<IShape> Shapes = new List<IShape>();
+
+        Dictionary<int, IShape> ShapesDict = new Dictionary<int, IShape>();
+        int shapeCount = 0;
+
         List<ShapeAction> Actions = new List<ShapeAction>();
         bool drawCir, drawLine,textbox_IsDrawn, drawRec, drawText, drawTri, drawDotted, eraser, fill, scaleShape, moving, just_cleared;
         string text_to_draw;
@@ -83,11 +87,13 @@ namespace FloorPlanTool
          */
         private void drawing_panel_Paint(object sender, PaintEventArgs e)
         {
-            //e.Graphics.DrawImage(bmap, Point.Empty);
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
            
-            foreach (var shape in Shapes)
-                shape.Draw(e.Graphics);      
+            //foreach (var shape in Shapes)
+            //    shape.Draw(e.Graphics);
+
+            foreach (KeyValuePair<int, IShape> shape in ShapesDict)
+                shape.Value.Draw(e.Graphics);
         }
 
         /*
@@ -111,7 +117,8 @@ namespace FloorPlanTool
                     newCircle.FillColor = brush_color.Color;
                     newCircle.Center = new Point(e.X, e.Y);
                     newCircle.Radius = 2; //trackBar1.Value;
-                    Shapes.Add(newCircle);
+                    //Shapes.Add(newCircle);
+                    ShapesDict.Add(shapeCount++, newCircle);
                     Actions.Add(new ShapeAction("Draw", newCircle));
 
                     scaleShape = true;
@@ -128,7 +135,8 @@ namespace FloorPlanTool
                     newLine.DashPattern = new float[] { 1.0F };
                     newLine.Point1 = previousPoint;
                     newLine.Point2 = e.Location;
-                    Shapes.Add(newLine);
+                   // Shapes.Add(newLine);
+                    ShapesDict.Add(shapeCount++, newLine);
                     Actions.Add(new ShapeAction("Draw", newLine));
 
                     scaleShape = true;
@@ -144,7 +152,8 @@ namespace FloorPlanTool
                     newLine.DashPattern = new float[] { 2.0F, 2.0F };
                     newLine.Point1 = previousPoint;
                     newLine.Point2 = e.Location;
-                    Shapes.Add(newLine);
+                   // Shapes.Add(newLine);
+                    ShapesDict.Add(shapeCount++, newLine);
                     Actions.Add(new ShapeAction("Draw", newLine));
 
                     scaleShape = true;
@@ -188,8 +197,10 @@ namespace FloorPlanTool
                         newRec.Bottom = e.Y;
                     }
 
-                    Shapes.Add(newRec);
-                    Actions.Add(new ShapeAction("Draw", newRec));
+                    //Shapes.Add(newRec);
+                    ShapesDict.Add(shapeCount++, newRec);
+                    Rec newRec_copy = new Rec(newRec.Left, newRec.Top, newRec.Right, newRec.Bottom);
+                    Actions.Add(new ShapeAction("Draw", newRec_copy));
 
                     scaleShape = true;                    
                 }
@@ -213,7 +224,8 @@ namespace FloorPlanTool
                                    (float)(e.Y + size*Math.Sin((2*Math.PI)/3)))    //20 is default length
                     };
                     
-                    Shapes.Add(newTriangle);
+                    //Shapes.Add(newTriangle);
+                    ShapesDict.Add(shapeCount++, newTriangle);
                     Actions.Add(new ShapeAction("Draw", newTriangle));
 
                     scaleShape = true;
@@ -291,7 +303,8 @@ namespace FloorPlanTool
                 {
                     scaleShape = true;
                     previousPoint = e.Location;
-                    Actions.Add(new ShapeAction("Resize", selectedShape));
+                    var selectedShape_copy = selectedShape;
+                    Actions.Add(new ShapeAction("Resize", selectedShape.Copy()));
                 }
                 drawing_panel.Invalidate();
             }            
@@ -494,6 +507,15 @@ namespace FloorPlanTool
             drawing_panel.Invalidate();
         }
     
+
+        void undoRectangle(IShape shape, ShapeAction lastAction, int index)
+        {
+            var properties = lastAction.Shape.GetProperties();
+            Shapes[index] = new Rec(properties[0], properties[1], properties[2], properties[3]);
+            Console.WriteLine("rectangle undone");
+        }
+
+
         /*
          * When Undo is clicked, remove the last shape added to the Shapes List
          * and push it onto the redo_stack. Handle if 'Clear All' was clicked.
@@ -509,11 +531,16 @@ namespace FloorPlanTool
                 redo_stack.Push(lastAction);
                 
                 //undo last action, make changes to Shapes list
-                foreach(var shape in Shapes)
+                for(int i=0; i < Shapes.Count; ++i)
                 {
-                    if (lastAction.Shape == shape)
+                    if (lastAction.Shape == Shapes[i])
                     {
                         Console.WriteLine("equal");
+                        string type = Shapes[i].ToString();
+                        if (type == "FloorPlanTool.Rec")
+                        {
+                            undoRectangle(Shapes[i], lastAction, i);
+                        }
 
                     }
                     else
@@ -521,6 +548,24 @@ namespace FloorPlanTool
                         Console.WriteLine("not equal");
                     }
                 }
+                //foreach(var shape in Shapes)
+                //{
+                //    if (lastAction.Shape == shape)
+                //    {
+                //        Console.WriteLine("equal");
+                //        string type = shape.ToString();
+                //        if (type == "FloorPlanTool.Rec")
+                //        {
+                //            Console.WriteLine("we made it");
+                //            undoRectangle(shape, lastAction);
+                //        }
+                        
+                //    }
+                //    else
+                //    {
+                //        Console.WriteLine("not equal");
+                //    }
+                //}
 
                 //remove lastaction from stack
             }
