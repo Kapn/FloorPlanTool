@@ -8,13 +8,15 @@ namespace FloorPlanTool
 {
     public class ShapeAction
     {
-        public ShapeAction(string TypeOfAction, IShape Shape)
+        public ShapeAction(string TypeOfAction, int Key, IShape Shape)
         {
             this.TypeOfAction = TypeOfAction;
+            this.Key = Key;
             this.Shape = Shape;
         }
 
         public string TypeOfAction { get; set; }
+        public int Key { get; set; }
         public IShape Shape{get; set;}        
 
     }

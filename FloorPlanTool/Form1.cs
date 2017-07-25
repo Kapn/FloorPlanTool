@@ -16,6 +16,7 @@ using System.Windows.Forms;
 //using MySql.Data.MySqlClient;
 
 // TODO: 
+// - after erasing first drag of a shape doesn't draw, second time does
 // - change UI buttons to be more intuitive  (need dashed-line image still)
 // - undo erase
 // - undo/redo Object Manipulation (move/resize)
@@ -23,6 +24,8 @@ using System.Windows.Forms;
 // - erase as holding down mouse
 // - file save/load
 // - other triangle shapes, maybe a drop-down button
+// - function for check hittest on each shape. For-loop is in several places
+
 
 // minor TODO:
 // - resizing rectangle past nothing should mirror across
@@ -61,7 +64,7 @@ namespace FloorPlanTool
         bool drawCir, drawLine,textbox_IsDrawn, drawRec, drawText, drawTri, drawDotted, eraser, fill, scaleShape, moving, just_cleared;
         string text_to_draw;
         SolidBrush brush_color;
-        IShape selectedShape;        
+        public KeyValuePair<int, IShape> selectedShape;        
         Stack<ShapeAction> redo_stack = new Stack<ShapeAction>();
         Stack<IShape> move_stack = new Stack<IShape>();
         Stack<IShape> resize_stack = new Stack<IShape>();        
@@ -118,8 +121,8 @@ namespace FloorPlanTool
                     newCircle.Center = new Point(e.X, e.Y);
                     newCircle.Radius = 2; //trackBar1.Value;
                     //Shapes.Add(newCircle);
-                    ShapesDict.Add(shapeCount++, newCircle);
-                    Actions.Add(new ShapeAction("Draw", newCircle));
+                    ShapesDict.Add(++shapeCount, newCircle);
+                    Actions.Add(new ShapeAction("Draw", shapeCount, newCircle));
 
                     scaleShape = true;
                 
@@ -136,8 +139,8 @@ namespace FloorPlanTool
                     newLine.Point1 = previousPoint;
                     newLine.Point2 = e.Location;
                    // Shapes.Add(newLine);
-                    ShapesDict.Add(shapeCount++, newLine);
-                    Actions.Add(new ShapeAction("Draw", newLine));
+                    ShapesDict.Add(++shapeCount, newLine);
+                    Actions.Add(new ShapeAction("Draw", shapeCount, newLine));
 
                     scaleShape = true;
                 }
@@ -153,8 +156,8 @@ namespace FloorPlanTool
                     newLine.Point1 = previousPoint;
                     newLine.Point2 = e.Location;
                    // Shapes.Add(newLine);
-                    ShapesDict.Add(shapeCount++, newLine);
-                    Actions.Add(new ShapeAction("Draw", newLine));
+                    ShapesDict.Add(++shapeCount, newLine);
+                    Actions.Add(new ShapeAction("Draw", shapeCount, newLine));
 
                     scaleShape = true;
                 }
@@ -198,9 +201,9 @@ namespace FloorPlanTool
                     }
 
                     //Shapes.Add(newRec);
-                    ShapesDict.Add(shapeCount++, newRec);
+                    ShapesDict.Add(++shapeCount, newRec);
                     Rec newRec_copy = new Rec(newRec.Left, newRec.Top, newRec.Right, newRec.Bottom);
-                    Actions.Add(new ShapeAction("Draw", newRec_copy));
+                    Actions.Add(new ShapeAction("Draw", shapeCount, newRec_copy));
 
                     scaleShape = true;                    
                 }
@@ -225,8 +228,8 @@ namespace FloorPlanTool
                     };
                     
                     //Shapes.Add(newTriangle);
-                    ShapesDict.Add(shapeCount++, newTriangle);
-                    Actions.Add(new ShapeAction("Draw", newTriangle));
+                    ShapesDict.Add(++shapeCount, newTriangle);
+                    Actions.Add(new ShapeAction("Draw", shapeCount, newTriangle));
 
                     scaleShape = true;
                 }
@@ -250,38 +253,62 @@ namespace FloorPlanTool
                 //eraser
                 else if (eraser)
                 {
-                    for (var i = Shapes.Count - 1; i >= 0; i--)
+                    //for (var i = Shapes.Count - 1; i >= 0; i--)
+                    //{
+                    //    //if a Shape was clicked on, erase it.
+                    //    if (Shapes[i].HitTest(e.Location))
+                    //    {
+                    //        selectedShape = Shapes[i];
+                    //        if (selectedShape != null)
+                    //        {                                                      
+                    //            Shapes.RemoveAt(i);
+                    //            Actions.Add(new ShapeAction("Erase", Shapes[i]));
+                    //        }
+                    //        break;
+                    //    }
+                    //}                       
+                    foreach (KeyValuePair<int, IShape> shape in ShapesDict)
                     {
-                        //if a Shape was clicked on, erase it.
-                        if (Shapes[i].HitTest(e.Location))
+                        //if a shape was clicked on, erase it.
+                        if (shape.Value.HitTest(e.Location))
                         {
-                            selectedShape = Shapes[i];
-                            if (selectedShape != null)
-                            {                                                      
-                                Shapes.RemoveAt(i);
-                                Actions.Add(new ShapeAction("Erase", Shapes[i]));
+                            selectedShape = shape;
+                            if (selectedShape.Value != null)
+                            {
+                                Actions.Add(new ShapeAction("Erase", shape.Key, shape.Value));
+                                ShapesDict.Remove(shape.Key);
                             }
-                            break;
-                        }
-                    }                        
-                }                   
-                //selector
-                else
-                {
-                    for (var i = Shapes.Count - 1; i >= 0; i--)
-                    {
-                        if (Shapes[i].HitTest(e.Location))
-                        {
-                            selectedShape = Shapes[i];
                             break;
                         }
                     }
 
-                    if (selectedShape != null)
+                }
+                //selector
+                else
+                {
+                    //for (var i = Shapes.Count - 1; i >= 0; i--)
+                    //{
+                    //    if (Shapes[i].HitTest(e.Location))
+                    //    {
+                    //        selectedShape = Shapes[i];
+                    //        break;
+                    //    }
+                    //}
+                    foreach (KeyValuePair<int, IShape> shape in ShapesDict)
+                    {
+                        if (shape.Value.HitTest(e.Location))
+                        {
+                            selectedShape = shape;
+                            break;
+                        }
+                    }
+
+
+                    if (selectedShape.Value != null)
                     {
                         moving = true;
                         previousPoint = e.Location;
-                        Actions.Add(new ShapeAction("Move", selectedShape));
+                        Actions.Add(new ShapeAction("Move", selectedShape.Key, selectedShape.Value));
                     }
                     drawing_panel.Invalidate();
                 }
@@ -290,21 +317,29 @@ namespace FloorPlanTool
             else
             {
                     
-                for (var i = Shapes.Count - 1; i >= 0; i--)
-                {                        
-                    if (Shapes[i].HitTest(e.Location))
+                //for (var i = Shapes.Count - 1; i >= 0; i--)
+                //{                        
+                //    if (Shapes[i].HitTest(e.Location))
+                //    {
+                //        selectedShape = Shapes[i];                        
+                //        break;
+                //    }
+                //}
+                foreach (KeyValuePair<int, IShape> shape in ShapesDict)
+                {
+                    if (shape.Value.HitTest(e.Location))
                     {
-                        selectedShape = Shapes[i];                        
+                        selectedShape = shape;
                         break;
                     }
                 }
 
-                if (selectedShape != null)
+                if (selectedShape.Value != null)
                 {
                     scaleShape = true;
                     previousPoint = e.Location;
                     var selectedShape_copy = selectedShape;
-                    Actions.Add(new ShapeAction("Resize", selectedShape.Copy()));
+                    Actions.Add(new ShapeAction("Resize", shapeCount, selectedShape.Value.Copy()));
                 }
                 drawing_panel.Invalidate();
             }            
@@ -320,7 +355,7 @@ namespace FloorPlanTool
                 if (moving)
                 {                                                            
                     var d = new Point(e.X - previousPoint.X, e.Y - previousPoint.Y);
-                    selectedShape.Move(d);
+                    selectedShape.Value.Move(d);
                 
                     previousPoint = e.Location;
                     drawing_panel.Invalidate();
@@ -331,13 +366,15 @@ namespace FloorPlanTool
                     var dx = e.X - previousPoint.X;
                     var dy = e.Y - previousPoint.Y;
                 
-                    if (selectedShape == null)
+                    //for viewing line/shapes as they are dragged out
+                    if (selectedShape.Value == null)
                     {
-                        selectedShape = Shapes.Last<IShape>();
+                        Console.WriteLine("error, selected shape is null when trying to scale!");
+                        selectedShape.Value = ShapesDict[shapeCount];
+                        selectedShape.Key = shapeCount;
+                        //selectedShape = Shapes.Last<IShape>();
                     }
-
-          
-
+                    
                     selectedShape.Resize(e.Location, previousPoint);
                     drawing_panel.Invalidate();                
                 }            
@@ -498,20 +535,29 @@ namespace FloorPlanTool
         {
             clear_all_stack.Clear();
             //push onto redo stack
-            foreach (IShape shape in Shapes)
+            //foreach (IShape shape in Shapes)
+            //{
+            //    clear_all_stack.Push(shape);
+            //    just_cleared = true;
+            //}
+            //Shapes.Clear();
+
+            shapeCount = 0;
+            foreach (KeyValuePair<int, IShape> shape in ShapesDict)
             {
-                clear_all_stack.Push(shape);
+                clear_all_stack.Push(shape.Value);
                 just_cleared = true;
             }
-            Shapes.Clear();
-            drawing_panel.Invalidate();
+            ShapesDict.Clear();
+                drawing_panel.Invalidate();
         }
     
 
         void undoRectangle(IShape shape, ShapeAction lastAction, int index)
         {
             var properties = lastAction.Shape.GetProperties();
-            Shapes[index] = new Rec(properties[0], properties[1], properties[2], properties[3]);
+            //Shapes[index] = new Rec(properties[0], properties[1], properties[2], properties[3]);
+            
             Console.WriteLine("rectangle undone");
         }
 
@@ -525,21 +571,22 @@ namespace FloorPlanTool
             // check if there are any actions to undo
             if (Actions.Count > 0)
             {
+                //lookup last action
                 var lastAction = Actions.Last();
 
                 //save last action to a redo stack
                 redo_stack.Push(lastAction);
-                
-                //undo last action, make changes to Shapes list
-                for(int i=0; i < Shapes.Count; ++i)
+          
+                //find the shape that the lastAction was on and revert it
+                foreach (KeyValuePair<int, IShape> shape in ShapesDict)
                 {
-                    if (lastAction.Shape == Shapes[i])
+                    if (lastAction.Shape == shape.Value)
                     {
                         Console.WriteLine("equal");
-                        string type = Shapes[i].ToString();
+                        string type = shape.Value.ToString();
                         if (type == "FloorPlanTool.Rec")
                         {
-                            undoRectangle(Shapes[i], lastAction, i);
+                           // undoRectangle(shape.Value, lastAction);
                         }
 
                     }
@@ -548,24 +595,6 @@ namespace FloorPlanTool
                         Console.WriteLine("not equal");
                     }
                 }
-                //foreach(var shape in Shapes)
-                //{
-                //    if (lastAction.Shape == shape)
-                //    {
-                //        Console.WriteLine("equal");
-                //        string type = shape.ToString();
-                //        if (type == "FloorPlanTool.Rec")
-                //        {
-                //            Console.WriteLine("we made it");
-                //            undoRectangle(shape, lastAction);
-                //        }
-                        
-                //    }
-                //    else
-                //    {
-                //        Console.WriteLine("not equal");
-                //    }
-                //}
 
                 //remove lastaction from stack
             }
@@ -577,10 +606,13 @@ namespace FloorPlanTool
             //}
             else if(just_cleared)
             {
+
                 foreach(IShape shape in clear_all_stack)
                 {
-                    Shapes.Add(shape);
+                    //Shapes.Add(shape);
+                    ShapesDict.Add(++shapeCount, shape);
                 }
+                
                 just_cleared = false;                                
             }
             drawing_panel.Invalidate();
@@ -594,7 +626,8 @@ namespace FloorPlanTool
             if (redo_stack.Count > 0)
             {
                 IShape popped_shape = redo_stack.Pop().Shape;
-                Shapes.Add(popped_shape);
+                ShapesDict.Add(++shapeCount, popped_shape);
+                //Shapes.Add(popped_shape);
             }            
             drawing_panel.Invalidate();
         }
@@ -645,8 +678,9 @@ namespace FloorPlanTool
                 newText.Height = 25;
                 newText.PosX = previousPoint.X;
                 newText.PosY = previousPoint.Y;
-                Shapes.Add(newText);
-                Actions.Add(new ShapeAction("Draw", newText));
+               // Shapes.Add(newText);
+                ShapesDict.Add(++shapeCount, newText);
+                Actions.Add(new ShapeAction("Draw", shapeCount, newText));
 
                 textbox_IsDrawn = false;
                 drawing_panel.Invalidate();
