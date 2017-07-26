@@ -64,7 +64,7 @@ namespace FloorPlanTool
         bool drawCir, drawLine,textbox_IsDrawn, drawRec, drawText, drawTri, drawDotted, eraser, fill, scaleShape, moving, just_cleared;
         string text_to_draw;
         SolidBrush brush_color;
-        public KeyValuePair<int, IShape> selectedShape;        
+        public KeyValuePair<int, IShape> selectedShape { get; set; }        
         Stack<ShapeAction> redo_stack = new Stack<ShapeAction>();
         Stack<IShape> move_stack = new Stack<IShape>();
         Stack<IShape> resize_stack = new Stack<IShape>();        
@@ -214,8 +214,7 @@ namespace FloorPlanTool
                     var size = 20;
 
                     Triangle newTriangle = new Triangle();
-                    newTriangle.LineColor = brush_color.Color;
-                    newTriangle.LineWidth = 2;
+                    newTriangle.LineColor = brush_color.Color;                    
                     newTriangle.Size = size;
                     newTriangle.Location = e.Location;
                     newTriangle.Points = new PointF[]                   
@@ -369,13 +368,12 @@ namespace FloorPlanTool
                     //for viewing line/shapes as they are dragged out
                     if (selectedShape.Value == null)
                     {
-                        Console.WriteLine("error, selected shape is null when trying to scale!");
-                        selectedShape.Value = ShapesDict[shapeCount];
-                        selectedShape.Key = shapeCount;
+                        Console.WriteLine("error, selected shape is null when trying to scale! OR initial scaling is occurring");
+                        selectedShape = new KeyValuePair<int, IShape>(shapeCount, ShapesDict[shapeCount]);                        
                         //selectedShape = Shapes.Last<IShape>();
                     }
                     
-                    selectedShape.Resize(e.Location, previousPoint);
+                    selectedShape.Value.Resize(e.Location, previousPoint);
                     drawing_panel.Invalidate();                
                 }            
             
@@ -388,12 +386,14 @@ namespace FloorPlanTool
         {
             if (moving)
             {
-                selectedShape = null;
+                selectedShape = new KeyValuePair<int, IShape>(shapeCount, null);
+                //selectedShape.Value = null;
                 moving = false;
             } else if (scaleShape)
             {
                 scaleShape = false;
-                selectedShape = null;
+                selectedShape = new KeyValuePair<int, IShape>(shapeCount, null);
+                //selectedShape.Value = null;
             }
 
             drawing_panel.Invalidate();

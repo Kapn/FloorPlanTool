@@ -10,6 +10,12 @@ namespace FloorPlanTool
 {
     class Triangle : IShape
     {   
+        public Triangle() { LineWidth = 2; }
+        public Triangle(Point Location)
+        {
+            this.Location = Location;
+        }
+
         public Point Location { get; set; }
         public PointF[] Points { get; set; }
         public PointF Point1 { get; set; }
@@ -80,7 +86,8 @@ namespace FloorPlanTool
 
         public IShape Copy()
         {
-            throw new NotImplementedException();
+            var properties = GetProperties();
+            return new Triangle(new Point(properties[0], properties[1]));
         }
     }
 }

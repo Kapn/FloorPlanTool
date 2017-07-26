@@ -14,11 +14,20 @@ namespace FloorPlanTool
     public class Line : IShape
     {
         public Line() { LineWidth = 2; LineColor = Color.Black; }
+        public Line(Point point1, Point point2)
+        {
+            LineWidth = 2;
+            LineColor = Color.Black;
+            Point1 = point1;
+            Point2 = point2;
+        }
         public int LineWidth { get; set; }
         public Color LineColor { get; set; }
         public float[] DashPattern { get; set; }
         public Point Point1 { get; set; }
         public Point Point2 { get; set; }
+        
+
         public GraphicsPath GetPath()
         {
             var path = new GraphicsPath();
@@ -68,12 +77,13 @@ namespace FloorPlanTool
 
         public List<int> GetProperties()
         {
-            throw new NotImplementedException();
+            return new List<int> { Point1.X, Point1.Y, Point2.X, Point2.Y };
         }
 
         public IShape Copy()
         {
-            throw new NotImplementedException();
+            var properties = this.GetProperties();
+            return new Line(new Point(properties[0], properties[1]), new Point(properties[2], properties[3]));
         }
     }
 }
