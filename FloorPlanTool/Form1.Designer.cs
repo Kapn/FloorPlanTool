@@ -34,7 +34,7 @@
             this.fill_circle_button = new System.Windows.Forms.Button();
             this.fill_rectangle_button = new System.Windows.Forms.Button();
             this.dotted_line_button = new System.Windows.Forms.Button();
-            this.redoButton = new System.Windows.Forms.Button();
+            this.redo_button = new System.Windows.Forms.Button();
             this.selectButton = new System.Windows.Forms.Button();
             this.text_button = new System.Windows.Forms.Button();
             this.undo_button = new System.Windows.Forms.Button();
@@ -62,7 +62,7 @@
             this.toolbar_panel.Controls.Add(this.fill_circle_button);
             this.toolbar_panel.Controls.Add(this.fill_rectangle_button);
             this.toolbar_panel.Controls.Add(this.dotted_line_button);
-            this.toolbar_panel.Controls.Add(this.redoButton);
+            this.toolbar_panel.Controls.Add(this.redo_button);
             this.toolbar_panel.Controls.Add(this.selectButton);
             this.toolbar_panel.Controls.Add(this.text_button);
             this.toolbar_panel.Controls.Add(this.undo_button);
@@ -126,15 +126,16 @@
             this.dotted_line_button.UseVisualStyleBackColor = true;
             this.dotted_line_button.Click += new System.EventHandler(this.dotted_line_button_Click);
             // 
-            // redoButton
+            // redo_button
             // 
-            this.redoButton.Location = new System.Drawing.Point(22, 392);
-            this.redoButton.Name = "redoButton";
-            this.redoButton.Size = new System.Drawing.Size(81, 33);
-            this.redoButton.TabIndex = 36;
-            this.redoButton.Text = "Redo";
-            this.redoButton.UseVisualStyleBackColor = true;
-            this.redoButton.Click += new System.EventHandler(this.redoButton_Click);
+            this.redo_button.Enabled = false;
+            this.redo_button.Location = new System.Drawing.Point(22, 392);
+            this.redo_button.Name = "redo_button";
+            this.redo_button.Size = new System.Drawing.Size(81, 33);
+            this.redo_button.TabIndex = 36;
+            this.redo_button.Text = "Redo";
+            this.redo_button.UseVisualStyleBackColor = true;
+            this.redo_button.Click += new System.EventHandler(this.redoButton_Click);
             // 
             // selectButton
             // 
@@ -160,6 +161,7 @@
             // 
             // undo_button
             // 
+            this.undo_button.Enabled = false;
             this.undo_button.Location = new System.Drawing.Point(22, 431);
             this.undo_button.Name = "undo_button";
             this.undo_button.Size = new System.Drawing.Size(82, 33);
@@ -344,7 +346,7 @@
         private System.Windows.Forms.Button red_button;
         private System.Windows.Forms.Button black_button;
         private System.Windows.Forms.Button selectButton;
-        private System.Windows.Forms.Button redoButton;
+        private System.Windows.Forms.Button redo_button;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;

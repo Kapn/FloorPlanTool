@@ -16,10 +16,13 @@ using System.Windows.Forms;
 //using MySql.Data.MySqlClient;
 
 // TODO: 
+// - undo/redo is buggy when combining the two function
 // - after erasing first drag of a shape doesn't draw, second time does
+// - resizing shapes starts from smallest possible circle
+// - don't need GetProperties in Copy() methods
+// - undo resize of triangle doesn't draw the triangle
 // - change UI buttons to be more intuitive  (need dashed-line image still)
-// - undo erase
-// - undo/redo Object Manipulation (move/resize)
+
 // - have to reselect text button to type again
 // - erase as holding down mouse
 // - file save/load
@@ -30,19 +33,14 @@ using System.Windows.Forms;
 // minor TODO:
 // - resizing rectangle past nothing should mirror across
 // - clicking places with textbox tool makes text appear at last place clicked.
-// - resizing circle starts from smallest possible circle
+
 
 
 
 // FINISHED:
-
-// - change rectangle to use drawPolygon?
-// - right click drag shouldn't draw rectangles (or any shapes, tri does it too) 
-// - select inside of triangle for dragging, not having to precisely click the lines
-// - holding mouse down after drawing triangle starts to scale the triangle
-// - drag-out triangle when drawing
-// - correctly shape triangle w/ trig
-// - correctly resize triangle w/ trig
+// - undo erase
+// - undo/redo Object Manipulation (move/resize)
+// - change shape storage from List to Dict
 
 
 
@@ -201,9 +199,8 @@ namespace FloorPlanTool
                     }
 
                     //Shapes.Add(newRec);
-                    ShapesDict.Add(++shapeCount, newRec);
-                    Rec newRec_copy = new Rec(newRec.Left, newRec.Top, newRec.Right, newRec.Bottom);
-                    Actions.Add(new ShapeAction("Draw", shapeCount, newRec_copy));
+                    ShapesDict.Add(++shapeCount, newRec);                    
+                    Actions.Add(new ShapeAction("Draw", shapeCount, newRec));
 
                     scaleShape = true;                    
                 }
@@ -307,23 +304,14 @@ namespace FloorPlanTool
                     {
                         moving = true;
                         previousPoint = e.Location;
-                        Actions.Add(new ShapeAction("Move", selectedShape.Key, selectedShape.Value));
+                        Actions.Add(new ShapeAction("Move", selectedShape.Key, selectedShape.Value.Copy()));
                     }
                     drawing_panel.Invalidate();
                 }
             }
             // resize with wheel click or right click
             else
-            {
-                    
-                //for (var i = Shapes.Count - 1; i >= 0; i--)
-                //{                        
-                //    if (Shapes[i].HitTest(e.Location))
-                //    {
-                //        selectedShape = Shapes[i];                        
-                //        break;
-                //    }
-                //}
+            {                    
                 foreach (KeyValuePair<int, IShape> shape in ShapesDict)
                 {
                     if (shape.Value.HitTest(e.Location))
@@ -336,8 +324,7 @@ namespace FloorPlanTool
                 if (selectedShape.Value != null)
                 {
                     scaleShape = true;
-                    previousPoint = e.Location;
-                    var selectedShape_copy = selectedShape;
+                    previousPoint = e.Location;                    
                     Actions.Add(new ShapeAction("Resize", shapeCount, selectedShape.Value.Copy()));
                 }
                 drawing_panel.Invalidate();
@@ -384,6 +371,9 @@ namespace FloorPlanTool
          */
         private void  drawing_panel_MouseUp(object sender, MouseEventArgs e)
         {
+            if (Actions.Count > 0)
+                undo_button.Enabled = true;
+
             if (moving)
             {
                 selectedShape = new KeyValuePair<int, IShape>(shapeCount, null);
@@ -460,6 +450,7 @@ namespace FloorPlanTool
             drawDotted = false;
             fill = false;
             drawTri = false;
+            eraser = false;
         }
 
         private void tri_button_Click(object sender, EventArgs e)
@@ -553,15 +544,6 @@ namespace FloorPlanTool
         }
     
 
-        void undoRectangle(IShape shape, ShapeAction lastAction, int index)
-        {
-            var properties = lastAction.Shape.GetProperties();
-            //Shapes[index] = new Rec(properties[0], properties[1], properties[2], properties[3]);
-            
-            Console.WriteLine("rectangle undone");
-        }
-
-
         /*
          * When Undo is clicked, remove the last shape added to the Shapes List
          * and push it onto the redo_stack. Handle if 'Clear All' was clicked.
@@ -572,49 +554,41 @@ namespace FloorPlanTool
             if (Actions.Count > 0)
             {
                 //lookup last action
-                var lastAction = Actions.Last();
+                var lastAction = Actions.Last();                
 
                 //save last action to a redo stack
-                redo_stack.Push(lastAction);
-          
-                //find the shape that the lastAction was on and revert it
-                foreach (KeyValuePair<int, IShape> shape in ShapesDict)
-                {
-                    if (lastAction.Shape == shape.Value)
-                    {
-                        Console.WriteLine("equal");
-                        string type = shape.Value.ToString();
-                        if (type == "FloorPlanTool.Rec")
-                        {
-                           // undoRectangle(shape.Value, lastAction);
-                        }
-
-                    }
-                    else
-                    {
-                        Console.WriteLine("not equal");
-                    }
-                }
-
-                //remove lastaction from stack
-            }
-            
-            //if (Shapes.Count > 0)
-            //{                                
-            //    redo_stack.Push(Shapes.Last());
-            //    Shapes.RemoveAt(Shapes.Count - 1);                
-            //}
-            else if(just_cleared)
-            {
-
-                foreach(IShape shape in clear_all_stack)
-                {
-                    //Shapes.Add(shape);
-                    ShapesDict.Add(++shapeCount, shape);
-                }
+                redo_stack.Push(lastAction);            
                 
-                just_cleared = false;                                
-            }
+                //re-activate redo_button for clicking
+                if (redo_button.Enabled == false)
+                {
+                    redo_button.Enabled = true;
+                }
+
+                // if last action was an Draw then remove shape from dict to undo the "Draw" Action
+                if (lastAction.TypeOfAction == "Draw")
+                {
+                    ShapesDict.Remove(lastAction.Key);
+                }                
+                else
+                {// else revert ShapesDict back to the state that lastAction saved                 
+                    ShapesDict[lastAction.Key] = lastAction.Shape;
+                }                
+
+                //pop last action from actions list
+                Actions.RemoveAt(Actions.Count - 1);                       
+            }                   
+            //else if(just_cleared)
+            //{
+
+            //    foreach(IShape shape in clear_all_stack)
+            //    {
+            //        //Shapes.Add(shape);
+            //        ShapesDict.Add(++shapeCount, shape);
+            //    }
+                
+            //    just_cleared = false;                                
+            //}
             drawing_panel.Invalidate();
         }
         
@@ -623,12 +597,15 @@ namespace FloorPlanTool
          */
         private void redoButton_Click(object sender, EventArgs e)
         {
-            if (redo_stack.Count > 0)
+            var redo_action = redo_stack.Pop();
+            ShapesDict.Add(++shapeCount, redo_action.Shape);
+            Actions.Add(redo_action);
+            
+            //disable redo_button if there is nothing to redo
+            if (redo_stack.Count == 0)
             {
-                IShape popped_shape = redo_stack.Pop().Shape;
-                ShapesDict.Add(++shapeCount, popped_shape);
-                //Shapes.Add(popped_shape);
-            }            
+                redo_button.Enabled = false;
+            }
             drawing_panel.Invalidate();
         }
 

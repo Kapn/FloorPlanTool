@@ -17,6 +17,16 @@ namespace FloorPlanTool
                              FontSize = 12;
                              Font = new Font("Arial", FontSize);
                              Brush = new SolidBrush(Color.Black); }
+
+        public TextInput(int PosX, int PosY)
+        {
+            FontSize = 12;
+            Font = new Font("Arial", FontSize);
+            Brush = new SolidBrush(Color.Black);
+
+            this.PosX = PosX;
+            this.PosY = PosY;            
+        }
         public int FontSize { get; set; }
         public SolidBrush Brush { get; set; }
         public Font Font { get; set; }
@@ -85,20 +95,18 @@ namespace FloorPlanTool
             {
                 Console.WriteLine("Font Size less than 0");
             }
-
             
-
-
         }
 
         public List<int> GetProperties()
         {
-            throw new NotImplementedException();
+            return new List<int> { PosX, PosY };
         }
 
         public IShape Copy()
         {
-            throw new NotImplementedException();
+            var properties = GetProperties();            
+            return new TextInput(properties[0], properties[1]);
         }
     }
 }

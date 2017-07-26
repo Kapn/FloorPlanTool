@@ -90,17 +90,13 @@ namespace FloorPlanTool
 
             if (Right < Left)
             { 
-                var initialRight = Right;
-                //var initialTop = Top;
-
+                var initialRight = Right;                
                 Right = previousPoint.X;
                 Left = initialRight;
-
-                Console.WriteLine("right < left");
-
+                //Console.WriteLine("right < left");
             } else
             {
-                Console.WriteLine("left < right");
+                //Console.WriteLine("left < right");
             }
         }
 

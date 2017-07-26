@@ -17,6 +17,15 @@ namespace FloorPlanTool
             FillColor = Color.Black;
             Fill = false;
         }
+
+        public Circle(int Radius, Point Center, bool Fill)
+        {
+            FillColor = Color.Black;
+            this.Fill = Fill;
+            this.Radius = Radius;
+            this.Center = Center;
+        }
+        
         public bool Fill { get; set; }
         public Color FillColor { get; set; }
         public Point Center { get; set; }
@@ -24,7 +33,7 @@ namespace FloorPlanTool
         public int Radius
         {
             get { return radius; }
-            set { this.radius = value; }
+            set { radius = value; }
         }
 
         public GraphicsPath GetPath()
@@ -86,12 +95,18 @@ namespace FloorPlanTool
 
         public List<int> GetProperties()
         {
-            throw new NotImplementedException();
+            if (Fill)
+            {                
+                return new List<int> { Radius, Center.X, Center.Y, 1 };
+            } else
+            {
+                return new List<int> { Radius, Center.X, Center.Y, 0 };
+            }            
         }
 
         public IShape Copy()
-        {
-            throw new NotImplementedException();
+        {            
+            return new Circle(Radius, Center, Fill);            
         }
     }
 }

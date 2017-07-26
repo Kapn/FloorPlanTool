@@ -14,8 +14,9 @@ namespace FloorPlanTool
     public class Line : IShape
     {
         public Line() { LineWidth = 2; LineColor = Color.Black; }
-        public Line(Point point1, Point point2)
+        public Line(Point point1, Point point2, float[] DashPattern)
         {
+            this.DashPattern = DashPattern;
             LineWidth = 2;
             LineColor = Color.Black;
             Point1 = point1;
@@ -83,7 +84,8 @@ namespace FloorPlanTool
         public IShape Copy()
         {
             var properties = this.GetProperties();
-            return new Line(new Point(properties[0], properties[1]), new Point(properties[2], properties[3]));
+            return new Line(Point1, Point2, DashPattern);
+            //return new Line(new Point(properties[0], properties[1]), new Point(properties[2], properties[3]));
         }
     }
 }
