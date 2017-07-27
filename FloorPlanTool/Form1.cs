@@ -33,7 +33,7 @@ using System.Windows.Forms;
 // minor TODO:
 // - resizing rectangle past nothing should mirror across
 // - clicking places with textbox tool makes text appear at last place clicked.
-
+// - with one shape, sequencing undo and redo over and over for some reason alternates 'highlighting' dotted line tool and eraser
 
 
 
@@ -372,7 +372,9 @@ namespace FloorPlanTool
         private void  drawing_panel_MouseUp(object sender, MouseEventArgs e)
         {
             if (Actions.Count > 0)
+            {
                 undo_button.Enabled = true;
+            } 
 
             if (moving)
             {
@@ -576,8 +578,11 @@ namespace FloorPlanTool
                 }                
 
                 //pop last action from actions list
-                Actions.RemoveAt(Actions.Count - 1);                       
-            }                   
+                Actions.RemoveAt(Actions.Count - 1);
+
+                if (Actions.Count <= 0)
+                    undo_button.Enabled = false;
+            }      
             //else if(just_cleared)
             //{
 
@@ -597,10 +602,15 @@ namespace FloorPlanTool
          */
         private void redoButton_Click(object sender, EventArgs e)
         {
-            var redo_action = redo_stack.Pop();
-            ShapesDict.Add(++shapeCount, redo_action.Shape);
+            var ra = redo_stack.Pop();
+            ShapesDict.Add(++shapeCount, ra.Shape);
+
+            //add redo_action back to Actions List and enable undo button
+            var redo_action = new ShapeAction("Redo", shapeCount, ra.Shape);
             Actions.Add(redo_action);
-            
+            if (undo_button.Enabled == false)
+                undo_button.Enabled = true;
+
             //disable redo_button if there is nothing to redo
             if (redo_stack.Count == 0)
             {
