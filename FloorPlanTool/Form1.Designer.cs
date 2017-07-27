@@ -194,6 +194,7 @@
             // 
             // clear_all_button
             // 
+            this.clear_all_button.Enabled = false;
             this.clear_all_button.Location = new System.Drawing.Point(22, 470);
             this.clear_all_button.Name = "clear_all_button";
             this.clear_all_button.Size = new System.Drawing.Size(82, 38);

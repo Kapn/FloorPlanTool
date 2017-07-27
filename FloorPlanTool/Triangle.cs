@@ -11,12 +11,15 @@ namespace FloorPlanTool
     class Triangle : IShape
     {   
         public Triangle() { LineWidth = 2; }
-        public Triangle(Point Location, PointF[] Points, Color LineColor)
+        public Triangle(Point Location, PointF[] Points, Color LineColor, PointF Point1, PointF Point2, PointF Point3)
         {
             this.Location = Location;
             this.Points = Points;
             this.LineColor = LineColor;
             LineWidth = 2;
+            this.Point1 = Point1;
+            this.Point2 = Point2;
+            this.Point3 = Point3;
         }
 
         public Point Location { get; set; }
@@ -81,7 +84,7 @@ namespace FloorPlanTool
 
         public IShape Copy()
         {            
-            return new Triangle(Location, Points, LineColor);
+            return new Triangle(Location, Points, LineColor, Point1, Point2, Point3);
         }
     }
 }
