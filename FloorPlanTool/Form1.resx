@@ -145,16 +145,6 @@
         AAAAAElFTkSuQmCC
 </value>
   </data>
-  <data name="dotted_line_button.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        xAAADsQBlSsOGwAAAPdJREFUOE+VlI0NhSAMhDuH2xiZwTinjKfYl8Oc6auA0OQCtfLZH4OklPQ8T+Xq
-        91+x67oUtq6rTtOkYoPUcRxNnwIcNs+ziohu23YD7YEWzMcsbFmW7P9lWMukJBhhIdwwZFwsGWrBEYPZ
-        zNjbPJSvw9aH2T3MDqqaoRcHsO97Xn2cH6720O4JY89iLEOh5z+sycN8z3xLmj0chUHVkkdh9KtDgY1k
-        RhVLhmGaJdiXXhkCznJjjHntyexVMiEwPrP7FswqAwljz2D2pZ7MKOF95gdQO2BViuV0CAshZFjPADyM
-        vuCmHf01WjHBtY2b1sJK6omllPQHxsDDmWGiyQsAAAAASUVORK5CYII=
-</value>
-  </data>
   <data name="text_button.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO

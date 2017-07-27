@@ -118,7 +118,7 @@
             // dotted_line_button
             // 
             this.dotted_line_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.dotted_line_button.Image = ((System.Drawing.Image)(resources.GetObject("dotted_line_button.Image")));
+            this.dotted_line_button.Image = global::FloorPlanTool.Properties.Resources.dashed_line___newest;
             this.dotted_line_button.Location = new System.Drawing.Point(61, 101);
             this.dotted_line_button.Name = "dotted_line_button";
             this.dotted_line_button.Size = new System.Drawing.Size(34, 23);
@@ -140,11 +140,11 @@
             // selectButton
             // 
             this.selectButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.selectButton.Image = global::FloorPlanTool.Properties.Resources.one_finger_tap_gesture_of_outlined_hand_symbol;
             this.selectButton.Location = new System.Drawing.Point(22, 214);
             this.selectButton.Name = "selectButton";
             this.selectButton.Size = new System.Drawing.Size(34, 23);
             this.selectButton.TabIndex = 35;
-            this.selectButton.Text = "Selector";
             this.selectButton.UseVisualStyleBackColor = true;
             this.selectButton.Click += new System.EventHandler(this.selectButton_Click);
             // 

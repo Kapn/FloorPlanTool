@@ -64,8 +64,7 @@ namespace FloorPlanTool
 
         public void Resize(Point e, Point distance)
         {          
-            var scale = e.X - distance.X;
-            Console.WriteLine(scale);
+            var scale = e.Y - distance.Y;            
 
             Points[0] = new PointF((float)(Location.X + scale * Math.Cos(Math.PI / 3)),
                               (float)(Location.Y + scale * Math.Sin(Math.PI / 3)));
@@ -74,9 +73,7 @@ namespace FloorPlanTool
             Points[2] = Location;                    
 
         }
-
-        //return Triangle Properties:
-        //  - location
+        
         public List<int> GetProperties()
         {
             return new List<int> { Location.X, Location.Y };

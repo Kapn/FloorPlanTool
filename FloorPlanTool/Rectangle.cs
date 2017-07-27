@@ -106,9 +106,8 @@ namespace FloorPlanTool
         }
 
         public IShape Copy()
-        {
-            var properties = this.GetProperties();
-            return new Rec(properties[0], properties[1], properties[2], properties[3]);
+        {            
+            return new Rec(Left, Top, Right, Bottom);            
         }
     }
 }

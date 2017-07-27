@@ -82,10 +82,8 @@ namespace FloorPlanTool
         }
 
         public IShape Copy()
-        {
-            var properties = this.GetProperties();
-            return new Line(Point1, Point2, DashPattern);
-            //return new Line(new Point(properties[0], properties[1]), new Point(properties[2], properties[3]));
+        {            
+            return new Line(Point1, Point2, DashPattern);            
         }
     }
 }

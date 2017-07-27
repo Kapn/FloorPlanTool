@@ -1,4 +1,7 @@
-﻿using System;
+﻿//Question for Meeting
+//-What are you guys using currently for mapping out FloorPlans?
+
+using System;
 using System.Windows;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,36 +14,47 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MySql.Data.MySqlClient;
 
-//used for testing storage in MySQL Database
-//using MySql.Data.MySqlClient;
+#region TASKS
 
 // TODO: 
-// - undo/redo is buggy when combining the two function
-// - after erasing first drag of a shape doesn't draw, second time does
-// - resizing shapes starts from smallest possible circle
-// - don't need GetProperties in Copy() methods
 // - undo resize of triangle doesn't draw the triangle
-// - change UI buttons to be more intuitive  (need dashed-line image still)
-
-// - have to reselect text button to type again
-// - erase as holding down mouse
-// - file save/load
-// - other triangle shapes, maybe a drop-down button
-// - function for check hittest on each shape. For-loop is in several places
-
+// - text doesn't get redone
+// - after erasing first drag of a shape doesn't draw, second time does
+// - with many shapes on the board, undo shape manipulation does not work correctly...
+// - function for check hit-test on each shape. For-loop is in several places
+// - resizing rectangle past nothing should mirror across
 
 // minor TODO:
-// - resizing rectangle past nothing should mirror across
+// - grey out 'Clear All' if there are no shapes drawn
+// - TextInput makes a 'Ding' windows sound??
+// - resizing shapes starts from smallest possible circle
+// - when textbox appears it should be focused ready to be typed in (not have to click again)
 // - clicking places with textbox tool makes text appear at last place clicked.
 // - with one shape, sequencing undo and redo over and over for some reason alternates 'highlighting' dotted line tool and eraser
+// - file save/load adjusted to a database that is going to be used
 
-
-
-// FINISHED:
+// FINISHED (7/24-7/30):
+// - change UI buttons to be more intuitive  (need dashed-line image still)
+// - have to reselect text button to type again
+// - escape key should remove textbox control
+// - base resize of triangle of of dY not dX
+// - undo/redo is buggy when combining the two function
+// - don't need GetProperties in Copy() methods
 // - undo erase
 // - undo/redo Object Manipulation (move/resize)
+// - Shape.Copy() & Shape.GetProperties()
+// - created Actions List filled with ShapeActions
 // - change shape storage from List to Dict
+
+// optional features to implement:
+// - erase as holding down mouse
+// - multiple triangles, maybe a dropdown button
+// - rectangle around shape that shows which shape is selected.
+
+#endregion
+
 
 
 
@@ -48,36 +62,38 @@ namespace FloorPlanTool
 {
     public partial class Form1 : Form
     {
+        #region Variable Declarations
         /*
          * Variable Declarations 
          */
 
-        //List of Shapes that are to be drawn each time Paint Event gets fired.
-        public List<IShape> Shapes = new List<IShape>();
-
+        //List of Shapes that are to be drawn each time Paint Event gets fired.       
         Dictionary<int, IShape> ShapesDict = new Dictionary<int, IShape>();
-        int shapeCount = 0;
-
-        List<ShapeAction> Actions = new List<ShapeAction>();
+        //shapeCount is used as the key of ShapesDict
+        int shapeCount = 0;                
         bool drawCir, drawLine,textbox_IsDrawn, drawRec, drawText, drawTri, drawDotted, eraser, fill, scaleShape, moving, just_cleared;
         string text_to_draw;
         SolidBrush brush_color;
-        public KeyValuePair<int, IShape> selectedShape { get; set; }        
-        Stack<ShapeAction> redo_stack = new Stack<ShapeAction>();
-        Stack<IShape> move_stack = new Stack<IShape>();
-        Stack<IShape> resize_stack = new Stack<IShape>();        
+        KeyValuePair<int, IShape> selectedShape { get; set; }
+        List<ShapeAction> Actions = new List<ShapeAction>();
+        Stack<ShapeAction> redo_stack = new Stack<ShapeAction>();                
+        Stack<IShape> clear_all_stack = new Stack<IShape>();
         Point previousPoint = Point.Empty;
         TextBox txtbox;
-        
+        #endregion
+
+        #region Methods
         public Form1()
         {
             InitializeComponent();
 
-            //enables doublebuffering. Fixes screen flashing when dragging/resizing
+            // Enables double-buffering. Fixes screen flashing when dragging/resizing and ultimately seems to make
+            // drawing appear smoother.
             typeof(Panel).InvokeMember("DoubleBuffered",
                 BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
                 null, drawing_panel, new object[] { true });   
                         
+            // Initialize brush color to be Black
             brush_color = new SolidBrush(Color.Black);            
         }
        
@@ -89,10 +105,7 @@ namespace FloorPlanTool
         private void drawing_panel_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-           
-            //foreach (var shape in Shapes)
-            //    shape.Draw(e.Graphics);
-
+                       
             foreach (KeyValuePair<int, IShape> shape in ShapesDict)
                 shape.Value.Draw(e.Graphics);
         }
@@ -117,8 +130,8 @@ namespace FloorPlanTool
                     }
                     newCircle.FillColor = brush_color.Color;
                     newCircle.Center = new Point(e.X, e.Y);
-                    newCircle.Radius = 2; //trackBar1.Value;
-                    //Shapes.Add(newCircle);
+                    newCircle.Radius = 2;
+                    
                     ShapesDict.Add(++shapeCount, newCircle);
                     Actions.Add(new ShapeAction("Draw", shapeCount, newCircle));
 
@@ -132,11 +145,11 @@ namespace FloorPlanTool
 
                     Line newLine = new Line();
                     newLine.LineColor = brush_color.Color;
-                    newLine.LineWidth = 2; //trackBar1.Value;
+                    newLine.LineWidth = 2;
                     newLine.DashPattern = new float[] { 1.0F };
                     newLine.Point1 = previousPoint;
                     newLine.Point2 = e.Location;
-                   // Shapes.Add(newLine);
+                   
                     ShapesDict.Add(++shapeCount, newLine);
                     Actions.Add(new ShapeAction("Draw", shapeCount, newLine));
 
@@ -149,11 +162,11 @@ namespace FloorPlanTool
 
                     Line newLine = new Line();
                     newLine.LineColor = brush_color.Color;
-                    newLine.LineWidth = 2;// trackBar1.Value;
+                    newLine.LineWidth = 2;
                     newLine.DashPattern = new float[] { 2.0F, 2.0F };
                     newLine.Point1 = previousPoint;
                     newLine.Point2 = e.Location;
-                   // Shapes.Add(newLine);
+                   
                     ShapesDict.Add(++shapeCount, newLine);
                     Actions.Add(new ShapeAction("Draw", shapeCount, newLine));
 
@@ -197,8 +210,7 @@ namespace FloorPlanTool
                         newRec.Top = previousPoint.Y;
                         newRec.Bottom = e.Y;
                     }
-
-                    //Shapes.Add(newRec);
+                    
                     ShapesDict.Add(++shapeCount, newRec);                    
                     Actions.Add(new ShapeAction("Draw", shapeCount, newRec));
 
@@ -222,8 +234,7 @@ namespace FloorPlanTool
                         new PointF((float)(e.X + size*Math.Cos((2*Math.PI)/3)),
                                    (float)(e.Y + size*Math.Sin((2*Math.PI)/3)))    //20 is default length
                     };
-                    
-                    //Shapes.Add(newTriangle);
+                                        
                     ShapesDict.Add(++shapeCount, newTriangle);
                     Actions.Add(new ShapeAction("Draw", shapeCount, newTriangle));
 
@@ -242,27 +253,11 @@ namespace FloorPlanTool
                         txtbox.TextAlign = HorizontalAlignment.Left;
                         drawing_panel.Controls.Add(txtbox);
                         textbox_IsDrawn = true;
-
-                    }
-                    
+                    }                    
                 }
                 //eraser
                 else if (eraser)
-                {
-                    //for (var i = Shapes.Count - 1; i >= 0; i--)
-                    //{
-                    //    //if a Shape was clicked on, erase it.
-                    //    if (Shapes[i].HitTest(e.Location))
-                    //    {
-                    //        selectedShape = Shapes[i];
-                    //        if (selectedShape != null)
-                    //        {                                                      
-                    //            Shapes.RemoveAt(i);
-                    //            Actions.Add(new ShapeAction("Erase", Shapes[i]));
-                    //        }
-                    //        break;
-                    //    }
-                    //}                       
+                {                                
                     foreach (KeyValuePair<int, IShape> shape in ShapesDict)
                     {
                         //if a shape was clicked on, erase it.
@@ -277,30 +272,14 @@ namespace FloorPlanTool
                             break;
                         }
                     }
-
                 }
                 //selector
                 else
-                {
-                    //for (var i = Shapes.Count - 1; i >= 0; i--)
-                    //{
-                    //    if (Shapes[i].HitTest(e.Location))
-                    //    {
-                    //        selectedShape = Shapes[i];
-                    //        break;
-                    //    }
-                    //}
-                    foreach (KeyValuePair<int, IShape> shape in ShapesDict)
-                    {
-                        if (shape.Value.HitTest(e.Location))
-                        {
-                            selectedShape = shape;
-                            break;
-                        }
-                    }
+                {                         
+                    bool hit = perform_HitTest(e.Location);
 
-
-                    if (selectedShape.Value != null)
+                    // if HitTest found a shape to resize:
+                    if (hit)
                     {
                         moving = true;
                         previousPoint = e.Location;
@@ -311,17 +290,11 @@ namespace FloorPlanTool
             }
             // resize with wheel click or right click
             else
-            {                    
-                foreach (KeyValuePair<int, IShape> shape in ShapesDict)
-                {
-                    if (shape.Value.HitTest(e.Location))
-                    {
-                        selectedShape = shape;
-                        break;
-                    }
-                }
+            {                      
+                bool hit = perform_HitTest(e.Location);
 
-                if (selectedShape.Value != null)
+                // if HitTest found a shape to resize:                
+                if (hit)
                 {
                     scaleShape = true;
                     previousPoint = e.Location;                    
@@ -329,15 +302,28 @@ namespace FloorPlanTool
                 }
                 drawing_panel.Invalidate();
             }            
+            //clear the redo_stack because you shouldn't be able to redo after a Draw
             redo_stack.Clear();
+        }
+
+        private bool perform_HitTest(Point p)
+        {
+            foreach (KeyValuePair<int, IShape> shape in ShapesDict)
+            {
+                if (shape.Value.HitTest(p))
+                {
+                    selectedShape = shape;
+                    return true;                    
+                }
+            }
+            return false;
         }
 
         /*
          * MouseMove handles Moving and Resizing shapes
          */
         private void drawing_panel_MouseMove(object sender, MouseEventArgs e)
-        {
-            
+        {            
                 if (moving)
                 {                                                            
                     var d = new Point(e.X - previousPoint.X, e.Y - previousPoint.Y);
@@ -347,19 +333,14 @@ namespace FloorPlanTool
                     drawing_panel.Invalidate();
                 }
                 else if (scaleShape)
-                {                    
-                    var newRadius = e.X - previousPoint.X;
-                    var dx = e.X - previousPoint.X;
-                    var dy = e.Y - previousPoint.Y;
+                {                                        
                 
                     //for viewing line/shapes as they are dragged out
                     if (selectedShape.Value == null)
                     {
-                        Console.WriteLine("error, selected shape is null when trying to scale! OR initial scaling is occurring");
-                        selectedShape = new KeyValuePair<int, IShape>(shapeCount, ShapesDict[shapeCount]);                        
-                        //selectedShape = Shapes.Last<IShape>();
-                    }
-                    
+                        //Console.WriteLine("error, selected shape is null when trying to scale! OR initial scaling is occurring");
+                        selectedShape = new KeyValuePair<int, IShape>(shapeCount, ShapesDict[shapeCount]);                                                
+                    }                    
                     selectedShape.Value.Resize(e.Location, previousPoint);
                     drawing_panel.Invalidate();                
                 }            
@@ -378,19 +359,159 @@ namespace FloorPlanTool
 
             if (moving)
             {
-                selectedShape = new KeyValuePair<int, IShape>(shapeCount, null);
-                //selectedShape.Value = null;
+                selectedShape = new KeyValuePair<int, IShape>(shapeCount, null);                
                 moving = false;
             } else if (scaleShape)
             {
                 scaleShape = false;
-                selectedShape = new KeyValuePair<int, IShape>(shapeCount, null);
-                //selectedShape.Value = null;
+                selectedShape = new KeyValuePair<int, IShape>(shapeCount, null);                
             }
-
             drawing_panel.Invalidate();
         }
+        
+        /*
+         * ClearAll Button Click: Clears all drawings and adds them to
+         * clear_all_stack so the 'Clear' Action can be undone if wanted.
+         */
+        private void clear_all_button_Click(object sender, EventArgs e)
+        {
+            clear_all_stack.Clear();
+            shapeCount = 0;
 
+            // For each shape, add it to clear_all_stack.
+            foreach (KeyValuePair<int, IShape> shape in ShapesDict)
+            {
+                clear_all_stack.Push(shape.Value);                
+            }
+
+            just_cleared = true;
+            ShapesDict.Clear();
+            drawing_panel.Invalidate();
+        }
+    
+
+        /*
+         * When Undo is clicked, remove the last shape added to the Shapes List
+         * and push it onto the redo_stack. Handle if 'Clear All' was clicked.
+         */
+        private void undo_button_Click(object sender, EventArgs e)
+        {
+            // check if there are any actions to undo
+            if (Actions.Count > 0)
+            {
+                //lookup last action
+                var lastAction = Actions.Last();                
+
+                //save last action to a redo stack
+                redo_stack.Push(lastAction);            
+                
+                //re-activate redo_button for clicking
+                if (redo_button.Enabled == false)
+                {
+                    redo_button.Enabled = true;
+                }
+
+                // if last action was an Draw then remove shape from dict to undo the "Draw" Action
+                if (lastAction.TypeOfAction == "Draw")
+                {
+                    ShapesDict.Remove(lastAction.Key);
+                }                
+                else
+                {// else revert ShapesDict back to the state that lastAction saved                 
+                    ShapesDict[lastAction.Key] = lastAction.Shape;
+                }                
+
+                //pop last action from actions list
+                Actions.RemoveAt(Actions.Count - 1);
+
+                if (Actions.Count <= 0)
+                    undo_button.Enabled = false;
+            } // Add all shapes from the clear_all_stack back into the dict
+            //else if(just_cleared)
+            //{
+
+            //    foreach(IShape shape in clear_all_stack)
+            //    {
+            //        //Shapes.Add(shape);
+            //        ShapesDict.Add(++shapeCount, shape);
+            //    }
+                
+            //    just_cleared = false;                                
+            //}
+            drawing_panel.Invalidate();
+        }
+        
+        /*
+         * When Redo is clicked: pop redo_stack and add it back to the Shapes List
+         */
+        private void redoButton_Click(object sender, EventArgs e)
+        {
+            if (redo_stack.Count > 0)
+            {                
+                ShapeAction ra = redo_stack.Pop();
+                ShapesDict.Add(++shapeCount, ra.Shape);
+                ShapeAction redo_action = new ShapeAction(ra.TypeOfAction, shapeCount, ra.Shape);                
+
+                //add redo_action back to Actions List and enable undo button
+                Actions.Add(redo_action);
+                if (undo_button.Enabled == false)
+                    undo_button.Enabled = true;
+
+                //disable redo_button if there is nothing to redo
+                if (redo_stack.Count == 0)
+                {
+                    redo_button.Enabled = false;
+                }
+            }
+            drawing_panel.Invalidate();
+        }        
+
+        /*
+         * Handles the KeyDown event for our dynamically created TextBox
+         * 
+         * Draws the text entered, and removes the textbox from the form                 
+         */
+        private void textbox_KeyDown(object sender, KeyEventArgs e)
+        {            
+            if (e.KeyCode == Keys.Enter)
+            {
+                foreach (Control ctrl in drawing_panel.Controls)
+                {
+                    if (ctrl.Name == "textbox1")
+                    {
+                        text_to_draw = ctrl.Text;
+                        drawing_panel.Controls.Remove(ctrl);
+                    }
+                }
+
+                TextInput newText = new TextInput();
+                newText.Text = text_to_draw;
+                newText.Brush = brush_color;
+                newText.Width = 100;
+                newText.Height = 25;
+                newText.PosX = previousPoint.X;
+                newText.PosY = previousPoint.Y;
+               
+                ShapesDict.Add(++shapeCount, newText);
+                Actions.Add(new ShapeAction("Draw", shapeCount, newText));
+
+                textbox_IsDrawn = false;
+                drawing_panel.Invalidate();
+
+            }else if (e.KeyCode == Keys.Escape)
+            {
+                foreach (Control ctrl in drawing_panel.Controls)
+                {
+                    if (ctrl.Name == "textbox1")
+                    {                        
+                        drawing_panel.Controls.Remove(ctrl);
+                    }
+                }
+            }                      
+        }
+        #endregion
+
+        #region Bool Handling for Tool Selection
         /* 
          * Tool Buttons: Handles bools for drawing functions
          */
@@ -408,7 +529,7 @@ namespace FloorPlanTool
         private void line_button_Click(object sender, EventArgs e)
         {
             drawLine = true;
-            drawCir = false;            
+            drawCir = false;
             drawRec = false;
             eraser = false;
             drawText = false;
@@ -463,7 +584,7 @@ namespace FloorPlanTool
             eraser = false;
             drawText = false;
             drawDotted = false;
-            fill = false;            
+            fill = false;
             drawTri = true;
         }
 
@@ -515,166 +636,37 @@ namespace FloorPlanTool
             drawText = false;
             drawDotted = false;
             drawTri = false;
-        }    
-
-        private void black_button_Click(object sender, EventArgs e)
-        {
-            brush_color.Color = Color.Black;           
         }
 
-        Stack<IShape> clear_all_stack = new Stack<IShape>();
+        #endregion
 
-        private void clear_all_button_Click(object sender, EventArgs e)
-        {
-            clear_all_stack.Clear();
-            //push onto redo stack
-            //foreach (IShape shape in Shapes)
-            //{
-            //    clear_all_stack.Push(shape);
-            //    just_cleared = true;
-            //}
-            //Shapes.Clear();
-
-            shapeCount = 0;
-            foreach (KeyValuePair<int, IShape> shape in ShapesDict)
-            {
-                clear_all_stack.Push(shape.Value);
-                just_cleared = true;
-            }
-            ShapesDict.Clear();
-                drawing_panel.Invalidate();
-        }
-    
-
-        /*
-         * When Undo is clicked, remove the last shape added to the Shapes List
-         * and push it onto the redo_stack. Handle if 'Clear All' was clicked.
-         */
-        private void undo_button_Click(object sender, EventArgs e)
-        {
-            // check if there are any actions to undo
-            if (Actions.Count > 0)
-            {
-                //lookup last action
-                var lastAction = Actions.Last();                
-
-                //save last action to a redo stack
-                redo_stack.Push(lastAction);            
-                
-                //re-activate redo_button for clicking
-                if (redo_button.Enabled == false)
-                {
-                    redo_button.Enabled = true;
-                }
-
-                // if last action was an Draw then remove shape from dict to undo the "Draw" Action
-                if (lastAction.TypeOfAction == "Draw")
-                {
-                    ShapesDict.Remove(lastAction.Key);
-                }                
-                else
-                {// else revert ShapesDict back to the state that lastAction saved                 
-                    ShapesDict[lastAction.Key] = lastAction.Shape;
-                }                
-
-                //pop last action from actions list
-                Actions.RemoveAt(Actions.Count - 1);
-
-                if (Actions.Count <= 0)
-                    undo_button.Enabled = false;
-            }      
-            //else if(just_cleared)
-            //{
-
-            //    foreach(IShape shape in clear_all_stack)
-            //    {
-            //        //Shapes.Add(shape);
-            //        ShapesDict.Add(++shapeCount, shape);
-            //    }
-                
-            //    just_cleared = false;                                
-            //}
-            drawing_panel.Invalidate();
-        }
-        
-        /*
-         * When Redo is clicked: pop redo_stack and add it back to the Shapes List
-         */
-        private void redoButton_Click(object sender, EventArgs e)
-        {
-            var ra = redo_stack.Pop();
-            ShapesDict.Add(++shapeCount, ra.Shape);
-
-            //add redo_action back to Actions List and enable undo button
-            var redo_action = new ShapeAction("Redo", shapeCount, ra.Shape);
-            Actions.Add(redo_action);
-            if (undo_button.Enabled == false)
-                undo_button.Enabled = true;
-
-            //disable redo_button if there is nothing to redo
-            if (redo_stack.Count == 0)
-            {
-                redo_button.Enabled = false;
-            }
-            drawing_panel.Invalidate();
-        }
-
+        #region Color selectors
         /*
          * Adjust brush_color for each button selected
          */
         private void red_button_Click(object sender, EventArgs e)
         {
-            brush_color.Color = Color.Red;            
-        }     
+            brush_color.Color = Color.Red;
+        }
 
         private void green_button_Click(object sender, EventArgs e)
         {
             brush_color.Color = Color.Green;
-            
+
         }
 
         private void blue_button_Click(object sender, EventArgs e)
         {
-            brush_color.Color = Color.Blue;            
-        }      
-
-        /*
-         * Handles the KeyDown event for our dynamically created TextBox
-         * 
-         * Draws the text entered, and removes the textbox from the form
-         * 
-         * TODO: only allow 1 TextBox to be created at a time
-         */
-        private void textbox_KeyDown(object sender, KeyEventArgs e)
-        {            
-            if (e.KeyCode == Keys.Enter)
-            {
-                foreach (Control ctrl in drawing_panel.Controls)
-                {
-                    if (ctrl.Name == "textbox1")
-                    {
-                        text_to_draw = ctrl.Text;
-                        drawing_panel.Controls.Remove(ctrl);
-                    }
-                }
-
-                TextInput newText = new TextInput();
-                newText.Text = text_to_draw;
-                newText.Brush = brush_color;
-                newText.Width = 100;
-                newText.Height = 25;
-                newText.PosX = previousPoint.X;
-                newText.PosY = previousPoint.Y;
-               // Shapes.Add(newText);
-                ShapesDict.Add(++shapeCount, newText);
-                Actions.Add(new ShapeAction("Draw", shapeCount, newText));
-
-                textbox_IsDrawn = false;
-                drawing_panel.Invalidate();
-
-            }                        
+            brush_color.Color = Color.Blue;
         }
 
+        private void black_button_Click(object sender, EventArgs e)
+        {
+            brush_color.Color = Color.Black;
+        }
+        #endregion
+
+        #region Load/Save Methods
         //currently saves to file for testing of database in other solution 'ProgrammingKnowledge'
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -768,6 +760,7 @@ namespace FloorPlanTool
             //}
             return null;
         }
-            
+#endregion
+
     }
 }

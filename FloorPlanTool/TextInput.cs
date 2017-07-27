@@ -13,10 +13,13 @@ namespace FloorPlanTool
     // ---------------------------------
     public class TextInput : IShape
     {
-        public TextInput() {
-                             FontSize = 12;
-                             Font = new Font("Arial", FontSize);
-                             Brush = new SolidBrush(Color.Black); }
+        #region Constructors
+        public TextInput()
+        {
+            FontSize = 12;
+            Font = new Font("Arial", FontSize);
+            Brush = new SolidBrush(Color.Black);
+        }
 
         public TextInput(int PosX, int PosY)
         {
@@ -27,6 +30,8 @@ namespace FloorPlanTool
             this.PosX = PosX;
             this.PosY = PosY;            
         }
+        #endregion
+
         public int FontSize { get; set; }
         public SolidBrush Brush { get; set; }
         public Font Font { get; set; }
@@ -41,11 +46,12 @@ namespace FloorPlanTool
         {
             using (var path = GetPath())
             {
-                //strip rectangle to only be size of Text after resizing etc
+                // Strip rectangle to only be size of Text.
+                // This is done by adjusting Width and Height based off of the input string.
                 var stringSize = g.MeasureString(Text, Font);
-                Width = Convert.ToInt32(stringSize.Width);
-                Height = Convert.ToInt32(stringSize.Height);
-
+                Width = Convert.ToInt32(stringSize.Width) + 5;
+                //Height = Convert.ToInt32(stringSize.Height);
+                
                 g.DrawString(Text, Font, Brush, drawRect);
             }         
                 
@@ -79,7 +85,7 @@ namespace FloorPlanTool
             Width = e.X - PosX;
             Height = e.Y - PosY;
             
-            //random scale value to determine fontSize, needs work
+            //TODO: this is a random scaling to determine fontSize, needs work
             FontSize = Width / 6;
             
             if (FontSize < 8)
@@ -104,9 +110,8 @@ namespace FloorPlanTool
         }
 
         public IShape Copy()
-        {
-            var properties = GetProperties();            
-            return new TextInput(properties[0], properties[1]);
+        {            
+            return new TextInput(PosX, PosY);            
         }
     }
 }
