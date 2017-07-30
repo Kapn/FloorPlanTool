@@ -21,7 +21,7 @@ using MySql.Data.MySqlClient;
 // TODO: 
 
 // - Undo resize of triangle doesn't draw the triangle
-// - Adjust text to be on one-line intially not after resize
+// - Adjust text to be on one-line initially not after resize
 // - Text doesn't get redone
 // - After erasing first drag of a shape doesn't draw, second time does
 // - With many shapes on the board, undo shape manipulation does not work correctly...
@@ -141,7 +141,30 @@ namespace FloorPlanTool
             {
                 undo_button.Enabled = true;                
             }
-            
+
+
+
+            //TESTING UNDO/REDO
+
+            redoTb.Text = "redo_stack\n";
+            foreach (var str in redo_stack)
+            {
+                redoTb.Text += str.Shape.ToString() + "," + str.TypeOfAction + "\n";
+            }
+            undoTb.Text = "Actions\n";
+            foreach (var str in Actions)
+            {
+                undoTb.Text += str.Shape.ToString() + "," + str.TypeOfAction + "\n";
+            }
+            shapesDictTb.Text = "ShapesDict\n";
+            foreach( var obj in ShapesDict)
+            {
+                shapesDictTb.Text += obj.Key + " , " + obj.Value.ToString() + "\n";
+            }
+
+
+            //END TESTING
+
             //enable AntiAlias - fills in pixels along the drawing path to give a smoother appearance
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                        
@@ -401,6 +424,8 @@ namespace FloorPlanTool
         /*
          * When Undo is clicked, remove the last shape added to the Shapes List
          * and push it onto the redo_stack. Handle if 'Clear All' was clicked.
+         * 
+         * TODO: DO I NEED A REDO_STACK?!?! can I just use the actions list and shapesdict instead?
          */
         private void undo_button_Click(object sender, EventArgs e)
         {
@@ -408,36 +433,45 @@ namespace FloorPlanTool
             if (Actions.Count > 0)
             {
                 //lookup last action
-                var lastAction = Actions.Last();                
-
-                //save last action to a redo stack
-                redo_stack.Push(lastAction);                                                            
+                ShapeAction lastAction = Actions.Last();                                
 
                 // if last action was an Draw then remove shape from dict to undo the "Draw" Action
                 if (lastAction.TypeOfAction == "Draw")
                 {
+                    //save last action to a redo stack                
+                    redo_stack.Push(lastAction);
+
                     ShapesDict.Remove(lastAction.Key);
                 }                
-                else
+                else if (lastAction.TypeOfAction == "Resize")
+                {                                                          
+                    //store initial size of shape in redo_stack
+                    redo_stack.Push(new ShapeAction("Resize", lastAction.Key, ShapesDict[lastAction.Key]));
+                    //set shape back to size stored in lastAction                    
+                    ShapesDict[lastAction.Key] = lastAction.Shape;
+                }else
                 {// else revert ShapesDict back to the state that lastAction saved                 
                     ShapesDict[lastAction.Key] = lastAction.Shape;
+                    //save last action to a redo stack                
+                    redo_stack.Push(lastAction);
                 }                
 
                 //pop last action from actions list
                 Actions.RemoveAt(Actions.Count - 1);
                 
             } // Add all shapes from the clear_all_stack back into the dict
-            //else if(just_cleared)
-            //{
+              //else if(just_cleared)
+              //{
 
             //    foreach(IShape shape in clear_all_stack)
             //    {
             //        //Shapes.Add(shape);
             //        ShapesDict.Add(++shapeCount, shape);
             //    }
-                
+
             //    just_cleared = false;                                
             //}
+           
             drawing_panel.Invalidate();
         }
         
@@ -454,17 +488,34 @@ namespace FloorPlanTool
                 // ^ can't replicate...
                 try
                 {
-                    ShapesDict.Add(++shapeCount, ra.Shape);
+                    if (ra.TypeOfAction == "Erase")
+                    {
+                        ShapesDict.Remove(ra.Key);
+                        Actions.Add(ra);
+                    }
+                    else if (ra.TypeOfAction == "Resize" || ra.TypeOfAction == "Move")
+                    {                        
+                        ShapesDict[ra.Key] = ra.Shape;
+                        
+
+                        Console.WriteLine("ra.TypeOfAction: " + ra.TypeOfAction);
+                        ShapeAction redo_action = new ShapeAction(ra.TypeOfAction, shapeCount, ra.Shape);
+
+                        //add redo_action back to Actions List
+                        Actions.Add(redo_action);
+                    } else
+                    {
+                        ShapesDict.Add(shapeCount, ra.Shape);
+                        //add redo_action back to Actions List
+                        Actions.Add(ra);
+                    }
+
                 } catch(Exception err)
                 {
                     Console.WriteLine("Spamming Redo too fast, error: " + err);
-                }
-                
-                ShapeAction redo_action = new ShapeAction(ra.TypeOfAction, shapeCount, ra.Shape);                
-
-                //add redo_action back to Actions List
-                Actions.Add(redo_action);                
+                }                
             }
+            
             drawing_panel.Invalidate();
         }
 
@@ -476,6 +527,8 @@ namespace FloorPlanTool
         {
             clear_all_stack.Clear();
             redo_stack.Clear();
+            Actions.Clear();
+            selectedShape = new KeyValuePair<int, IShape>(100, null);
 
             shapeCount = 0;
 

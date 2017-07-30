@@ -52,8 +52,12 @@
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.drawing_panel = new System.Windows.Forms.Panel();
+            this.undoTb = new System.Windows.Forms.RichTextBox();
+            this.redoTb = new System.Windows.Forms.RichTextBox();
+            this.shapesDictTb = new System.Windows.Forms.RichTextBox();
             this.toolbar_panel.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            this.drawing_panel.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolbar_panel
@@ -303,21 +307,48 @@
             // drawing_panel
             // 
             this.drawing_panel.BackColor = System.Drawing.Color.White;
+            this.drawing_panel.Controls.Add(this.shapesDictTb);
+            this.drawing_panel.Controls.Add(this.redoTb);
+            this.drawing_panel.Controls.Add(this.undoTb);
             this.drawing_panel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.drawing_panel.Location = new System.Drawing.Point(126, 0);
             this.drawing_panel.Name = "drawing_panel";
-            this.drawing_panel.Size = new System.Drawing.Size(476, 523);
+            this.drawing_panel.Size = new System.Drawing.Size(1168, 523);
             this.drawing_panel.TabIndex = 1;
             this.drawing_panel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawing_panel_Paint);
             this.drawing_panel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseDown);
             this.drawing_panel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseMove);
             this.drawing_panel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseUp);
             // 
+            // undoTb
+            // 
+            this.undoTb.Location = new System.Drawing.Point(635, 34);
+            this.undoTb.Name = "undoTb";
+            this.undoTb.Size = new System.Drawing.Size(140, 237);
+            this.undoTb.TabIndex = 0;
+            this.undoTb.Text = "";
+            // 
+            // redoTb
+            // 
+            this.redoTb.Location = new System.Drawing.Point(635, 277);
+            this.redoTb.Name = "redoTb";
+            this.redoTb.Size = new System.Drawing.Size(140, 243);
+            this.redoTb.TabIndex = 1;
+            this.redoTb.Text = "";
+            // 
+            // shapesDictTb
+            // 
+            this.shapesDictTb.Location = new System.Drawing.Point(792, 34);
+            this.shapesDictTb.Name = "shapesDictTb";
+            this.shapesDictTb.Size = new System.Drawing.Size(364, 356);
+            this.shapesDictTb.TabIndex = 2;
+            this.shapesDictTb.Text = "";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(602, 523);
+            this.ClientSize = new System.Drawing.Size(1294, 523);
             this.Controls.Add(this.drawing_panel);
             this.Controls.Add(this.toolbar_panel);
             this.MainMenuStrip = this.menuStrip1;
@@ -327,6 +358,7 @@
             this.toolbar_panel.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.drawing_panel.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -356,6 +388,9 @@
         private System.Windows.Forms.Button fill_circle_button;
         private System.Windows.Forms.Button fill_rectangle_button;
         private System.Windows.Forms.Button tri_button;
+        private System.Windows.Forms.RichTextBox redoTb;
+        private System.Windows.Forms.RichTextBox undoTb;
+        private System.Windows.Forms.RichTextBox shapesDictTb;
     }
 }
 
