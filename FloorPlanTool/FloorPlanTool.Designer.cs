@@ -1,6 +1,6 @@
 ﻿namespace FloorPlanTool
 {
-    partial class Form1
+    partial class FloorPlanTool
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FloorPlanTool));
             this.toolbar_panel = new System.Windows.Forms.Panel();
             this.tri_button = new System.Windows.Forms.Button();
             this.fill_circle_button = new System.Windows.Forms.Button();
@@ -52,9 +52,9 @@
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.drawing_panel = new System.Windows.Forms.Panel();
-            this.undoTb = new System.Windows.Forms.RichTextBox();
-            this.redoTb = new System.Windows.Forms.RichTextBox();
             this.shapesDictTb = new System.Windows.Forms.RichTextBox();
+            this.redoTb = new System.Windows.Forms.RichTextBox();
+            this.undoTb = new System.Windows.Forms.RichTextBox();
             this.toolbar_panel.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.drawing_panel.SuspendLayout();
@@ -320,31 +320,31 @@
             this.drawing_panel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseMove);
             this.drawing_panel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseUp);
             // 
-            // undoTb
-            // 
-            this.undoTb.Location = new System.Drawing.Point(635, 34);
-            this.undoTb.Name = "undoTb";
-            this.undoTb.Size = new System.Drawing.Size(140, 237);
-            this.undoTb.TabIndex = 0;
-            this.undoTb.Text = "";
-            // 
-            // redoTb
-            // 
-            this.redoTb.Location = new System.Drawing.Point(635, 277);
-            this.redoTb.Name = "redoTb";
-            this.redoTb.Size = new System.Drawing.Size(140, 243);
-            this.redoTb.TabIndex = 1;
-            this.redoTb.Text = "";
-            // 
             // shapesDictTb
             // 
-            this.shapesDictTb.Location = new System.Drawing.Point(792, 34);
+            this.shapesDictTb.Location = new System.Drawing.Point(958, 34);
             this.shapesDictTb.Name = "shapesDictTb";
-            this.shapesDictTb.Size = new System.Drawing.Size(364, 356);
+            this.shapesDictTb.Size = new System.Drawing.Size(198, 356);
             this.shapesDictTb.TabIndex = 2;
             this.shapesDictTb.Text = "";
             // 
-            // Form1
+            // redoTb
+            // 
+            this.redoTb.Location = new System.Drawing.Point(675, 255);
+            this.redoTb.Name = "redoTb";
+            this.redoTb.Size = new System.Drawing.Size(277, 243);
+            this.redoTb.TabIndex = 1;
+            this.redoTb.Text = "";
+            // 
+            // undoTb
+            // 
+            this.undoTb.Location = new System.Drawing.Point(675, 12);
+            this.undoTb.Name = "undoTb";
+            this.undoTb.Size = new System.Drawing.Size(277, 237);
+            this.undoTb.TabIndex = 0;
+            this.undoTb.Text = "";
+            // 
+            // FloorPlanTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -352,7 +352,7 @@
             this.Controls.Add(this.drawing_panel);
             this.Controls.Add(this.toolbar_panel);
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "Form1";
+            this.Name = "FloorPlanTool";
             this.Text = "FloorPlan Tool";
             this.toolbar_panel.ResumeLayout(false);
             this.toolbar_panel.PerformLayout();

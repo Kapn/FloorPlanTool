@@ -21,14 +21,15 @@ namespace FloorPlanTool
             Brush = new SolidBrush(Color.Black);
         }
 
-        public TextInput(int PosX, int PosY)
+        public TextInput(int PosX, int PosY, string Text)
         {
             FontSize = 12;
             Font = new Font("Arial", FontSize);
             Brush = new SolidBrush(Color.Black);
 
             this.PosX = PosX;
-            this.PosY = PosY;            
+            this.PosY = PosY;
+            this.Text = Text;
         }
         #endregion
 
@@ -111,7 +112,7 @@ namespace FloorPlanTool
 
         public IShape Copy()
         {            
-            return new TextInput(PosX, PosY);            
+            return new TextInput(PosX, PosY, Text);            
         }
     }
 }

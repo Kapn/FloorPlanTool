@@ -2,19 +2,13 @@
 //-What are you guys using currently for mapping out FloorPlans?
 
 using System;
-using System.Windows;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
+using System.ComponentModel;
 
 #region TASKS
 
@@ -61,14 +55,11 @@ using MySql.Data.MySqlClient;
 
 #endregion
 
-
-
-
 namespace FloorPlanTool
 {
-    public partial class Form1 : Form
+    public partial class FloorPlanTool : Form
     {
-        #region Variable Declarations
+        #region Variables
         /*
          * Variable Declarations 
          */
@@ -94,7 +85,7 @@ namespace FloorPlanTool
          * Form Constructor:
          * Initializes brush to black and enables DoubleBuffering
          */
-        public Form1()
+        public FloorPlanTool()
         {
             InitializeComponent();
 
@@ -146,20 +137,24 @@ namespace FloorPlanTool
 
             //TESTING UNDO/REDO
 
-            redoTb.Text = "redo_stack\n";
+            redoTb.Text = "redo_stack\n";           
             foreach (var str in redo_stack)
             {
-                redoTb.Text += str.Shape.ToString() + "," + str.TypeOfAction + "\n";
-            }
+                List<int> temp = str.Shape.GetProperties();
+                redoTb.Text += str.Shape.ToString() + ", " + str.TypeOfAction + ", " + str.Key + "\n" + "Point1: " + temp[0] + ", Point2:" + temp[2] +"\n\n";
+            }            
+
             undoTb.Text = "Actions\n";
             foreach (var str in Actions)
             {
-                undoTb.Text += str.Shape.ToString() + "," + str.TypeOfAction + "\n";
+                List<int> temp = str.Shape.GetProperties();
+                undoTb.Text += str.Shape.ToString() + "," + ", " + str.TypeOfAction + ", " + str.Key + "\n" + "Point1: " + temp[0] + ", Point2:" + temp[2] + "\n\n";
             }
-            shapesDictTb.Text = "ShapesDict\n";
+            shapesDictTb.Text = "ShapesDict\n";            
             foreach( var obj in ShapesDict)
             {
-                shapesDictTb.Text += obj.Key + " , " + obj.Value.ToString() + "\n";
+                List<int> temp = obj.Value.GetProperties();
+                shapesDictTb.Text += obj.Key + " , " + obj.Value.ToString() + "\n" + "Point1: " + temp[0] + ",Point2:" + temp[2] + "\n\n";
             }
 
 
@@ -196,7 +191,7 @@ namespace FloorPlanTool
                     newCircle.Radius = 2;
                     
                     ShapesDict.Add(++shapeCount, newCircle);
-                    Actions.Add(new ShapeAction("Draw", shapeCount, newCircle));
+                    Actions.Add(new ShapeAction("Draw", shapeCount, newCircle.Copy()));
 
                     scaleShape = true;
                 
@@ -214,7 +209,7 @@ namespace FloorPlanTool
                     newLine.Point2 = e.Location;
                    
                     ShapesDict.Add(++shapeCount, newLine);
-                    Actions.Add(new ShapeAction("Draw", shapeCount, newLine));
+                    Actions.Add(new ShapeAction("Draw", shapeCount, newLine.Copy()));
 
                     scaleShape = true;
                 }
@@ -231,7 +226,7 @@ namespace FloorPlanTool
                     newLine.Point2 = e.Location;
                    
                     ShapesDict.Add(++shapeCount, newLine);
-                    Actions.Add(new ShapeAction("Draw", shapeCount, newLine));
+                    Actions.Add(new ShapeAction("Draw", shapeCount, newLine.Copy()));
 
                     scaleShape = true;
                 }
@@ -275,7 +270,7 @@ namespace FloorPlanTool
                     }
                     
                     ShapesDict.Add(++shapeCount, newRec);                    
-                    Actions.Add(new ShapeAction("Draw", shapeCount, newRec));
+                    Actions.Add(new ShapeAction("Draw", shapeCount, newRec.Copy()));
 
                     scaleShape = true;                    
                 }
@@ -299,7 +294,7 @@ namespace FloorPlanTool
                     };
                                         
                     ShapesDict.Add(++shapeCount, newTriangle);
-                    Actions.Add(new ShapeAction("Draw", shapeCount, newTriangle));
+                    Actions.Add(new ShapeAction("Draw", shapeCount, newTriangle.Copy()));
 
                     scaleShape = true;
                 }
@@ -339,7 +334,7 @@ namespace FloorPlanTool
 
                     if (hit)
                     {
-                        Actions.Add(new ShapeAction("Erase", selectedShape.Key, selectedShape.Value));
+                        Actions.Add(new ShapeAction("Erase", selectedShape.Key, selectedShape.Value.Copy()));
                         ShapesDict.Remove(selectedShape.Key);
                     }
                 }
@@ -348,7 +343,7 @@ namespace FloorPlanTool
                 {                         
                     bool hit = perform_HitTest(e.Location);
 
-                    // if HitTest found a shape to resize:
+                    // if HitTest found a shape to move:
                     if (hit)
                     {
                         moving = true;
@@ -368,8 +363,9 @@ namespace FloorPlanTool
                 {
                     scaleShape = true;
                     previousPoint = e.Location;                    
-                    Actions.Add(new ShapeAction("Resize", shapeCount, selectedShape.Value.Copy()));
+                    Actions.Add(new ShapeAction("Resize", selectedShape.Key, selectedShape.Value.Copy()));
                 }
+
                 drawing_panel.Invalidate();
             }            
             //clear the redo_stack because you shouldn't be able to redo after a Draw
@@ -423,7 +419,9 @@ namespace FloorPlanTool
                
         /*
          * When Undo is clicked, remove the last shape added to the Shapes List
-         * and push it onto the redo_stack. Handle if 'Clear All' was clicked.
+         * and push it onto the redo_stack. 
+         * 
+         * TODO: Handle if 'Clear All' was clicked previously.
          * 
          * TODO: DO I NEED A REDO_STACK?!?! can I just use the actions list and shapesdict instead?
          */
@@ -484,8 +482,8 @@ namespace FloorPlanTool
             {                
                 ShapeAction ra = redo_stack.Pop();
                 
-                //Wrapped in a Try/Catch because Spamming Redo can try to add multiple shapes to the same key
-                // ^ can't replicate...
+                //Wrapped in a Try/Catch because of multiple shapes to the same key
+                // ^ difficult to replicate (occurs when undo/redo issues occur)
                 try
                 {
                     if (ra.TypeOfAction == "Erase")
@@ -495,24 +493,23 @@ namespace FloorPlanTool
                     }
                     else if (ra.TypeOfAction == "Resize" || ra.TypeOfAction == "Move")
                     {                        
+                        Actions.Add(new ShapeAction(ra.TypeOfAction, ra.Key, ShapesDict[ra.Key]));
                         ShapesDict[ra.Key] = ra.Shape;
                         
-
-                        Console.WriteLine("ra.TypeOfAction: " + ra.TypeOfAction);
-                        ShapeAction redo_action = new ShapeAction(ra.TypeOfAction, shapeCount, ra.Shape);
-
-                        //add redo_action back to Actions List
-                        Actions.Add(redo_action);
+                        //ShapeAction redo_action = new ShapeAction(ra.TypeOfAction, shapeCount, ra.Shape.Copy());
+                        ////add redo_action back to Actions List
+                        //Actions.Add(redo_action);
                     } else
                     {
                         ShapesDict.Add(shapeCount, ra.Shape);
-                        //add redo_action back to Actions List
+
+                        //add ra (popped object from redo_stack) back to Actions List
                         Actions.Add(ra);
                     }
 
                 } catch(Exception err)
                 {
-                    Console.WriteLine("Spamming Redo too fast, error: " + err);
+                    Console.WriteLine("Error with Undo/redo logic: " + err);
                 }                
             }
             
@@ -591,7 +588,7 @@ namespace FloorPlanTool
                 newText.PosY = previousPoint.Y;
                
                 ShapesDict.Add(++shapeCount, newText);
-                Actions.Add(new ShapeAction("Draw", shapeCount, newText));
+                Actions.Add(new ShapeAction("Draw", shapeCount, newText.Copy()));
 
                 textbox_IsDrawn = false;
                 drawing_panel.Invalidate();
