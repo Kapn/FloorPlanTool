@@ -14,13 +14,13 @@ namespace FloorPlanTool
     public class Line : IShape
     {
         public Line() { LineWidth = 2; LineColor = Color.Black; }
-        public Line(Point point1, Point point2, float[] DashPattern)
+        public Line(Point Point1, Point Point2, float[] DashPattern)
         {
-            this.DashPattern = DashPattern;
-            LineWidth = 2;
-            LineColor = Color.Black;
-            Point1 = point1;
-            Point2 = point2;
+            this.LineWidth = 2;
+            this.LineColor = Color.Black;
+            this.DashPattern = DashPattern;            
+            this.Point1 = Point1;
+            this.Point2 = Point2;
         }
         public int LineWidth { get; set; }
         public Color LineColor { get; set; }

@@ -141,20 +141,20 @@ namespace FloorPlanTool
             foreach (var str in redo_stack)
             {
                 List<int> temp = str.Shape.GetProperties();
-                redoTb.Text += str.Shape.ToString() + ", " + str.TypeOfAction + ", " + str.Key + "\n" + "Point1: " + temp[0] + ", Point2:" + temp[2] +"\n\n";
+                redoTb.Text += str.Shape.ToString() + ", " + str.TypeOfAction + ", " + str.Key + "\n" + "Point1.X: " + temp[0] + ", Point2.X: " + temp[2] +"\n\n";
             }            
 
             undoTb.Text = "Actions\n";
             foreach (var str in Actions)
             {
                 List<int> temp = str.Shape.GetProperties();
-                undoTb.Text += str.Shape.ToString() + "," + ", " + str.TypeOfAction + ", " + str.Key + "\n" + "Point1: " + temp[0] + ", Point2:" + temp[2] + "\n\n";
+                undoTb.Text += str.Shape.ToString() + "," + ", " + str.TypeOfAction + ", " + str.Key + "\n" + "Point1.X: " + temp[0] + ", Point2.X: " + temp[2] + "\n\n";
             }
             shapesDictTb.Text = "ShapesDict\n";            
             foreach( var obj in ShapesDict)
             {
                 List<int> temp = obj.Value.GetProperties();
-                shapesDictTb.Text += obj.Key + " , " + obj.Value.ToString() + "\n" + "Point1: " + temp[0] + ",Point2:" + temp[2] + "\n\n";
+                shapesDictTb.Text += obj.Key + " , " + obj.Value.ToString() + "\n" + "Point1.X: " + temp[0] + ", Point2.X: " + temp[2] + "\n\n";
             }
 
 
@@ -209,7 +209,7 @@ namespace FloorPlanTool
                     newLine.Point2 = e.Location;
                    
                     ShapesDict.Add(++shapeCount, newLine);
-                    Actions.Add(new ShapeAction("Draw", shapeCount, newLine.Copy()));
+                    //Actions.Add(new ShapeAction("Draw", shapeCount, newLine.Copy()));
 
                     scaleShape = true;
                 }
@@ -226,7 +226,7 @@ namespace FloorPlanTool
                     newLine.Point2 = e.Location;
                    
                     ShapesDict.Add(++shapeCount, newLine);
-                    Actions.Add(new ShapeAction("Draw", shapeCount, newLine.Copy()));
+                    //Actions.Add(new ShapeAction("Draw", shapeCount, newLine.Copy()));
 
                     scaleShape = true;
                 }
@@ -412,6 +412,8 @@ namespace FloorPlanTool
             } else if (scaleShape)
             {
                 scaleShape = false;
+                Actions.Add(new ShapeAction("Draw", selectedShape.Key, selectedShape.Value.Copy()));
+
                 selectedShape = new KeyValuePair<int, IShape>(shapeCount, null);                
             }
             drawing_panel.Invalidate();
@@ -499,12 +501,16 @@ namespace FloorPlanTool
                         //ShapeAction redo_action = new ShapeAction(ra.TypeOfAction, shapeCount, ra.Shape.Copy());
                         ////add redo_action back to Actions List
                         //Actions.Add(redo_action);
-                    } else
+                    } else if (ra.TypeOfAction == "Draw")
                     {
-                        ShapesDict.Add(shapeCount, ra.Shape);
+                        Console.WriteLine("redo-ing a draw!!");
+                        ShapesDict.Add(ra.Key, ra.Shape);
 
                         //add ra (popped object from redo_stack) back to Actions List
                         Actions.Add(ra);
+                    } else
+                    {
+                        Console.WriteLine("Type of Action is not being handled in redo: " + ra.TypeOfAction);
                     }
 
                 } catch(Exception err)
