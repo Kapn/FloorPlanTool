@@ -16,17 +16,17 @@ namespace FloorPlanTool
         #region Constructors
         public TextInput()
         {
+            // Set a default Font, FontSize, and Brush
             FontSize = 12;
             Font = new Font("Arial", FontSize);
             Brush = new SolidBrush(Color.Black);
         }
 
-        public TextInput(int PosX, int PosY, string Text)
+        public TextInput(int PosX, int PosY, string Text, SolidBrush Brush, int FontSize, Font Font)
         {
-            FontSize = 12;
-            Font = new Font("Arial", FontSize);
-            Brush = new SolidBrush(Color.Black);
-
+            this.FontSize = FontSize;
+            this.Font = Font;
+            this.Brush = Brush;
             this.PosX = PosX;
             this.PosY = PosY;
             this.Text = Text;
@@ -107,12 +107,12 @@ namespace FloorPlanTool
 
         public List<int> GetProperties()
         {
-            return new List<int> { PosX, PosY };
+            return new List<int> { PosX, PosY , Width, Height, FontSize};
         }
 
         public IShape Copy()
         {            
-            return new TextInput(PosX, PosY, Text);            
+            return new TextInput(PosX, PosY, Text, Brush, FontSize, Font);            
         }
     }
 }

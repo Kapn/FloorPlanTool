@@ -18,9 +18,9 @@ namespace FloorPlanTool
             Fill = false;
         }
 
-        public Circle(int Radius, Point Center, bool Fill)
+        public Circle(int Radius, Point Center, bool Fill, Color FillColor)
         {
-            FillColor = Color.Black;
+            this.FillColor = FillColor;
             this.Fill = Fill;
             this.Radius = Radius;
             this.Center = Center;
@@ -106,7 +106,7 @@ namespace FloorPlanTool
 
         public IShape Copy()
         {            
-            return new Circle(Radius, Center, Fill);            
+            return new Circle(Radius, Center, Fill, FillColor);            
         }
     }
 }

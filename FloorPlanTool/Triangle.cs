@@ -79,7 +79,10 @@ namespace FloorPlanTool
         
         public List<int> GetProperties()
         {
-            return new List<int> { Location.X, Location.Y };
+            return new List<int> { Location.X, Location.Y,
+                                   (int)Points[0].X,
+                                   (int)Points[1].X,
+                                   (int)Points[2].X };
         }
 
         public IShape Copy()

@@ -18,11 +18,10 @@ namespace FloorPlanTool
             Fill = false;        
         }
 
-        public Rec(int Left, int Top, int Right, int Bottom)
+        public Rec(int Left, int Top, int Right, int Bottom, bool Fill, Color FillColor)
         {
-            FillColor = Color.Black;
-            Fill = false;
-
+            this.FillColor = FillColor;
+            this.Fill = Fill;
             this.Left = Left;
             this.Top = Top;
             this.Right = Right;
@@ -84,19 +83,24 @@ namespace FloorPlanTool
         {
             int dx = e.X - Right;
             int dy = e.Y - Bottom;
-            
+                        
             Right = Right + dx;
             Bottom = Bottom + dy;
 
-            if (Right < Left)
-            { 
-                var initialRight = Right;                
-                Right = previousPoint.X;
-                Left = initialRight;
-                //Console.WriteLine("right < left");
-            } else
+            // Handle mirroring across Y-Axis
+            if (Right < previousPoint.X)
             {
-                //Console.WriteLine("left < right");
+                var initialRight = Right;
+                Right = previousPoint.X;
+                Left = initialRight;                
+            }
+            
+            // Handle mirroring across X-Axis
+            if (Bottom < previousPoint.Y)
+            {
+                var initialBottom = Bottom;
+                Bottom = previousPoint.Y;
+                Top = initialBottom;                
             }
         }
 
@@ -107,7 +111,7 @@ namespace FloorPlanTool
 
         public IShape Copy()
         {            
-            return new Rec(Left, Top, Right, Bottom);            
+            return new Rec(Left, Top, Right, Bottom, Fill, FillColor);            
         }
     }
 }
