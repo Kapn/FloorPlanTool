@@ -127,25 +127,38 @@ namespace FloorPlanTool
 
 
             //TESTING UNDO/REDO
+            try
+            {
 
-            redoTb.Text = "redo_stack\n";
-            foreach (var str in redo_stack)
-            {
-                List<int> temp = str.Shape.GetProperties();
-                redoTb.Text += str.Shape.ToString() + ", " + str.TypeOfAction + ", " + str.Key + "\n" + "PosX: " + temp[0] + ", PosY: " + temp[1] + "\n\n";
-            }
 
-            undoTb.Text = "Actions\n";
-            foreach (var str in Actions)
+                redoTb.Text = "redo_stack\n";
+                foreach (var str in redo_stack)
+                {
+                    List<int> temp = str.Shape.GetProperties();
+                    //redoTb.Text += str.Shape.ToString() + ", " + str.TypeOfAction + ", " + str.Key + "\n" + "PosX: " + temp[0] + ", PosY: " + temp[1] + "\n\n";
+                    redoTb.Text += String.Format("Action: {0}, {1}, Key: {2} \nLocation.X: {3}, Location.Y: {4}\nPoint1: {5}, Point2: {6}, Point3: {7}\n\n",
+                                                str.TypeOfAction, str.Shape.ToString(), str.Key, temp[0], temp[1], temp[2], temp[3], temp[4]);
+                }
+
+                undoTb.Text = "Actions\n";
+                foreach (var str in Actions)
+                {
+                    List<int> temp = str.Shape.GetProperties();
+                    //undoTb.Text += str.Shape.ToString() + "," + ", " + str.TypeOfAction + ", " + str.Key + "\n" + "PosX: " + temp[0] + ", PosY: " + temp[1] + "\n\n";
+                    undoTb.Text += String.Format("Action: {0}, {1}, Key: {2} \nLocation.X: {3}, Location.Y: {4}\nPoint1: {5}, Point2: {6}, Point3: {7}\n\n",
+                                                str.TypeOfAction, str.Shape.ToString(), str.Key, temp[0], temp[1], temp[2], temp[3], temp[4]);
+                }
+                shapesDictTb.Text = "ShapesDict\n";
+                foreach (var obj in ShapesDict)
+                {
+                    List<int> temp = obj.Value.GetProperties();
+                    //shapesDictTb.Text += obj.Key + " , " + obj.Value.ToString() + "\n" + "PosX: " + temp[0] + ", PosY: " + temp[1] + "\n\n";
+                    shapesDictTb.Text += String.Format(" {0}, Key: {1} \nLocation.X: {2}, Location.Y: {3}\nPoint1: {4}, Point2: {5}, Point3: {6}\n\n",
+                                                obj.Value.ToString(), obj.Key, temp[0], temp[1], temp[2], temp[3], temp[4]);
+                }
+            } catch(Exception err)
             {
-                List<int> temp = str.Shape.GetProperties();
-                undoTb.Text += str.Shape.ToString() + "," + ", " + str.TypeOfAction + ", " + str.Key + "\n" + "PosX: " + temp[0] + ", PosY: " + temp[1] + "\n\n";
-            }
-            shapesDictTb.Text = "ShapesDict\n";
-            foreach (var obj in ShapesDict)
-            {
-                List<int> temp = obj.Value.GetProperties();
-                shapesDictTb.Text += obj.Key + " , " + obj.Value.ToString() + "\n" + "PosX: " + temp[0] + ", PosY: " + temp[1] + "\n\n";
+                Console.WriteLine("textboxes only setup for triangle atm");
             }
 
 
@@ -279,21 +292,11 @@ namespace FloorPlanTool
                 else if (drawTri)
                 {
                     previousPoint = e.Location;
-                    var size = 20;
+                    int size_of_triangle = 20;
 
-                    Triangle newTriangle = new Triangle();
+                    Triangle newTriangle = new Triangle(e.Location, size_of_triangle);
                     newTriangle.LineColor = brush_color.Color;                    
-                    newTriangle.Size = size;
-                    newTriangle.Location = e.Location;
-                    newTriangle.Points = new PointF[]                   
-                    {
-                        new PointF(e.X, e.Y),
-                        new PointF((float)(e.X + size*Math.Cos(Math.PI/3)),
-                                   (float)(e.Y + size*Math.Sin(Math.PI/3))),                                  
-                        new PointF((float)(e.X + size*Math.Cos((2*Math.PI)/3)),
-                                   (float)(e.Y + size*Math.Sin((2*Math.PI)/3)))    //20 is default length
-                    };
-                                        
+                    
                     ShapesDict.Add(++shapeCount, newTriangle);
                     Actions.Add(new ShapeAction("Draw", shapeCount, newTriangle));
 
@@ -381,7 +384,7 @@ namespace FloorPlanTool
         {            
                 if (moving)
                 {                                                            
-                    var d = new Point(e.X - previousPoint.X, e.Y - previousPoint.Y);
+                    Point d = new Point(e.X - previousPoint.X, e.Y - previousPoint.Y);
                     selectedShape.Value.Move(d);
                 
                     previousPoint = e.Location;

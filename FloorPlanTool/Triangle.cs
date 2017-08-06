@@ -10,23 +10,29 @@ namespace FloorPlanTool
 {
     class Triangle : IShape
     {   
-        public Triangle() { LineWidth = 2; }
-        public Triangle(Point Location, PointF[] Points, Color LineColor, PointF Point1, PointF Point2, PointF Point3)
+        public Triangle(Point Location, int Size) {
+            this.Location = Location;
+            this.Size = Size;
+            this.LineWidth = 2;
+            this.Points = new PointF[]
+                            {
+                            new PointF(Location.X, Location.Y),
+                            new PointF((float)(Location.X + Size*Math.Cos(Math.PI/3)),
+                                        (float)(Location.Y + Size*Math.Sin(Math.PI/3))),
+                            new PointF((float)(Location.X + Size*Math.Cos((2*Math.PI)/3)),
+                                        (float)(Location.Y + Size*Math.Sin((2*Math.PI)/3)))    //size = 20 by default
+                            };
+        }
+        public Triangle(Point Location, PointF[] Points, Color LineColor)
         {
             this.Location = Location;
             this.Points = Points;
             this.LineColor = LineColor;
-            LineWidth = 2;
-            this.Point1 = Point1;
-            this.Point2 = Point2;
-            this.Point3 = Point3;
+            LineWidth = 2;            
         }
 
         public Point Location { get; set; }
-        public PointF[] Points { get; set; }
-        public PointF Point1 { get; set; }
-        public PointF Point2 { get; set; }
-        public PointF Point3 { get; set; }
+        public PointF[] Points { get; set; }        
         public int Size { get; set; }
         public int LineWidth { get; set; }
         public Color LineColor { get; set; }
@@ -51,7 +57,8 @@ namespace FloorPlanTool
         {
             using (var path = GetPath())
             using (var pen = new Pen(LineColor, LineWidth))
-            {                                                
+            {      
+                
                 g.DrawPolygon(pen, Points);
             }
         }
@@ -61,7 +68,7 @@ namespace FloorPlanTool
             Points[0] = new PointF(Points[0].X + d.X, Points[0].Y + d.Y);
             Points[1] = new PointF(Points[1].X + d.X, Points[1].Y + d.Y);
             Points[2] = new PointF(Points[2].X + d.X, Points[2].Y + d.Y);
-            Location = new Point((int)(Points[2].X + d.X), (int)(Points[2].Y + d.Y));
+            Location = new Point((int)(Points[2].X + d.X), (int)(Points[2].Y + d.Y)); // same as Points[2] adjustment
 
         }
 
@@ -87,7 +94,7 @@ namespace FloorPlanTool
 
         public IShape Copy()
         {            
-            return new Triangle(Location, Points, LineColor, Point1, Point2, Point3);
+            return new Triangle(Location, Points, LineColor);
         }
     }
 }
