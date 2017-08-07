@@ -114,5 +114,11 @@ namespace FloorPlanTool
         {            
             return new TextInput(PosX, PosY, Text, Brush, FontSize, Font);            
         }
+
+        string IShape.ToString()
+        {
+            string shape_info = String.Format("TextInput\nLocation: ({0}, {1}),  Width: {2}, Height: {3}, String: {4}", PosX, PosY, Width, Height, Text);
+            return shape_info;
+        }
     }
 }

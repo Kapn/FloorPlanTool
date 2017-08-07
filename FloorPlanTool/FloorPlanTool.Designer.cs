@@ -52,12 +52,8 @@
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.drawing_panel = new System.Windows.Forms.Panel();
-            this.shapesDictTb = new System.Windows.Forms.RichTextBox();
-            this.redoTb = new System.Windows.Forms.RichTextBox();
-            this.undoTb = new System.Windows.Forms.RichTextBox();
             this.toolbar_panel.SuspendLayout();
             this.menuStrip1.SuspendLayout();
-            this.drawing_panel.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolbar_panel
@@ -83,7 +79,7 @@
             this.toolbar_panel.Dock = System.Windows.Forms.DockStyle.Left;
             this.toolbar_panel.Location = new System.Drawing.Point(0, 0);
             this.toolbar_panel.Name = "toolbar_panel";
-            this.toolbar_panel.Size = new System.Drawing.Size(126, 523);
+            this.toolbar_panel.Size = new System.Drawing.Size(126, 632);
             this.toolbar_panel.TabIndex = 0;
             // 
             // tri_button
@@ -307,48 +303,21 @@
             // drawing_panel
             // 
             this.drawing_panel.BackColor = System.Drawing.Color.White;
-            this.drawing_panel.Controls.Add(this.shapesDictTb);
-            this.drawing_panel.Controls.Add(this.redoTb);
-            this.drawing_panel.Controls.Add(this.undoTb);
             this.drawing_panel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.drawing_panel.Location = new System.Drawing.Point(126, 0);
             this.drawing_panel.Name = "drawing_panel";
-            this.drawing_panel.Size = new System.Drawing.Size(1168, 523);
+            this.drawing_panel.Size = new System.Drawing.Size(707, 632);
             this.drawing_panel.TabIndex = 1;
             this.drawing_panel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawing_panel_Paint);
             this.drawing_panel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseDown);
             this.drawing_panel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseMove);
             this.drawing_panel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseUp);
             // 
-            // shapesDictTb
-            // 
-            this.shapesDictTb.Location = new System.Drawing.Point(958, 34);
-            this.shapesDictTb.Name = "shapesDictTb";
-            this.shapesDictTb.Size = new System.Drawing.Size(198, 356);
-            this.shapesDictTb.TabIndex = 2;
-            this.shapesDictTb.Text = "";
-            // 
-            // redoTb
-            // 
-            this.redoTb.Location = new System.Drawing.Point(675, 255);
-            this.redoTb.Name = "redoTb";
-            this.redoTb.Size = new System.Drawing.Size(277, 243);
-            this.redoTb.TabIndex = 1;
-            this.redoTb.Text = "";
-            // 
-            // undoTb
-            // 
-            this.undoTb.Location = new System.Drawing.Point(675, 12);
-            this.undoTb.Name = "undoTb";
-            this.undoTb.Size = new System.Drawing.Size(277, 237);
-            this.undoTb.TabIndex = 0;
-            this.undoTb.Text = "";
-            // 
             // FloorPlanTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1294, 523);
+            this.ClientSize = new System.Drawing.Size(833, 632);
             this.Controls.Add(this.drawing_panel);
             this.Controls.Add(this.toolbar_panel);
             this.MainMenuStrip = this.menuStrip1;
@@ -358,7 +327,6 @@
             this.toolbar_panel.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.drawing_panel.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -388,9 +356,6 @@
         private System.Windows.Forms.Button fill_circle_button;
         private System.Windows.Forms.Button fill_rectangle_button;
         private System.Windows.Forms.Button tri_button;
-        private System.Windows.Forms.RichTextBox redoTb;
-        private System.Windows.Forms.RichTextBox undoTb;
-        private System.Windows.Forms.RichTextBox shapesDictTb;
     }
 }
 

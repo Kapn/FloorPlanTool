@@ -23,12 +23,20 @@ namespace FloorPlanTool
                                         (float)(Location.Y + Size*Math.Sin((2*Math.PI)/3)))    //size = 20 by default
                             };
         }
-        public Triangle(Point Location, PointF[] Points, Color LineColor)
+        public Triangle(Point Location, Color LineColor, int Size)
         {
             this.Location = Location;
-            this.Points = Points;
+            //this.Points = Points;
             this.LineColor = LineColor;
-            LineWidth = 2;            
+            LineWidth = 2;
+            this.Points = new PointF[]
+                          {
+                            new PointF(Location.X, Location.Y),
+                            new PointF((float)(Location.X + Size*Math.Cos(Math.PI/3)),
+                                        (float)(Location.Y + Size*Math.Sin(Math.PI/3))),
+                            new PointF((float)(Location.X + Size*Math.Cos((2*Math.PI)/3)),
+                                        (float)(Location.Y + Size*Math.Sin((2*Math.PI)/3)))    //size = 20 by default
+                          };
         }
 
         public Point Location { get; set; }
@@ -73,13 +81,13 @@ namespace FloorPlanTool
         }
 
         public void Resize(Point e, Point distance)
-        {          
-            var scale = e.Y - distance.Y;            
+        {                      
+            this.Size = e.Y - distance.Y;
 
-            Points[0] = new PointF((float)(Location.X + scale * Math.Cos(Math.PI / 3)),
-                              (float)(Location.Y + scale * Math.Sin(Math.PI / 3)));
-            Points[1] = new PointF((float)(Location.X + scale * Math.Cos((2 * Math.PI) / 3)),
-                                 (float)(Location.Y + scale * Math.Sin((2 * Math.PI) / 3)));
+            Points[0] = new PointF((float)(Location.X + this.Size * Math.Cos(Math.PI / 3)),
+                              (float)(Location.Y + this.Size * Math.Sin(Math.PI / 3)));
+            Points[1] = new PointF((float)(Location.X + this.Size * Math.Cos((2 * Math.PI) / 3)),
+                                 (float)(Location.Y + this.Size * Math.Sin((2 * Math.PI) / 3)));
             Points[2] = Location;                    
 
         }
@@ -94,7 +102,13 @@ namespace FloorPlanTool
 
         public IShape Copy()
         {            
-            return new Triangle(Location, Points, LineColor);
+            return new Triangle(Location, LineColor, Size);
+        }
+
+        string IShape.ToString()
+        {
+            string shape_info = String.Format("Triangle\nSize: {0}, Location: ({1}, {2}), Points: ({3}, {4}, {5})", Size, Location.X, Location.Y, Points[0].X, Points[1].X, Points[2].X);
+            return shape_info;
         }
     }
 }

@@ -16,6 +16,7 @@ namespace FloorPlanTool
         void Draw(Graphics g);
         void Move(Point d);
         void Resize(Point e, Point previousPoint);
+        string ToString();
         List<int> GetProperties();
 
     }

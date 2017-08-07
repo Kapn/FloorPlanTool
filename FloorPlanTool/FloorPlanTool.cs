@@ -12,24 +12,25 @@ using MySql.Data.MySqlClient;
 #region TASKS
 
 // TODO: 
-// - clean up triangle class.  Maybe get rid of Location altogether
-// - Doesnt redo a shape to its initial size/location after resizing a shape
-      //replicate by: Resizing a shape, then undo until there is nothing on the screen and then redo.
-// - Undo resize of triangle doesn't work.
-// - Adjust text to be on one-line initially not after resize
-// - Text resize/move redo is not working correctly
-// - With many shapes on the board, undo shape manipulation does not work correctly...
 
 // minor TODO:
+// - resize rec adjusts original position slightly
+// - Adjust text to be on one-line initially not after resize.  (Fixes itself on next draw I believe)
 // - a single click at a point adds a 'shape' to the ShapesDict of size 1 pixel
 // - only add a "resize" action if the resize was actually resized and not just right-clicked
 // - Resizing shapes starts from smallest possible circle
 // - When textbox appears it should be focused ready to be typed in (not have to click again)
 // - Clicking places with textbox tool makes text appear at last place clicked.
 // - With one shape, sequencing undo and redo over and over for some reason alternates 'highlighting' dotted line tool and eraser
-// - File save/load adjusted to a database that is going to be used
 
 // FINISHED (8/1 - 8/4):
+// - Clean up previousPoint and e.X (ex: in newRec)
+// - Doesnt redo a shape to its initial size/location after resizing a shape
+// - ^^ same bug applies to "Move"
+// - With many shapes on the board, undo shape manipulation does not work correctly...
+// - TextInput resize/move redo
+// - Undo resize of triangle doesn't work.
+// - clean up triangle class.  Maybe get rid of Location altogether
 // - Undo reverts colored shapes back to black brush color
 // - Resizing rectangle past nothing should mirror across
 // - TextInput makes a 'Ding' windows sound no longer
@@ -123,46 +124,29 @@ namespace FloorPlanTool
             {
                 undo_button.Enabled = true;                
             }
+            
+            ////TESTING UNDO/REDO
 
+            //redoTb.Text = "redo_stack\n";
+            //foreach (var obj in redo_stack)
+            //{
+            //    string obj_info = String.Format("Key: {0}, {1}, {2}\n\n",obj.Key, obj.TypeOfAction, obj.Shape.ToString());
+            //    redoTb.Text += obj_info;
+            //}
+            //undoTb.Text = "Actions\n";
+            //foreach (var obj in Actions)
+            //{
+            //    string obj_info = String.Format("Key: {0}, {1}, {2}\n\n", obj.Key, obj.TypeOfAction, obj.Shape.ToString());
+            //undoTb.Text += obj_info;                    
+            //}
+            //shapesDictTb.Text = "ShapesDict\n";
+            //foreach (var obj in ShapesDict)
+            //{
+            //    string obj_info = String.Format("Key: {0}, {1}\n\n", obj.Key, obj.Value.ToString());                    
+            //    shapesDictTb.Text += obj_info;
+            //}
 
-
-            //TESTING UNDO/REDO
-            try
-            {
-
-
-                redoTb.Text = "redo_stack\n";
-                foreach (var str in redo_stack)
-                {
-                    List<int> temp = str.Shape.GetProperties();
-                    //redoTb.Text += str.Shape.ToString() + ", " + str.TypeOfAction + ", " + str.Key + "\n" + "PosX: " + temp[0] + ", PosY: " + temp[1] + "\n\n";
-                    redoTb.Text += String.Format("Action: {0}, {1}, Key: {2} \nLocation.X: {3}, Location.Y: {4}\nPoint1: {5}, Point2: {6}, Point3: {7}\n\n",
-                                                str.TypeOfAction, str.Shape.ToString(), str.Key, temp[0], temp[1], temp[2], temp[3], temp[4]);
-                }
-
-                undoTb.Text = "Actions\n";
-                foreach (var str in Actions)
-                {
-                    List<int> temp = str.Shape.GetProperties();
-                    //undoTb.Text += str.Shape.ToString() + "," + ", " + str.TypeOfAction + ", " + str.Key + "\n" + "PosX: " + temp[0] + ", PosY: " + temp[1] + "\n\n";
-                    undoTb.Text += String.Format("Action: {0}, {1}, Key: {2} \nLocation.X: {3}, Location.Y: {4}\nPoint1: {5}, Point2: {6}, Point3: {7}\n\n",
-                                                str.TypeOfAction, str.Shape.ToString(), str.Key, temp[0], temp[1], temp[2], temp[3], temp[4]);
-                }
-                shapesDictTb.Text = "ShapesDict\n";
-                foreach (var obj in ShapesDict)
-                {
-                    List<int> temp = obj.Value.GetProperties();
-                    //shapesDictTb.Text += obj.Key + " , " + obj.Value.ToString() + "\n" + "PosX: " + temp[0] + ", PosY: " + temp[1] + "\n\n";
-                    shapesDictTb.Text += String.Format(" {0}, Key: {1} \nLocation.X: {2}, Location.Y: {3}\nPoint1: {4}, Point2: {5}, Point3: {6}\n\n",
-                                                obj.Value.ToString(), obj.Key, temp[0], temp[1], temp[2], temp[3], temp[4]);
-                }
-            } catch(Exception err)
-            {
-                Console.WriteLine("textboxes only setup for triangle atm");
-            }
-
-
-            //END TESTING
+            ////END TESTING            
 
             //enable AntiAlias - fills in pixels along the drawing path to give a smoother appearance
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
@@ -244,44 +228,13 @@ namespace FloorPlanTool
 
                     Rec newRec = new Rec();
                     
-                    //set fill bool
-                    if (fill)
-                    {
-                        newRec.Fill = true;
-                    }                 
+                    // Initialize new Rec() with Properties
+                    if (fill){ newRec.Fill = true;}                    
                     newRec.FillColor = brush_color.Color;
-                    newRec.Left = previousPoint.X;
+                    newRec.Left = e.X;
                     newRec.Right = e.X;
-                    newRec.Top = previousPoint.Y;
-                    newRec.Bottom = e.Y;                  
-
-                    ////set initial values of rec here
-                    //if (e.X < previousPoint.X)
-                    //{
-                    //    Console.WriteLine("never gets entered");
-                    //    newRec.Left = e.X;
-                    //    newRec.Right = previousPoint.X;
-
-                    //}
-                    //else
-                    //{
-                    //    Console.WriteLine("gets entered");
-                    //    newRec.Left = previousPoint.X;
-                    //    newRec.Right = e.X;
-                    //}
-
-                    //if (e.Y < previousPoint.Y)
-                    //{
-                    //    Console.WriteLine("never gets entered");
-                    //    newRec.Top = e.Y;
-                    //    newRec.Bottom = previousPoint.Y;
-                    //}
-                    //else
-                    //{
-                    //    Console.WriteLine("gets entered");
-                    //    newRec.Top = previousPoint.Y;
-                    //    newRec.Bottom = e.Y;
-                    //}
+                    newRec.Top = e.Y;
+                    newRec.Bottom = e.Y;                       
                     
                     ShapesDict.Add(++shapeCount, newRec);                    
                     Actions.Add(new ShapeAction("Draw", shapeCount, newRec));
@@ -319,21 +272,7 @@ namespace FloorPlanTool
                 }
                 //eraser
                 else if (eraser)
-                {                                
-                    //foreach (KeyValuePair<int, IShape> shape in ShapesDict)
-                    //{
-                    //    //if a shape was clicked on, erase it.
-                    //    if (shape.Value.HitTest(e.Location))
-                    //    {
-                    //        selectedShape = shape;
-                    //        if (selectedShape.Value != null)
-                    //        {
-                    //            Actions.Add(new ShapeAction("Erase", shape.Key, shape.Value));
-                    //            ShapesDict.Remove(shape.Key);
-                    //        }
-                    //        break;
-                    //    }
-                    //}
+                {                                                
                     bool hit = perform_HitTest(e.Location);
 
                     if (hit)
@@ -366,6 +305,16 @@ namespace FloorPlanTool
                 // if HitTest found a shape to resize:                
                 if (hit)
                 {
+                    var key = selectedShape.Key;
+                    foreach (ShapeAction action in Actions)
+                    {
+                        if (action.Key == key)
+                        {
+                            // needed .Copy here in order to fix the issue where Actions was storing a single point
+                            action.Shape = selectedShape.Value.Copy();
+                        }
+                    }
+
                     scaleShape = true;
                     previousPoint = e.Location;                    
                     Actions.Add(new ShapeAction("Resize", selectedShape.Key, selectedShape.Value.Copy()));
@@ -375,7 +324,7 @@ namespace FloorPlanTool
             }            
             //clear the redo_stack because you shouldn't be able to redo after a Draw
             redo_stack.Clear();
-        }        
+        }                
 
         /*
          * MouseMove handles Moving and Resizing shapes
@@ -391,15 +340,14 @@ namespace FloorPlanTool
                     drawing_panel.Invalidate();
                 }
                 else if (scaleShape)
-                {                                        
-                
+                {                                                        
                     //for viewing line/shapes as they are dragged out
                     if (selectedShape.Value == null)
                     {                        
                         selectedShape = new KeyValuePair<int, IShape>(shapeCount, ShapesDict[shapeCount].Copy());                                                
                     }                    
                     ShapesDict[selectedShape.Key].Resize(e.Location, previousPoint);
-                    //selectedShape.Value.Resize(e.Location, previousPoint);
+                
                     drawing_panel.Invalidate();                
                 }            
             
@@ -415,7 +363,7 @@ namespace FloorPlanTool
                 selectedShape = new KeyValuePair<int, IShape>(shapeCount, null);                
                 moving = false;
             } else if (scaleShape)
-            {
+            {                
                 scaleShape = false;                
                 selectedShape = new KeyValuePair<int, IShape>(shapeCount, null);                
             }
@@ -426,9 +374,7 @@ namespace FloorPlanTool
          * When Undo is clicked, remove the last shape added to the Shapes List
          * and push it onto the redo_stack. 
          * 
-         * TODO: Handle if 'Clear All' was clicked previously.
-         * 
-         * TODO: DO I NEED A REDO_STACK?!?! can I just use the actions list and shapesdict instead?
+         * TODO: Handle if 'Clear All' was clicked previously.                  
          */
         private void undo_button_Click(object sender, EventArgs e)
         {
@@ -446,18 +392,18 @@ namespace FloorPlanTool
 
                     ShapesDict.Remove(lastAction.Key);
                 }                
-                else if (lastAction.TypeOfAction == "Resize")
+                else if (lastAction.TypeOfAction == "Resize" || lastAction.TypeOfAction == "Move")
                 {                                                          
                     //store initial size of shape in redo_stack
                     redo_stack.Push(new ShapeAction("Resize", lastAction.Key, ShapesDict[lastAction.Key]));
                     //set shape back to size stored in lastAction                    
                     ShapesDict[lastAction.Key] = lastAction.Shape;
-                }else
+                }else if (lastAction.TypeOfAction == "Erase")
                 {// else revert ShapesDict back to the state that lastAction saved                 
                     ShapesDict[lastAction.Key] = lastAction.Shape;
                     //save last action to a redo stack                
                     redo_stack.Push(lastAction);
-                }                
+                }
 
                 //pop last action from actions list
                 Actions.RemoveAt(Actions.Count - 1);
@@ -486,42 +432,25 @@ namespace FloorPlanTool
             if (redo_stack.Count > 0)
             {                
                 ShapeAction ra = redo_stack.Pop();
-                
-                //Wrapped in a Try/Catch because of multiple shapes to the same key
-                // ^ difficult to replicate (occurs when undo/redo issues occur)
-                try
+                                
+                if (ra.TypeOfAction == "Erase")
                 {
-                    if (ra.TypeOfAction == "Erase")
-                    {
-                        ShapesDict.Remove(ra.Key);
-                        Actions.Add(ra);
-                    }
-                    else if (ra.TypeOfAction == "Resize" || ra.TypeOfAction == "Move")
-                    {                        
-                        Actions.Add(new ShapeAction(ra.TypeOfAction, ra.Key, ShapesDict[ra.Key]));
-                        ShapesDict[ra.Key] = ra.Shape;
-                        
-                        //ShapeAction redo_action = new ShapeAction(ra.TypeOfAction, shapeCount, ra.Shape.Copy());
-                        ////add redo_action back to Actions List
-                        //Actions.Add(redo_action);
-                    } else if (ra.TypeOfAction == "Draw")
-                    {
-                        Console.WriteLine("redo-ing a draw!!");
-                        ShapesDict.Add(ra.Key, ra.Shape);
+                    ShapesDict.Remove(ra.Key);
+                    Actions.Add(ra);
+                }
+                else if (ra.TypeOfAction == "Resize" || ra.TypeOfAction == "Move")
+                {                        
+                    Actions.Add(new ShapeAction(ra.TypeOfAction, ra.Key, ShapesDict[ra.Key]));
+                    ShapesDict[ra.Key] = ra.Shape;                                                
+                }
+                else if (ra.TypeOfAction == "Draw")
+                {                        
+                    ShapesDict.Add(ra.Key, ra.Shape);
 
-                        //add ra (popped object from redo_stack) back to Actions List
-                        Actions.Add(ra);
-                    } else
-                    {
-                        Console.WriteLine("Type of Action is not being handled in redo: " + ra.TypeOfAction);
-                    }
-
-                } catch(Exception err)
-                {
-                    Console.WriteLine("Error with Undo/redo logic: " + err);
-                }                
-            }
-            
+                    //add ra (popped object from redo_stack) back to Actions List
+                    Actions.Add(ra);
+                }                   
+            }            
             drawing_panel.Invalidate();
         }
 

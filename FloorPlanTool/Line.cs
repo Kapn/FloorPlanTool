@@ -85,5 +85,11 @@ namespace FloorPlanTool
         {            
             return new Line(Point1, Point2, DashPattern, LineColor);            
         }
+
+        string IShape.ToString()
+        {
+            string shape_info = String.Format("Line\nPoint1: ({0}, {1})   Point2: ({2}, {3})", Point1.X, Point1.Y, Point2.X, Point2.Y);
+            return shape_info;
+        }
     }
 }

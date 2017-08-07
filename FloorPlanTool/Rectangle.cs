@@ -113,5 +113,11 @@ namespace FloorPlanTool
         {            
             return new Rec(Left, Top, Right, Bottom, Fill, FillColor);            
         }
+
+        string IShape.ToString()
+        {
+            string shape_info = String.Format("Rectangle\nLeft: {0}, Right: {1}, Top: {2}, Bottom: {3}", Left, Right, Top, Bottom);
+            return shape_info;
+        }
     }
 }

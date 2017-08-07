@@ -108,5 +108,11 @@ namespace FloorPlanTool
         {            
             return new Circle(Radius, Center, Fill, FillColor);            
         }
+
+        string IShape.ToString()
+        {
+            string shape_info = String.Format("Circle\nRadius: {0} , Center: ({1}, {2})", Radius, Center.X, Center.Y);
+            return shape_info;
+        }
     }
 }
