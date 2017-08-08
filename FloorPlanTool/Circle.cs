@@ -11,6 +11,19 @@ namespace FloorPlanTool
     // ---------------------------------
     //  Handles Drawing/Manipulating Circles
     // ---------------------------------
+    // Properties:
+    //      Fill : Bool determines whether the shape should be filled
+    //      FillColor : Fill Color
+    //      Center :  Point at the center of the circle
+    //      Radius : Radius of circle    
+    // Methods:
+    //      GetPath()       : Returns GraphicsPath object used to perform HitTest
+    //      HitTest(Point p): Checks if the point is within the object's Path
+    //      Draw(Graphics g): Draws the object
+    //      Move(Point d)   : Moves
+    //      Resize(Point e, Point previousPoint) : Resize 
+    //      Copy(): Returns a Copy of the object
+    //      ToString(): Returns a string of all properties
     public class Circle : IShape
     {
         public Circle() {
@@ -63,8 +76,7 @@ namespace FloorPlanTool
             {
                 var p = Center;
                 p.Offset(-Radius, -Radius);
-
-                using (var path = GetPath())
+                
                 using (var pen = new Pen(FillColor))
                     g.DrawEllipse(pen, new Rectangle(p, new Size(Radius * 2, 2* Radius)));
             }
@@ -91,18 +103,7 @@ namespace FloorPlanTool
             }
 
             this.Radius = newRadius;
-        }
-
-        public List<int> GetProperties()
-        {
-            if (Fill)
-            {                
-                return new List<int> { Radius, Center.X, Center.Y, 1 };
-            } else
-            {
-                return new List<int> { Radius, Center.X, Center.Y, 0 };
-            }            
-        }
+        }        
 
         public IShape Copy()
         {            
@@ -111,8 +112,7 @@ namespace FloorPlanTool
 
         string IShape.ToString()
         {
-            string shape_info = String.Format("Circle\nRadius: {0} , Center: ({1}, {2})", Radius, Center.X, Center.Y);
-            return shape_info;
+            return String.Format("Circle\nRadius: {0} , Center: ({1}, {2})", Radius, Center.X, Center.Y);            
         }
     }
 }

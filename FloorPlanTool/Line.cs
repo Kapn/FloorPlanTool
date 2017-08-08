@@ -10,7 +10,21 @@ namespace FloorPlanTool
 {
     // ---------------------------------
     //  Handles Drawing/Manipulating lines
-    // ---------------------------------
+    // ---------------------------------    
+    // Properties:
+    //      DashPattern : float array to determine dash pattern
+    //      Point1 : Point at the beginning of the line
+    //      Point2 :  Point at the end of the line
+    //      LineWidth : Line Width
+    //      LineColor: Line Color
+    // Methods:
+    //      GetPath()       : Returns GraphicsPath object used to perform HitTest
+    //      HitTest(Point p): Checks if the point is within the object's Path
+    //      Draw(Graphics g): Draws the object
+    //      Move(Point d)   : Moves
+    //      Resize(Point e, Point previousPoint) : Resize 
+    //      Copy(): Returns a Copy of the object
+    //      ToString(): Returns a string of all properties
     public class Line : IShape
     {
         public Line() { LineWidth = 2; LineColor = Color.Black; }
@@ -76,11 +90,6 @@ namespace FloorPlanTool
             }
         }
 
-        public List<int> GetProperties()
-        {
-            return new List<int> { Point1.X, Point1.Y, Point2.X, Point2.Y };
-        }
-
         public IShape Copy()
         {            
             return new Line(Point1, Point2, DashPattern, LineColor);            
@@ -88,8 +97,7 @@ namespace FloorPlanTool
 
         string IShape.ToString()
         {
-            string shape_info = String.Format("Line\nPoint1: ({0}, {1})   Point2: ({2}, {3})", Point1.X, Point1.Y, Point2.X, Point2.Y);
-            return shape_info;
+            return String.Format("Line\nPoint1: ({0}, {1})   Point2: ({2}, {3})", Point1.X, Point1.Y, Point2.X, Point2.Y);            
         }
     }
 }

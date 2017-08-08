@@ -11,6 +11,24 @@ namespace FloorPlanTool
     // ---------------------------------
     //  Handles Drawing/Manipulating Rec
     // ---------------------------------
+    // Properties:
+    //      Fill : Bool to determine whether the circle should be filled or not
+    //      FillColor : Fill Color
+    //      Left :  Upper Left point
+    //      Right : Bottom Right point
+    //      Top   : Upper Left Point
+    //      Bottom : Bottom right point
+    //      Rec     : Rectangle Object
+    //      LineWidth : Line Width
+    //      LineColor: Line Color
+    // Methods:
+    //      GetPath()       : Returns GraphicsPath object used to perform HitTest
+    //      HitTest(Point p): Checks if the point is within the object's Path
+    //      Draw(Graphics g): Draws the object
+    //      Move(Point d)   : Moves
+    //      Resize(Point e, Point previousPoint) : Resize 
+    //      Copy(): Returns a Copy of the object
+    //      ToString(): Returns a string of all properties
     class Rec : IShape
     {
         public Rec() {
@@ -33,12 +51,13 @@ namespace FloorPlanTool
         public int Right { get; set; }
         public int Top { get; set; }
         public int Bottom { get; set; }
-        private Rectangle temp_rec;
+        private Rectangle rec;
+
         public GraphicsPath GetPath()
         {
             var path = new GraphicsPath();            
-            temp_rec = Rectangle.FromLTRB(Left, Top, Right, Bottom);
-            path.AddRectangle(temp_rec);
+            rec = Rectangle.FromLTRB(Left, Top, Right, Bottom);
+            path.AddRectangle(rec);
             return path;
         }
 
@@ -68,17 +87,14 @@ namespace FloorPlanTool
                 using (var brush = new SolidBrush(FillColor))
                     g.FillPath(brush, path);
             } else
-            {
-                using (var path = GetPath())
+            {                
                 using (var pen = new Pen(FillColor))
-                    g.DrawRectangle(pen, temp_rec);
+                    g.DrawRectangle(pen, rec);
             }
-
-
         }
 
         //resize rectangle
-        //top-left corner stays fixed
+        //top-left corner should stay fixed
         public void Resize(Point e, Point previousPoint)
         {
             int dx = e.X - Right;
@@ -103,12 +119,7 @@ namespace FloorPlanTool
                 Top = initialBottom;                
             }
         }
-
-        public List<int> GetProperties()
-        {
-            return new List<int> { Left, Top, Right, Bottom };
-        }
-
+        
         public IShape Copy()
         {            
             return new Rec(Left, Top, Right, Bottom, Fill, FillColor);            
@@ -116,8 +127,7 @@ namespace FloorPlanTool
 
         string IShape.ToString()
         {
-            string shape_info = String.Format("Rectangle\nLeft: {0}, Right: {1}, Top: {2}, Bottom: {3}", Left, Right, Top, Bottom);
-            return shape_info;
+            return String.Format("Rectangle\nLeft: {0}, Right: {1}, Top: {2}, Bottom: {3}", Left, Right, Top, Bottom);            
         }
     }
 }

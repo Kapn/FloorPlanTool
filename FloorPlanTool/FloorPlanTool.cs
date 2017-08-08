@@ -1,11 +1,9 @@
-﻿//Question for Meeting
-//-What are you guys using currently for mapping out FloorPlans?
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Reflection; //used for DoubleBuffering
+using System.Reflection;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 
@@ -14,34 +12,19 @@ using MySql.Data.MySqlClient;
 // TODO: 
 
 // minor TODO:
-// - resize rec adjusts original position slightly
-// - Adjust text to be on one-line initially not after resize.  (Fixes itself on next draw I believe)
+// - resize rec adjusts original position to be near right-click location
+// - When textbox appears it should be focused ready to be typed in (not have to click again)
+// - Adjust text to be on one-line initially not after resize.  (Fixes itself on next invalidate())
 // - a single click at a point adds a 'shape' to the ShapesDict of size 1 pixel
 // - only add a "resize" action if the resize was actually resized and not just right-clicked
 // - Resizing shapes starts from smallest possible circle
-// - When textbox appears it should be focused ready to be typed in (not have to click again)
 // - Clicking places with textbox tool makes text appear at last place clicked.
 // - With one shape, sequencing undo and redo over and over for some reason alternates 'highlighting' dotted line tool and eraser
 
-// FINISHED (8/1 - 8/4):
-// - Clean up previousPoint and e.X (ex: in newRec)
-// - Doesnt redo a shape to its initial size/location after resizing a shape
-// - ^^ same bug applies to "Move"
-// - With many shapes on the board, undo shape manipulation does not work correctly...
-// - TextInput resize/move redo
-// - Undo resize of triangle doesn't work.
-// - clean up triangle class.  Maybe get rid of Location altogether
-// - Undo reverts colored shapes back to black brush color
-// - Resizing rectangle past nothing should mirror across
-// - TextInput makes a 'Ding' windows sound no longer
-// - After erasing first drag of a shape doesn't draw, second time does
-// - undo/redo Drawing of textInput
-// - after an erase, draws were saved to incorrect keys
-// - shapes initially store initial values in Actions list
-// - grey out clear all button when necessary
-
 // optional features to implement:
-// - erase as holding down mouse
+// - KeyBoard shortcuts for different tools
+// - Erase objects as holding down mouse
+// - Rotate objects
 // - multiple triangles, maybe a dropdown button
 // - rectangle around shape that shows which shape is selected.
 
@@ -60,15 +43,14 @@ namespace FloorPlanTool
         Dictionary<int, IShape> ShapesDict = new Dictionary<int, IShape>();
         //shapeCount is used as the key of ShapesDict
         int shapeCount = 0;                
-        bool drawCir, drawLine,textbox_IsDrawn, drawRec, drawText, drawTri, drawDotted, eraser, fill, scaleShape, moving, just_cleared;
-        string text_to_draw;
+        bool drawCir, drawLine,textbox_IsDrawn, drawRec, drawText, drawTri, drawDotted, eraser, fill, scaleShape, moving, just_cleared;        
         SolidBrush brush_color;
-        KeyValuePair<int, IShape> selectedShape { get; set; }
+        KeyValuePair<int, IShape> selectedShape;
         List<ShapeAction> Actions = new List<ShapeAction>();
         Stack<ShapeAction> redo_stack = new Stack<ShapeAction>();                
         Stack<IShape> clear_all_stack = new Stack<IShape>();
         Point previousPoint = Point.Empty;
-        TextBox txtbox;
+        
         #endregion
 
         #region Methods
@@ -124,29 +106,29 @@ namespace FloorPlanTool
             {
                 undo_button.Enabled = true;                
             }
-            
-            ////TESTING UNDO/REDO
+
+            #region  testing statements
 
             //redoTb.Text = "redo_stack\n";
             //foreach (var obj in redo_stack)
             //{
-            //    string obj_info = String.Format("Key: {0}, {1}, {2}\n\n",obj.Key, obj.TypeOfAction, obj.Shape.ToString());
+            //    string obj_info = String.Format("Key: {0}, {1}, {2}\n\n", obj.Key, obj.TypeOfAction, obj.Shape.ToString());
             //    redoTb.Text += obj_info;
             //}
             //undoTb.Text = "Actions\n";
             //foreach (var obj in Actions)
             //{
             //    string obj_info = String.Format("Key: {0}, {1}, {2}\n\n", obj.Key, obj.TypeOfAction, obj.Shape.ToString());
-            //undoTb.Text += obj_info;                    
+            //    undoTb.Text += obj_info;
             //}
             //shapesDictTb.Text = "ShapesDict\n";
             //foreach (var obj in ShapesDict)
             //{
-            //    string obj_info = String.Format("Key: {0}, {1}\n\n", obj.Key, obj.Value.ToString());                    
+            //    string obj_info = String.Format("Key: {0}, {1}\n\n", obj.Key, obj.Value.ToString());
             //    shapesDictTb.Text += obj_info;
             //}
 
-            ////END TESTING            
+            #endregion
 
             //enable AntiAlias - fills in pixels along the drawing path to give a smoother appearance
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
@@ -255,11 +237,14 @@ namespace FloorPlanTool
 
                     scaleShape = true;
                 }
-                //draw text
+                //draw Text
                 else if (drawText)
                 {                    
-                    //Create a TextBox object and add event.KeyDown method
+                    //Create a TextBox object for input.
+                    //TextInput object is added to ShapesDict in KeyDown method
                     previousPoint = e.Location;
+                    TextBox txtbox;
+
                     if (!textbox_IsDrawn)
                     {
                         txtbox = new TextBox { Name = "textbox1" };
@@ -290,11 +275,13 @@ namespace FloorPlanTool
                     // if HitTest found a shape to move:
                     if (hit)
                     {
+                        update_DrawAction();                       
                         moving = true;
                         previousPoint = e.Location;
                         Actions.Add(new ShapeAction("Move", selectedShape.Key, selectedShape.Value.Copy()));
+                        drawing_panel.Invalidate();
                     }
-                    drawing_panel.Invalidate();
+                    
                 }
             }
             // resize with wheel click or right click
@@ -305,16 +292,7 @@ namespace FloorPlanTool
                 // if HitTest found a shape to resize:                
                 if (hit)
                 {
-                    var key = selectedShape.Key;
-                    foreach (ShapeAction action in Actions)
-                    {
-                        if (action.Key == key)
-                        {
-                            // needed .Copy here in order to fix the issue where Actions was storing a single point
-                            action.Shape = selectedShape.Value.Copy();
-                        }
-                    }
-
+                    update_DrawAction();
                     scaleShape = true;
                     previousPoint = e.Location;                    
                     Actions.Add(new ShapeAction("Resize", selectedShape.Key, selectedShape.Value.Copy()));
@@ -495,9 +473,21 @@ namespace FloorPlanTool
 
             if (selectedShape.Value != null)
                 return true;
-
-            Console.WriteLine("couldn't find shape");
+            
             return false;
+        }
+
+        private void update_DrawAction()
+        {
+            var key = selectedShape.Key;
+            foreach (ShapeAction action in Actions)
+            {
+                if ((action.Key == key) && (action.TypeOfAction == "Draw") && (action.Updated == false))
+                {                    
+                    action.Updated = true;
+                    action.Shape = selectedShape.Value.Copy();                    
+                }
+            }
         }
 
         /*
@@ -506,7 +496,8 @@ namespace FloorPlanTool
          * Draws the text entered, and removes the textbox from the form                 
          */
         private void textbox_KeyDown(object sender, KeyEventArgs e)
-        {            
+        {
+            string text_to_draw = "";
             if (e.KeyCode == Keys.Enter)
             {
                 foreach (Control ctrl in drawing_panel.Controls)
@@ -520,7 +511,7 @@ namespace FloorPlanTool
 
                 TextInput newText = new TextInput();
                 newText.Text = text_to_draw;
-                newText.Brush = brush_color;
+                newText.TextColor = brush_color.Color;
                 newText.Width = 100;
                 newText.Height = 25;
                 newText.PosX = previousPoint.X;

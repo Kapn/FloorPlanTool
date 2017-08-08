@@ -8,6 +8,24 @@ using System.Threading.Tasks;
 
 namespace FloorPlanTool
 {
+    // ---------------------------------
+    //  Handles Drawing/Manipulating Triangles
+    // ---------------------------------
+    // Properties:
+    //      Location : Point used as anchor
+    //      Points : Array of 3 PointF's that represent each point of the triangle
+    //      Size :  int used to scale length of each side of the triangle
+    //      LineWidth : Line Width
+    //      LineColor: Line Color
+    // Methods:
+    //      GetPath()       : Returns GraphicsPath object used to perform HitTest
+    //      HitTest(Point p): Checks if the point is within the object's Path
+    //      Draw(Graphics g): Draws the object
+    //      Move(Point d)   : Moves
+    //      Resize(Point e, Point previousPoint) : Resize 
+    //      Copy(): Returns a Copy of the object
+    //      ToString(): Returns a string of all properties
+
     class Triangle : IShape
     {   
         public Triangle(Point Location, int Size) {
@@ -62,11 +80,9 @@ namespace FloorPlanTool
         }
 
         public void Draw(Graphics g)
-        {
-            using (var path = GetPath())
+        {            
             using (var pen = new Pen(LineColor, LineWidth))
-            {      
-                
+            {                      
                 g.DrawPolygon(pen, Points);
             }
         }
@@ -90,15 +106,7 @@ namespace FloorPlanTool
                                  (float)(Location.Y + this.Size * Math.Sin((2 * Math.PI) / 3)));
             Points[2] = Location;                    
 
-        }
-        
-        public List<int> GetProperties()
-        {
-            return new List<int> { Location.X, Location.Y,
-                                   (int)Points[0].X,
-                                   (int)Points[1].X,
-                                   (int)Points[2].X };
-        }
+        }           
 
         public IShape Copy()
         {            
@@ -107,8 +115,7 @@ namespace FloorPlanTool
 
         string IShape.ToString()
         {
-            string shape_info = String.Format("Triangle\nSize: {0}, Location: ({1}, {2}), Points: ({3}, {4}, {5})", Size, Location.X, Location.Y, Points[0].X, Points[1].X, Points[2].X);
-            return shape_info;
+            return String.Format("Triangle\nSize: {0}, Location: ({1}, {2}), Points: ({3}, {4}, {5})", Size, Location.X, Location.Y, Points[0].X, Points[1].X, Points[2].X);            
         }
     }
 }
