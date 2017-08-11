@@ -61,8 +61,7 @@ namespace FloorPlanTool
         private Rectangle drawRect;
 
         public void Draw(Graphics g)
-        {
-            
+        {            
             using (var brush = new SolidBrush(TextColor))
             {
                 // Strip rectangle to only be size of Text.
@@ -71,6 +70,7 @@ namespace FloorPlanTool
                 Width = Convert.ToInt32(stringSize.Width) + 5;
                 //Height = Convert.ToInt32(stringSize.Height);
 
+                GetPath(); //call GetPath to set up 'drawRect' w/ new Width
                 g.DrawString(Text, Font, brush, drawRect);
             }         
                 

@@ -79,6 +79,10 @@ namespace FloorPlanTool
 
         }
 
+        /*
+         * Draw Rec object.  If Fill, then we FillPath
+         *                   Else DrawRectangle based off local var 'rec'
+         */
         public void Draw(Graphics g)
         {
             if (Fill)
@@ -87,7 +91,9 @@ namespace FloorPlanTool
                 using (var brush = new SolidBrush(FillColor))
                     g.FillPath(brush, path);
             } else
-            {                
+            {
+                //call GetPath() to setup 'rec' variable
+                using (var path = GetPath()) 
                 using (var pen = new Pen(FillColor))
                     g.DrawRectangle(pen, rec);
             }

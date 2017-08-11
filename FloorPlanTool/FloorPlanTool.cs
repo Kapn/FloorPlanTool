@@ -12,14 +12,12 @@ using MySql.Data.MySqlClient;
 // TODO: 
 
 // minor TODO:
-// - resize rec adjusts original position to be near right-click location
-// - When textbox appears it should be focused ready to be typed in (not have to click again)
-// - Adjust text to be on one-line initially not after resize.  (Fixes itself on next invalidate())
-// - a single click at a point adds a 'shape' to the ShapesDict of size 1 pixel
-// - only add a "resize" action if the resize was actually resized and not just right-clicked
-// - Resizing shapes starts from smallest possible circle
+// - a single click at a point adds a 'shape' to the ShapesDict of size 1 pixel (when you undo/redo it will look like nothin is happening because you can't see a shape)
+// - only add a "resize" action if the resize was actually resized and not just right-clicked (ties into above ^^)
+// - Resizing circle and triangle starts from base size and not from current size (smallest possible size)
 // - Clicking places with textbox tool makes text appear at last place clicked.
-// - With one shape, sequencing undo and redo over and over for some reason alternates 'highlighting' dotted line tool and eraser
+// - With one shape, sequencing undo and redo over and over for some reason alternates 'highlighting' dotted line tool and eraser tool
+// - resize rec adjusts original position to be near right-click location when resizing to a smaller rec
 
 // optional features to implement:
 // - KeyBoard shortcuts for different tools
@@ -250,8 +248,11 @@ namespace FloorPlanTool
                         txtbox = new TextBox { Name = "textbox1" };
                         txtbox.KeyDown += textbox_KeyDown;
                         txtbox.Location = new Point(e.X, e.Y);
-                        txtbox.TextAlign = HorizontalAlignment.Left;
+                        txtbox.TextAlign = HorizontalAlignment.Left;                       
                         drawing_panel.Controls.Add(txtbox);
+
+                        //Make the new textbox Active and ready to type in
+                        this.ActiveControl = txtbox;
                         textbox_IsDrawn = true;
                     }                    
                 }
