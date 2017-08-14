@@ -129,6 +129,7 @@
             // redo_button
             // 
             this.redo_button.Enabled = false;
+            this.redo_button.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.redo_button.Location = new System.Drawing.Point(22, 392);
             this.redo_button.Name = "redo_button";
             this.redo_button.Size = new System.Drawing.Size(81, 33);
@@ -162,6 +163,7 @@
             // undo_button
             // 
             this.undo_button.Enabled = false;
+            this.undo_button.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.undo_button.Location = new System.Drawing.Point(22, 431);
             this.undo_button.Name = "undo_button";
             this.undo_button.Size = new System.Drawing.Size(82, 33);
@@ -195,6 +197,7 @@
             // clear_all_button
             // 
             this.clear_all_button.Enabled = false;
+            this.clear_all_button.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.clear_all_button.Location = new System.Drawing.Point(22, 470);
             this.clear_all_button.Name = "clear_all_button";
             this.clear_all_button.Size = new System.Drawing.Size(82, 38);
@@ -306,7 +309,7 @@
             this.drawing_panel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.drawing_panel.Location = new System.Drawing.Point(126, 0);
             this.drawing_panel.Name = "drawing_panel";
-            this.drawing_panel.Size = new System.Drawing.Size(707, 632);
+            this.drawing_panel.Size = new System.Drawing.Size(874, 632);
             this.drawing_panel.TabIndex = 1;
             this.drawing_panel.Paint += new System.Windows.Forms.PaintEventHandler(this.drawing_panel_Paint);
             this.drawing_panel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.drawing_panel_MouseDown);
@@ -317,7 +320,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(833, 632);
+            this.ClientSize = new System.Drawing.Size(1000, 632);
             this.Controls.Add(this.drawing_panel);
             this.Controls.Add(this.toolbar_panel);
             this.MainMenuStrip = this.menuStrip1;

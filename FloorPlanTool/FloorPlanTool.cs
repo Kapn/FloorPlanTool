@@ -12,12 +12,13 @@ using MySql.Data.MySqlClient;
 // TODO: 
 
 // minor TODO:
-// - a single click at a point adds a 'shape' to the ShapesDict of size 1 pixel (when you undo/redo it will look like nothin is happening because you can't see a shape)
-// - only add a "resize" action if the resize was actually resized and not just right-clicked (ties into above ^^)
+// - dock clear all/undo/redo to bottom of form so they stay down near the bottom when the form is resized
+// - only add a "resize" action if the resize was actually resized and not just right-clicked
+// - resize rec adjusts original position to be near right-click location when resizing to a smaller rec
+
 // - Resizing circle and triangle starts from base size and not from current size (smallest possible size)
 // - Clicking places with textbox tool makes text appear at last place clicked.
 // - With one shape, sequencing undo and redo over and over for some reason alternates 'highlighting' dotted line tool and eraser tool
-// - resize rec adjusts original position to be near right-click location when resizing to a smaller rec
 
 // optional features to implement:
 // - KeyBoard shortcuts for different tools
@@ -48,7 +49,14 @@ namespace FloorPlanTool
         Stack<ShapeAction> redo_stack = new Stack<ShapeAction>();                
         Stack<IShape> clear_all_stack = new Stack<IShape>();
         Point previousPoint = Point.Empty;
-        
+    
+
+        // TEMP TESTING BOOL -- set to true for testing
+        bool testing = false;
+        RichTextBox redoTb = new RichTextBox();
+        RichTextBox undoTb = new RichTextBox();
+        RichTextBox shapesDictTb = new RichTextBox();
+
         #endregion
 
         #region Methods
@@ -68,9 +76,34 @@ namespace FloorPlanTool
                 null, drawing_panel, new object[] { true });   
                         
             // Initialize brush color to be Black
-            brush_color = new SolidBrush(Color.Black);            
+            brush_color = new SolidBrush(Color.Black);
+
+            
+            if (testing)
+            {
+                redoTb.Name = "redoTb";
+                redoTb.Location = new Point(400, 20);
+                redoTb.Width = 150;
+                redoTb.Height = 400;
+                drawing_panel.Controls.Add(redoTb);
+
+
+                undoTb.Name = "undoTb";
+                undoTb.Location = new Point(560, 20);
+                undoTb.Width = 150;
+                undoTb.Height = 400;
+                drawing_panel.Controls.Add(undoTb);
+
+
+                shapesDictTb.Name = "shapesDictTb";
+                shapesDictTb.Location = new Point(720, 20);
+                shapesDictTb.Width = 150;
+                shapesDictTb.Height = 400;
+                drawing_panel.Controls.Add(shapesDictTb);
+            }
+
         }
-       
+
         /*
          *  OnPaint Event, Fired with calls to drawing_panel.Invalidate()
          *  
@@ -105,26 +138,31 @@ namespace FloorPlanTool
                 undo_button.Enabled = true;                
             }
 
-            #region  testing statements
+            #region  testing statements      
 
-            //redoTb.Text = "redo_stack\n";
-            //foreach (var obj in redo_stack)
-            //{
-            //    string obj_info = String.Format("Key: {0}, {1}, {2}\n\n", obj.Key, obj.TypeOfAction, obj.Shape.ToString());
-            //    redoTb.Text += obj_info;
-            //}
-            //undoTb.Text = "Actions\n";
-            //foreach (var obj in Actions)
-            //{
-            //    string obj_info = String.Format("Key: {0}, {1}, {2}\n\n", obj.Key, obj.TypeOfAction, obj.Shape.ToString());
-            //    undoTb.Text += obj_info;
-            //}
-            //shapesDictTb.Text = "ShapesDict\n";
-            //foreach (var obj in ShapesDict)
-            //{
-            //    string obj_info = String.Format("Key: {0}, {1}\n\n", obj.Key, obj.Value.ToString());
-            //    shapesDictTb.Text += obj_info;
-            //}
+
+            if (testing)
+            {
+                redoTb.Text = "redo_stack\n";
+                foreach (var obj in redo_stack)
+                {
+                    Console.WriteLine("in foreach");
+                    string obj_info = String.Format("Key: {0}, {1}, {2}\n\n", obj.Key, obj.TypeOfAction, obj.Shape.ToString());
+                    redoTb.Text += obj_info;
+                }
+                undoTb.Text = "Actions\n";
+                foreach (var obj in Actions)
+                {
+                    string obj_info = String.Format("Key: {0}, {1}, {2}\n\n", obj.Key, obj.TypeOfAction, obj.Shape.ToString());
+                    undoTb.Text += obj_info;
+                }
+                shapesDictTb.Text = "ShapesDict\n";
+                foreach (var obj in ShapesDict)
+                {
+                    string obj_info = String.Format("Key: {0}, {1}\n\n", obj.Key, obj.Value.ToString());
+                    shapesDictTb.Text += obj_info;
+                }
+            }
 
             #endregion
 
@@ -175,9 +213,14 @@ namespace FloorPlanTool
                     newLine.DashPattern = new float[] { 1.0F };
 
                     //line stretches out from a single point
-                    newLine.Point1 = previousPoint;
-                    newLine.Point2 = e.Location;
-                   
+                    //newLine.Point1 = previousPoint;
+                    //newLine.Point2 = e.Location;
+
+                    //line stretches out from a small horizontal line of size 2pixel
+                    newLine.Point1 = new Point(previousPoint.X + 1, previousPoint.Y);
+                    newLine.Point2 = previousPoint;
+                    
+
                     ShapesDict.Add(++shapeCount, newLine);
                     Actions.Add(new ShapeAction("Draw", shapeCount, newLine));
 
@@ -192,9 +235,14 @@ namespace FloorPlanTool
                     newLine.LineColor = brush_color.Color;
                     newLine.LineWidth = 2;
                     newLine.DashPattern = new float[] { 2.0F, 2.0F };
-                    newLine.Point1 = previousPoint;
-                    newLine.Point2 = e.Location;
-                   
+
+                    //newLine.Point1 = previousPoint;
+                    //newLine.Point2 = e.Location;
+
+                    //line stretches out from a small horizontal line of size 2pixel
+                    newLine.Point1 = new Point(previousPoint.X + 1, previousPoint.Y);
+                    newLine.Point2 = previousPoint;
+
                     ShapesDict.Add(++shapeCount, newLine);
                     Actions.Add(new ShapeAction("Draw", shapeCount, newLine));
 
@@ -212,9 +260,9 @@ namespace FloorPlanTool
                     if (fill){ newRec.Fill = true;}                    
                     newRec.FillColor = brush_color.Color;
                     newRec.Left = e.X;
-                    newRec.Right = e.X;
+                    newRec.Right = e.X + 1; // (+ 1) allows for a single click to still be viewable on the screen as a draw
                     newRec.Top = e.Y;
-                    newRec.Bottom = e.Y;                       
+                    newRec.Bottom = e.Y + 1;                       
                     
                     ShapesDict.Add(++shapeCount, newRec);                    
                     Actions.Add(new ShapeAction("Draw", shapeCount, newRec));
@@ -243,12 +291,16 @@ namespace FloorPlanTool
                     previousPoint = e.Location;
                     TextBox txtbox;
 
+                    // Only allow one textbox accepting input at a time
+                    // If there are no textboxes waiting for input, add one
                     if (!textbox_IsDrawn)
                     {
                         txtbox = new TextBox { Name = "textbox1" };
                         txtbox.KeyDown += textbox_KeyDown;
                         txtbox.Location = new Point(e.X, e.Y);
-                        txtbox.TextAlign = HorizontalAlignment.Left;                       
+                        txtbox.TextAlign = HorizontalAlignment.Left;
+                        txtbox.BorderStyle = BorderStyle.None; //remove border               
+
                         drawing_panel.Controls.Add(txtbox);
 
                         //Make the new textbox Active and ready to type in
@@ -292,7 +344,7 @@ namespace FloorPlanTool
 
                 // if HitTest found a shape to resize:                
                 if (hit)
-                {
+                {                    
                     update_DrawAction();
                     scaleShape = true;
                     previousPoint = e.Location;                    
@@ -324,7 +376,8 @@ namespace FloorPlanTool
                     if (selectedShape.Value == null)
                     {                        
                         selectedShape = new KeyValuePair<int, IShape>(shapeCount, ShapesDict[shapeCount].Copy());                                                
-                    }                    
+                    }       
+                    
                     ShapesDict[selectedShape.Key].Resize(e.Location, previousPoint);
                 
                     drawing_panel.Invalidate();                
@@ -522,12 +575,18 @@ namespace FloorPlanTool
                 Actions.Add(new ShapeAction("Draw", shapeCount, newText));
 
                 textbox_IsDrawn = false;
+                // disables 'bell' sound
                 e.Handled = true;
                 e.SuppressKeyPress = true;
+
                 drawing_panel.Invalidate();
 
             }else if (e.KeyCode == Keys.Escape)
             {
+                // disable 'bell' sound
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+
                 foreach (Control ctrl in drawing_panel.Controls)
                 {
                     if (ctrl.Name == "textbox1")
