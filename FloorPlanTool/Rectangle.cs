@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace FloorPlanTool
+namespace FloorPlanControl
 {
     // ---------------------------------
     //  Handles Drawing/Manipulating Rec
@@ -29,6 +27,7 @@ namespace FloorPlanTool
     //      Resize(Point e, Point previousPoint) : Resize 
     //      Copy(): Returns a Copy of the object
     //      ToString(): Returns a string of all properties
+    [Serializable]
     class Rec : IShape
     {
         public Rec() {
@@ -131,9 +130,16 @@ namespace FloorPlanTool
             return new Rec(Left, Top, Right, Bottom, Fill, FillColor);            
         }
 
-        string IShape.ToString()
+        string IToString()
         {
             return String.Format("Rectangle\nLeft: {0}, Right: {1}, Top: {2}, Bottom: {3}", Left, Right, Top, Bottom);            
+        }
+
+        void System.Runtime.Serialization.ISerializable.GetObjectData(
+       System.Runtime.Serialization.SerializationInfo info,
+       System.Runtime.Serialization.StreamingContext context)
+        {
+            // Code as required
         }
     }
 }

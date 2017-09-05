@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace FloorPlanTool
+namespace FloorPlanControl
 {
     // ---------------------------------
     //  Handles Drawing/Manipulating Circles
@@ -24,6 +22,7 @@ namespace FloorPlanTool
     //      Resize(Point e, Point previousPoint) : Resize 
     //      Copy(): Returns a Copy of the object
     //      ToString(): Returns a string of all properties
+    [Serializable]
     public class Circle : IShape
     {
         public Circle() {
@@ -113,6 +112,13 @@ namespace FloorPlanTool
         string IShape.ToString()
         {
             return String.Format("Circle\nRadius: {0} , Center: ({1}, {2})", Radius, Center.X, Center.Y);            
+        }
+
+        void System.Runtime.Serialization.ISerializable.GetObjectData(
+       System.Runtime.Serialization.SerializationInfo info,
+       System.Runtime.Serialization.StreamingContext context)
+        {
+            // Code as required
         }
     }
 }

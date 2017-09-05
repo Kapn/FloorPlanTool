@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace FloorPlanTool
+namespace FloorPlanControl
 {
     // ---------------------------------
     //  Handles Drawing/Manipulating lines
@@ -25,6 +23,7 @@ namespace FloorPlanTool
     //      Resize(Point e, Point previousPoint) : Resize 
     //      Copy(): Returns a Copy of the object
     //      ToString(): Returns a string of all properties
+    [Serializable]
     public class Line : IShape
     {
         public Line() { LineWidth = 2; LineColor = Color.Black; }
@@ -98,6 +97,13 @@ namespace FloorPlanTool
         string IShape.ToString()
         {
             return String.Format("Line\nPoint1: ({0}, {1})   Point2: ({2}, {3})", Point1.X, Point1.Y, Point2.X, Point2.Y);            
+        }
+
+        void System.Runtime.Serialization.ISerializable.GetObjectData(
+       System.Runtime.Serialization.SerializationInfo info,
+       System.Runtime.Serialization.StreamingContext context)
+        {
+            // Code as required
         }
     }
 }

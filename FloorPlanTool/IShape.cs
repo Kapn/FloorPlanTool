@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.Serialization;
 
-namespace FloorPlanTool
+namespace FloorPlanControl
 {
-    public interface IShape
+    public interface IShape : ISerializable
     {
         IShape Copy();
         GraphicsPath GetPath();

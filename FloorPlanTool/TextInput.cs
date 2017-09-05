@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace FloorPlanTool
+namespace FloorPlanControl
 {
     // ---------------------------------
     //  Handles Drawing/Manipulating Text
@@ -28,6 +26,7 @@ namespace FloorPlanTool
     //      Resize(Point e, Point previousPoint) : Resize 
     //      Copy(): Returns a Copy of the object
     //      ToString(): Returns a string of all properties
+    [Serializable]
     public class TextInput : IShape
     {
         #region Constructors
@@ -131,6 +130,13 @@ namespace FloorPlanTool
         string IShape.ToString()
         {
             return String.Format("TextInput\nLocation: ({0}, {1}),  Width: {2}, Height: {3}, String: {4}", PosX, PosY, Width, Height, Text);            
+        }
+
+        void System.Runtime.Serialization.ISerializable.GetObjectData(
+        System.Runtime.Serialization.SerializationInfo info,
+        System.Runtime.Serialization.StreamingContext context)
+        {
+            // Code as required
         }
     }
 }

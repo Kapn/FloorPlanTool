@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+//using System.Threading.Tasks;
 
-namespace FloorPlanTool
+namespace FloorPlanControl
 {
     // ---------------------------------
     //  Handles Drawing/Manipulating Triangles
@@ -25,7 +24,7 @@ namespace FloorPlanTool
     //      Resize(Point e, Point previousPoint) : Resize 
     //      Copy(): Returns a Copy of the object
     //      ToString(): Returns a string of all properties
-
+    [Serializable]
     class Triangle : IShape
     {   
         public Triangle(Point Location, int Size) {
@@ -116,6 +115,13 @@ namespace FloorPlanTool
         string IShape.ToString()
         {
             return String.Format("Triangle\nSize: {0}, Location: ({1}, {2}), Points: ({3}, {4}, {5})", Size, Location.X, Location.Y, Points[0].X, Points[1].X, Points[2].X);            
+        }
+
+        void System.Runtime.Serialization.ISerializable.GetObjectData(
+       System.Runtime.Serialization.SerializationInfo info,
+       System.Runtime.Serialization.StreamingContext context)
+        {
+            // Code as required
         }
     }
 }
