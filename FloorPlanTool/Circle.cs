@@ -31,7 +31,7 @@ namespace FloorPlanTool
             FillColor = Color.Black;
             Fill = false;
         }
-
+        
         public Circle(int Radius, Point Center, bool Fill, Color FillColor)
         {
             this.FillColor = FillColor;
@@ -106,9 +106,10 @@ namespace FloorPlanTool
             return new Circle(Radius, Center, Fill, FillColor);            
         }
 
+        // Format: Type\n, Radius, CenterX, CenterY, Fill, FillColor
         public override string ToString()
-        {
-            return String.Format("Circle\nRadius: {0} , Center: ({1}, {2})", Radius, Center.X, Center.Y);            
+        {   
+            return String.Format("Circle\n{0},{1},{2},{3},{4}", Radius, Center.X, Center.Y, Fill, FillColor.ToString());            
         }
     }
 }

@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using MySql.Data.MySqlClient;
 
 #region TASKS
 
@@ -773,44 +772,16 @@ namespace FloorPlanTool
                 bmp.Save(saveStream, ImageFormat.Png);
             }
 
-            Shapes.Save(@"C:\Users\kpannell\shapes.png");
-
-
-            //// save to localhost for testing
-            // try
-            //{
-            //    string myConnection = "datasource=localhost;port=3306;username=root;password=root";
-            //    MySqlConnection myConn = new MySqlConnection(myConnection);
-            //    myConn.Open();
-
-            //    string cmdText = "INSERT INTO test_schema.file(idfile, file_name, memorystream, file_size) VALUES (@idfile, @filename, @memorystream, @filesize)";
-            //    MySqlCommand cmd = new MySqlCommand(cmdText, myConn);
-            //    cmd.Parameters.AddWithValue("@idfile", 55);
-            //    cmd.Parameters.AddWithValue("@filename", "checkingSize");
-
-
-            //    //save image to memorystream
-            //    using (MemoryStream memStream = new MemoryStream())
-            //    {
-
-            //        bmp.Save(memStream, ImageFormat.Bmp);
-            //        byte[] ms_Array = memStream.ToArray();
-            //        cmd.Parameters.AddWithValue("@filesize", memStream.Length);
-            //        cmd.Parameters.AddWithValue("@memorystream", ms_Array);
-            //        cmd.ExecuteNonQuery();
-            //    }                    
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(ex.Message);
-            //}
-            //bmp.Dispose();
+            Shapes.Save(@"C:\Users\kpannell\shapes.png");         
         }
 
         //load currently only attempts to grab the stream from the database
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Shapes.Load(@"C:\Users\kpannell\shapes.png");
+            // update shapeCount
+            shapeCount = Shapes.Count;
+
             drawing_panel.Invalidate();
             //byte[] image = GetImage("55");
             //MemoryStream stream = new MemoryStream(image);
