@@ -65,6 +65,7 @@
     <Compile Include="Line.cs" />
     <Compile Include="Rectangle.cs" />
     <Compile Include="ShapeAction.cs" />
+    <Compile Include="ShapesList.cs" />
     <Compile Include="TextInput.cs" />
     <Compile Include="Triangle.cs" />
     <EmbeddedResource Include="FloorPlanTool.resx">

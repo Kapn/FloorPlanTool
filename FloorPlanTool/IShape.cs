@@ -8,14 +8,15 @@ using System.Threading.Tasks;
 
 namespace FloorPlanTool
 {
-    public interface IShape
+    [Serializable]
+    public abstract class IShape
     {
-        IShape Copy();
-        GraphicsPath GetPath();
-        bool HitTest(Point p);
-        void Draw(Graphics g);
-        void Move(Point d);
-        void Resize(Point e, Point previousPoint);
-        string ToString();        
+        public abstract IShape Copy();
+        public abstract GraphicsPath GetPath();
+        public abstract bool HitTest(Point p);
+        public abstract void Draw(Graphics g);
+        public abstract void Move(Point d);
+        public abstract void Resize(Point e, Point previousPoint);
+        public abstract override string ToString();        
     }
 }

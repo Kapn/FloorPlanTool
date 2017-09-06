@@ -28,6 +28,7 @@ namespace FloorPlanTool
     //      Resize(Point e, Point previousPoint) : Resize 
     //      Copy(): Returns a Copy of the object
     //      ToString(): Returns a string of all properties
+    [Serializable]
     public class TextInput : IShape
     {
         #region Constructors
@@ -60,7 +61,7 @@ namespace FloorPlanTool
         public int PosY { get; set; }
         private Rectangle drawRect;
 
-        public void Draw(Graphics g)
+        public override void Draw(Graphics g)
         {            
             using (var brush = new SolidBrush(TextColor))
             {
@@ -76,7 +77,7 @@ namespace FloorPlanTool
                 
         }
 
-        public GraphicsPath GetPath()
+        public override GraphicsPath GetPath()
         {
             var path = new GraphicsPath();
             drawRect = new Rectangle(PosX, PosY, Width, Height);
@@ -84,7 +85,7 @@ namespace FloorPlanTool
             return path;
         }
 
-        public bool HitTest(Point p)
+        public override bool HitTest(Point p)
         {
             var result = false;
             using (var path = GetPath())
@@ -92,13 +93,13 @@ namespace FloorPlanTool
             return result;
         }
 
-        public void Move(Point d)
+        public override void Move(Point d)
         {
             PosX = PosX + d.X;
             PosY = PosY + d.Y;
         }
 
-        public void Resize(Point e, Point previousPoint)
+        public override void Resize(Point e, Point previousPoint)
         {
                         
             Width = e.X - PosX;
@@ -123,12 +124,12 @@ namespace FloorPlanTool
             
         }        
 
-        public IShape Copy()
+        public override IShape Copy()
         {            
             return new TextInput(PosX, PosY, Text, TextColor, FontSize, Font);            
         }
 
-        string IShape.ToString()
+        public override string ToString()
         {
             return String.Format("TextInput\nLocation: ({0}, {1}),  Width: {2}, Height: {3}, String: {4}", PosX, PosY, Width, Height, Text);            
         }

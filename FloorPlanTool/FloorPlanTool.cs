@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
@@ -49,7 +51,7 @@ namespace FloorPlanTool
         Stack<ShapeAction> redo_stack = new Stack<ShapeAction>();                
         Stack<IShape> clear_all_stack = new Stack<IShape>();
         Point previousPoint = Point.Empty;
-    
+        ShapesList Shapes = new ShapesList();
 
         // TEMP TESTING BOOL -- set to true for testing
         bool testing = false;
@@ -168,10 +170,11 @@ namespace FloorPlanTool
 
             //enable AntiAlias - fills in pixels along the drawing path to give a smoother appearance
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                       
+
             //draw each shape in ShapesDict
-            foreach (KeyValuePair<int, IShape> shape in ShapesDict)
-                shape.Value.Draw(e.Graphics);
+            //foreach (KeyValuePair<int, IShape> shape in ShapesDict)
+            //    shape.Value.Draw(e.Graphics);
+            Shapes.Draw(e.Graphics);
         }        
 
         /*
@@ -196,7 +199,9 @@ namespace FloorPlanTool
                     newCircle.Center = new Point(e.X, e.Y);
                     newCircle.Radius = 2;
                     
-                    ShapesDict.Add(++shapeCount, newCircle);
+                    //ShapesDict.Add(++shapeCount, newCircle);
+                    //var toAdd = new KeyValuePair<int, IShape>(++shapeCount, newCircle);
+                    Shapes.Add(++shapeCount, newCircle);
                     Actions.Add(new ShapeAction("Draw", shapeCount, newCircle));
 
                     scaleShape = true;
@@ -375,10 +380,11 @@ namespace FloorPlanTool
                     //for viewing line/shapes as they are dragged out
                     if (selectedShape.Value == null)
                     {                        
-                        selectedShape = new KeyValuePair<int, IShape>(shapeCount, ShapesDict[shapeCount].Copy());                                                
+                        //selectedShape = new KeyValuePair<int, IShape>(shapeCount, ShapesDict[shapeCount].Copy());
+                        selectedShape = new KeyValuePair<int, IShape>(shapeCount, Shapes[shapeCount].Copy());
                     }       
-                    
-                    ShapesDict[selectedShape.Key].Resize(e.Location, previousPoint);
+                    Shapes[selectedShape.Key].Resize(e.Location, previousPoint);
+                    //ShapesDict[selectedShape.Key].Resize(e.Location, previousPoint);
                 
                     drawing_panel.Invalidate();                
                 }            
@@ -461,7 +467,7 @@ namespace FloorPlanTool
          */
         private void redoButton_Click(object sender, EventArgs e)
         {
-            if (redo_stack.Count > 0)
+            if (redo_stack.Count > 0) 
             {                
                 ShapeAction ra = redo_stack.Pop();
                                 
@@ -757,15 +763,17 @@ namespace FloorPlanTool
         //currently saves to file for testing of database in other solution 'ProgrammingKnowledge'
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //Bitmap bmp = new Bitmap((int)drawing_panel.Width, (int)drawing_panel.Height);
-            ////Draw Graphics to Bitmap for storage
-            //drawing_panel.DrawToBitmap(bmp, new Rectangle(0, 0, drawing_panel.Width, drawing_panel.Height));            
+            Bitmap bmp = new Bitmap((int)drawing_panel.Width, (int)drawing_panel.Height);
+            //Draw Graphics to Bitmap for storage
+            drawing_panel.DrawToBitmap(bmp, new Rectangle(0, 0, drawing_panel.Width, drawing_panel.Height));
 
-            ////saved to file to check contents of bmp
-            ////using (FileStream saveStream = new FileStream(@"C:\Users\kpannell\testing.png", FileMode.OpenOrCreate))
-            ////{
-            ////    bmp.Save(saveStream, ImageFormat.Png);
-            ////}
+            //saved to file to check contents of bmp
+            using (FileStream saveStream = new FileStream(@"C:\Users\kpannell\testing.png", FileMode.OpenOrCreate))
+            {
+                bmp.Save(saveStream, ImageFormat.Png);
+            }
+
+            Shapes.Save(@"C:\Users\kpannell\shapes.png");
 
 
             //// save to localhost for testing
@@ -784,7 +792,7 @@ namespace FloorPlanTool
             //    //save image to memorystream
             //    using (MemoryStream memStream = new MemoryStream())
             //    {
-                    
+
             //        bmp.Save(memStream, ImageFormat.Bmp);
             //        byte[] ms_Array = memStream.ToArray();
             //        cmd.Parameters.AddWithValue("@filesize", memStream.Length);
@@ -802,15 +810,17 @@ namespace FloorPlanTool
         //load currently only attempts to grab the stream from the database
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            Shapes.Load(@"C:\Users\kpannell\shapes.png");
+            drawing_panel.Invalidate();
             //byte[] image = GetImage("55");
             //MemoryStream stream = new MemoryStream(image);
 
         }
 
         //Grabs memorystream by fileid field and returns the byte array           
-        byte[] GetImage(string id)
+        private byte[] GetImage(string id)
         {
+           
             //using (MySqlConnection connection = new MySqlConnection("datasource=localhost;port=3306;username=root;password=root"))
             //{
             //    try

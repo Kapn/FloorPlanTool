@@ -26,6 +26,7 @@ namespace FloorPlanTool
     //      Copy(): Returns a Copy of the object
     //      ToString(): Returns a string of all properties
 
+    [Serializable]
     class Triangle : IShape
     {   
         public Triangle(Point Location, int Size) {
@@ -63,14 +64,14 @@ namespace FloorPlanTool
         public int LineWidth { get; set; }
         public Color LineColor { get; set; }
 
-        public GraphicsPath GetPath()
+        public override GraphicsPath GetPath()
         {
             var path = new GraphicsPath();
             path.AddPolygon(Points);            
             return path;
         }
 
-        public bool HitTest(Point p)
+        public override bool HitTest(Point p)
         {
             var result = false;
             using (var path = GetPath())
@@ -79,7 +80,7 @@ namespace FloorPlanTool
             return result;
         }
 
-        public void Draw(Graphics g)
+        public override void Draw(Graphics g)
         {            
             using (var pen = new Pen(LineColor, LineWidth))
             {                      
@@ -87,7 +88,7 @@ namespace FloorPlanTool
             }
         }
 
-        public void Move(Point d)
+        public override void Move(Point d)
         {            
             Points[0] = new PointF(Points[0].X + d.X, Points[0].Y + d.Y);
             Points[1] = new PointF(Points[1].X + d.X, Points[1].Y + d.Y);
@@ -96,7 +97,7 @@ namespace FloorPlanTool
 
         }
 
-        public void Resize(Point e, Point distance)
+        public override void Resize(Point e, Point distance)
         {                      
             this.Size = e.Y - distance.Y;
 
@@ -108,12 +109,12 @@ namespace FloorPlanTool
 
         }           
 
-        public IShape Copy()
+        public override IShape Copy()
         {            
             return new Triangle(Location, LineColor, Size);
         }
 
-        string IShape.ToString()
+        public override string ToString()
         {
             return String.Format("Triangle\nSize: {0}, Location: ({1}, {2}), Points: ({3}, {4}, {5})", Size, Location.X, Location.Y, Points[0].X, Points[1].X, Points[2].X);            
         }

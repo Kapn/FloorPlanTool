@@ -29,6 +29,7 @@ namespace FloorPlanTool
     //      Resize(Point e, Point previousPoint) : Resize 
     //      Copy(): Returns a Copy of the object
     //      ToString(): Returns a string of all properties
+    [Serializable]
     class Rec : IShape
     {
         public Rec() {
@@ -53,7 +54,7 @@ namespace FloorPlanTool
         public int Bottom { get; set; }
         private Rectangle rec;
 
-        public GraphicsPath GetPath()
+        public override GraphicsPath GetPath()
         {
             var path = new GraphicsPath();            
             rec = Rectangle.FromLTRB(Left, Top, Right, Bottom);
@@ -61,7 +62,7 @@ namespace FloorPlanTool
             return path;
         }
 
-        public bool HitTest(Point p)
+        public override bool HitTest(Point p)
         {
             var result = false;
             using (var path = GetPath())
@@ -69,7 +70,7 @@ namespace FloorPlanTool
             return result;
         }
 
-        public void Move(Point d)
+        public override void Move(Point d)
         {
             Left = Left + d.X;
             Right = Right + d.X;
@@ -83,7 +84,7 @@ namespace FloorPlanTool
          * Draw Rec object.  If Fill, then we FillPath
          *                   Else DrawRectangle based off local var 'rec'
          */
-        public void Draw(Graphics g)
+        public override void Draw(Graphics g)
         {
             if (Fill)
             {
@@ -101,7 +102,7 @@ namespace FloorPlanTool
 
         //resize rectangle
         //top-left corner should stay fixed
-        public void Resize(Point e, Point previousPoint)
+        public override void Resize(Point e, Point previousPoint)
         {
             int dx = e.X - Right;
             int dy = e.Y - Bottom;
@@ -126,12 +127,12 @@ namespace FloorPlanTool
             }
         }
         
-        public IShape Copy()
+        public override IShape Copy()
         {            
             return new Rec(Left, Top, Right, Bottom, Fill, FillColor);            
         }
 
-        string IShape.ToString()
+        public override string ToString()
         {
             return String.Format("Rectangle\nLeft: {0}, Right: {1}, Top: {2}, Bottom: {3}", Left, Right, Top, Bottom);            
         }

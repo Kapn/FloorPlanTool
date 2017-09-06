@@ -24,6 +24,7 @@ namespace FloorPlanTool
     //      Resize(Point e, Point previousPoint) : Resize 
     //      Copy(): Returns a Copy of the object
     //      ToString(): Returns a string of all properties
+    [Serializable]
     public class Circle : IShape
     {
         public Circle() {
@@ -41,15 +42,10 @@ namespace FloorPlanTool
         
         public bool Fill { get; set; }
         public Color FillColor { get; set; }
-        public Point Center { get; set; }
-        private int radius;
-        public int Radius
-        {
-            get { return radius; }
-            set { radius = value; }
-        }
+        public Point Center { get; set; }        
+        public int Radius { get; set; }
 
-        public GraphicsPath GetPath()
+        public override GraphicsPath GetPath()
         {
             var path = new GraphicsPath();
             var p = Center;
@@ -58,14 +54,14 @@ namespace FloorPlanTool
             return path;
         }
 
-        public bool HitTest(Point p)
+        public override bool HitTest(Point p)
         {
             var result = false;
             using (var path = GetPath())
                 result = path.IsVisible(p);
             return result;
         }
-        public void Draw(Graphics g)
+        public override void Draw(Graphics g)
         {
             if (Fill)
             {
@@ -82,12 +78,12 @@ namespace FloorPlanTool
             }
             
         }
-        public void Move(Point d)
+        public override void Move(Point d)
         {
             Center = new Point(Center.X + d.X, Center.Y + d.Y);
         }
 
-        public void Resize(Point e, Point previousPoint)
+        public override void Resize(Point e, Point previousPoint)
         {
             int newRadius;
             int dx = e.X - previousPoint.X;
@@ -105,12 +101,12 @@ namespace FloorPlanTool
             this.Radius = newRadius;
         }        
 
-        public IShape Copy()
+        public override IShape Copy()
         {            
             return new Circle(Radius, Center, Fill, FillColor);            
         }
 
-        string IShape.ToString()
+        public override string ToString()
         {
             return String.Format("Circle\nRadius: {0} , Center: ({1}, {2})", Radius, Center.X, Center.Y);            
         }

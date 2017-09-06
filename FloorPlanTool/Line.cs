@@ -25,6 +25,7 @@ namespace FloorPlanTool
     //      Resize(Point e, Point previousPoint) : Resize 
     //      Copy(): Returns a Copy of the object
     //      ToString(): Returns a string of all properties
+    [Serializable]
     public class Line : IShape
     {
         public Line() { LineWidth = 2; LineColor = Color.Black; }
@@ -43,13 +44,13 @@ namespace FloorPlanTool
         public Point Point2 { get; set; }
         
 
-        public GraphicsPath GetPath()
+        public override GraphicsPath GetPath()
         {
             var path = new GraphicsPath();
             path.AddLine(Point1, Point2);
             return path;
         }
-        public bool HitTest(Point p)
+        public override bool HitTest(Point p)
         {
             var result = false;
             using (var path = GetPath())
@@ -57,7 +58,7 @@ namespace FloorPlanTool
                 result = path.IsOutlineVisible(p, pen);
             return result;
         }
-        public void Draw(Graphics g)
+        public override void Draw(Graphics g)
         {
             using (var path = GetPath())
             using (var pen = new Pen(LineColor, LineWidth))
@@ -66,14 +67,14 @@ namespace FloorPlanTool
                 g.DrawPath(pen, path);
             }
         }
-        public void Move(Point d)
+        public override void Move(Point d)
         {
             Point1 = new Point(Point1.X + d.X, Point1.Y + d.Y);
             Point2 = new Point(Point2.X + d.X, Point2.Y + d.Y);
         }
 
         //resize line based on closest point clicked
-        public void Resize(Point e, Point previousPoint)
+        public override void Resize(Point e, Point previousPoint)
         {            
             
             double distanceToPt1 = ((e.X - Point1.X) * (e.X - Point1.X) + (e.Y - Point1.Y) * (e.Y - Point1.Y));
@@ -90,12 +91,12 @@ namespace FloorPlanTool
             }
         }
 
-        public IShape Copy()
+        public override IShape Copy()
         {            
             return new Line(Point1, Point2, DashPattern, LineColor);            
         }
 
-        string IShape.ToString()
+        public override string ToString()
         {
             return String.Format("Line\nPoint1: ({0}, {1})   Point2: ({2}, {3})", Point1.X, Point1.Y, Point2.X, Point2.Y);            
         }
